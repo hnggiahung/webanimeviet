@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Trang web phim anime chất lượng cao - Xem phim anime mới nhất" />
+  <meta name="keywords" content="anime, phim anime, xem phim, streaming" />
+  <meta name="theme-color" content="#ff6b00" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Ani VietSub VN - Xem Phim Anime Online</title>
+
+  <!-- Web App Manifest -->
+  <link rel="manifest" href="manifest.json" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          aspectRatio: {
+            '3/4': '3 / 4',
+          },
+        }
+      }
+    }
+  </script>
+
+  <!-- Feather Icons -->
+  <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/style.css" />
+
+  <style>
+    /* Overlay pattern - blended with logo colors */
+    .hero-pattern {
+      background: linear-gradient(135deg, #0a0a0f 0%, #1a0f0a 30%, #0f0f1e 70%, #0a0a12 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-pattern::before {
+      content: '';
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(255, 107, 0, 0.1) 0%, transparent 70%);
+      top: -100px;
+      right: -100px;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .hero-pattern::after {
+      content: '';
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(233, 69, 96, 0.08) 0%, transparent 70%);
+      bottom: -50px;
+      left: -50px;
+      animation: float 8s ease-in-out infinite reverse;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(30px);
+      }
+    }
+
+    .category-tag {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .category-tag:hover {
+      transform: translateY(-2px);
+    }
+
+    /* Gradient overlay at bottom of poster */
+    .poster-gradient {
+      background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 50%, transparent 100%);
+    }
+
+    /* Hide grid container initial CSS grid - use Tailwind instead */
+    .grid-container {
+      margin-top: 30px;
+    }
+
+    /* Card fade-in animation */
+    @keyframes cardFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .movie-card {
+      animation: cardFadeIn 0.5s ease forwards;
+    }
+
+    .movie-card:nth-child(2) { animation-delay: 0.05s; }
+    .movie-card:nth-child(3) { animation-delay: 0.1s; }
+    .movie-card:nth-child(4) { animation-delay: 0.15s; }
+    .movie-card:nth-child(5) { animation-delay: 0.2s; }
+    .movie-card:nth-child(6) { animation-delay: 0.25s; }
+    .movie-card:nth-child(7) { animation-delay: 0.3s; }
+    .movie-card:nth-child(8) { animation-delay: 0.35s; }
+    .movie-card:nth-child(9) { animation-delay: 0.4s; }
+    .movie-card:nth-child(10) { animation-delay: 0.45s; }
+    .movie-card:nth-child(11) { animation-delay: 0.5s; }
+    .movie-card:nth-child(12) { animation-delay: 0.55s; }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #1a1a2e;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #ff6b00;
+      border-radius: 5px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #e94560;
+    }
+
+    /* Compact search bar animation */
+    .search-bar {
+      transition: all 0.3s ease;
+    }
+    .search-bar:focus-within {
+      width: 260px;
+      border-color: #ff6b00;
+      box-shadow: 0 0 0 2px rgba(255, 107, 0, 0.15);
+    }
+  </style>
+</head>
+<body class="bg-[#0f0f1e] min-h-screen">
+  <!-- HEADER - Premium Style -->
+  <header class="sticky top-0 z-50 bg-slate-950/60 backdrop-blur-md border-b border-white/5">
+    <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+      <!-- Logo -->
+      <a href="index.html" class="flex items-center gap-2.5 shrink-0">
+        <img src="logo.jpg.jpg" alt="AnimeStream Logo" class="w-9 h-9 rounded-lg object-cover shadow-lg shadow-orange-500/20" loading="lazy" />
+        <span class="text-xl font-black bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
+          
+        </span>
+      </a>
+
+      <!-- Navigation + Search + Login (Desktop) -->
+      <nav class="hidden md:flex items-center gap-0">
+        <!-- Trang Chủ -->
+        <a href="index.html" class="px-3 py-1.5 text-sm font-medium text-gray-300 hover:text-white transition-colors duration-200">
+          Trang Chủ
+        </a>
+
+        <!-- Dạng Anime - Mega Dropdown -->
+        <div class="relative group">
+          <button class="px-3 py-1.5 text-sm font-medium text-gray-300 hover:text-white transition-colors duration-200 inline-flex items-center gap-1 cursor-pointer">
+            Dạng Anime
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="transition-transform duration-200 group-hover:rotate-180"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="absolute left-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 translate-y-2 group-hover:translate-y-0">
+            <div class="w-[500px] bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl shadow-black/50 p-5">
+              <div class="grid grid-cols-3 gap-2">
+                <a href="#" class="block px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">TV/Series</a>
+                <a href="#" class="block px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">Movie/OVA</a>
+                <a href="#" class="block px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">HH Trung Quốc</a>
+                <a href="#" class="block px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">Anime Sắp Chiếu</a>
+                <a href="#" class="block px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">Anime Đang Chiếu</a>
+                <a href="#" class="block px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">Anime Trọn Bộ</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Anime - Mega Dropdown -->
+        <div class="relative group">
+          <button class="px-3 py-1.5 text-sm font-medium text-gray-300 hover:text-white transition-colors duration-200 inline-flex items-center gap-1 cursor-pointer">
+            Top Anime
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="transition-transform duration-200 group-hover:rotate-180"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="absolute left-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 translate-y-2 group-hover:translate-y-0">
+            <div class="w-[400px] bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl shadow-black/50 p-5">
+              <div class="grid grid-cols-2 gap-2">
+                <a href="#" class="block px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">Theo Ngày</a>
+                <a href="#" class="block px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">Theo Tuần</a>
+                <a href="#" class="block px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">Theo Tháng</a>
+                <a href="#" class="block px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">Theo Mùa</a>
+                <a href="#" class="block px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">Theo Năm</a>
+                <a href="#" class="block px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">Yêu Thích</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Thể Loại - Mega Dropdown -->
+        <div class="relative group">
+          <button class="px-3 py-1.5 text-sm font-medium text-gray-300 hover:text-white transition-colors duration-200 inline-flex items-center gap-1 cursor-pointer">
+            Thể Loại
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="transition-transform duration-200 group-hover:rotate-180"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="absolute left-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 translate-y-2 group-hover:translate-y-0">
+            <div class="w-[520px] bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl shadow-black/50 p-5">
+              <div class="grid grid-cols-3 gap-2">
+                <a href="#" class="block px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">Action</a>
+                <a href="#" class="block px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">Adventure</a>
+                <a href="#" class="block px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">Boys Love</a>
+                <a href="#" class="block px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">Cartoon</a>
+                <a href="#" class="block px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">Cổ Trang</a>
+                <a href="#" class="block px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">Comedy</a>
+                <a href="#" class="block px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">Dementia</a>
+                <a href="#" class="block px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">Demons</a>
+                <a href="#" class="block px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">Drama</a>
+                <a href="#" class="block px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">Ecchi</a>
+                <a href="#" class="block px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">Fantasy</a>
+                <a href="#" class="block px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">Game</a>
+                <a href="#" class="block px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">Harem</a>
+                <a href="#" class="block px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">Historical</a>
+                <a href="#" class="block px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">Horror</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Season - Mega Dropdown -->
+        <div class="relative group">
+          <button class="px-3 py-1.5 text-sm font-medium text-gray-300 hover:text-white transition-colors duration-200 inline-flex items-center gap-1 cursor-pointer">
+            Season
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="transition-transform duration-200 group-hover:rotate-180"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="absolute left-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 translate-y-2 group-hover:translate-y-0">
+            <div class="w-[320px] bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl shadow-black/50 p-5">
+              <div class="space-y-1 mb-3">
+                <p class="text-[10px] uppercase tracking-wider text-gray-500 font-semibold mb-2">2026</p>
+                <div class="grid grid-cols-2 gap-1">
+                  <a href="#" class="block px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">Mùa Đông</a>
+                  <a href="#" class="block px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">Mùa Xuân</a>
+                  <a href="#" class="block px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">Mùa Hạ</a>
+                  <a href="#" class="block px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">Mùa Thu</a>
+                </div>
+              </div>
+              <div class="border-t border-white/5 pt-3">
+                <p class="text-[10px] uppercase tracking-wider text-gray-500 font-semibold mb-2">Trước đó</p>
+                <div class="grid grid-cols-3 gap-1">
+                  <a href="#" class="block px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">2025</a>
+                  <a href="#" class="block px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">2024</a>
+                  <a href="#" class="block px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">2023</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Thư Viện & Lịch Chiếu - No dropdown -->
+        <a href="#" class="px-3 py-1.5 text-sm font-medium text-gray-300 hover:text-white transition-colors duration-200">
+          Thư Viện
+        </a>
+        <a href="#" class="px-3 py-1.5 text-sm font-medium text-gray-300 hover:text-white transition-colors duration-200">
+          Lịch Chiếu
+        </a>
+
+        <!-- Divider -->
+        <div class="w-px h-6 bg-white/10 mx-2"></div>
+
+        <!-- Compact Search in Navbar -->
+        <div class="relative search-bar w-[180px]">
+          <div class="flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 transition-all duration-300 focus-within:border-orange-500 focus-within:shadow-lg focus-within:shadow-orange-500/10">
+            <svg class="text-gray-400 shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            <input type="text" id="search-input" placeholder="Tìm kiếm..." class="w-full bg-transparent outline-none text-white placeholder-gray-500 text-sm" />
+          </div>
+        </div>
+
+        <!-- Login Button - Direct Google Redirect -->
+        <a href="https://accounts.google.com/o/oauth2/auth?client_id=YOUR_CLIENT_ID&redirect_uri=YOUR_REDIRECT_URI&response_type=code&scope=email%20profile" 
+           id="login-btn" 
+           class="ml-2 px-4 py-1.5 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-md transition-all duration-200 hover:shadow-lg hover:shadow-red-500/25 inline-flex items-center gap-1.5">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Đăng nhập
+        </a>
+      </nav>
+
+      <!-- Mobile: Search + Menu + Login -->
+      <div class="md:hidden flex items-center gap-2">
+        <button id="mobile-search-toggle" class="text-gray-400 hover:text-white transition p-1">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+        </button>
+        <button id="login-btn-mobile" class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded transition">
+          Đăng nhập
+        </button>
+        <button class="text-gray-400 hover:text-white transition p-1">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <!-- Mobile Search Dropdown -->
+      <div id="mobile-search" class="hidden md:hidden px-4 pb-4">
+        <div class="flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2">
+          <svg class="text-gray-400 shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+          <input type="text" id="search-input-mobile" placeholder="Tìm kiếm phim anime..." class="w-full bg-transparent outline-none text-white placeholder-gray-500 text-sm" />
+        </div>
+        <!-- Mobile nav links -->
+        <div class="mt-3 grid grid-cols-3 gap-2">
+          <a href="#" class="text-xs text-gray-400 hover:text-white text-center py-2 bg-white/5 rounded-lg transition">Dạng Anime</a>
+          <a href="#" class="text-xs text-gray-400 hover:text-white text-center py-2 bg-white/5 rounded-lg transition">Top Anime</a>
+          <a href="#" class="text-xs text-gray-400 hover:text-white text-center py-2 bg-white/5 rounded-lg transition">Thể Loại</a>
+          <a href="#" class="text-xs text-gray-400 hover:text-white text-center py-2 bg-white/5 rounded-lg transition">Season</a>
+          <a href="#" class="text-xs text-gray-400 hover:text-white text-center py-2 bg-white/5 rounded-lg transition">Thư Viện</a>
+          <a href="#" class="text-xs text-gray-400 hover:text-white text-center py-2 bg-white/5 rounded-lg transition">Lịch Chiếu</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+
+  <!-- HERO BANNER - Dynamic từ API -->
+  <section class="max-w-7xl mx-auto px-4 mt-6 mb-8" id="hero-banner">
+    <div id="banner-container" class="relative h-[300px] md:h-[450px] rounded-2xl md:rounded-3xl overflow-hidden group">
+      <!-- Background Image sẽ được set bởi JS -->
+      <div id="banner-bg" 
+        class="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-700 group-hover:scale-105"
+        style="background-image: url('https://placehold.co/1400x600/1a0f0a/d45c3a?text=Anime+Banner&font=roboto');"
+      ></div>
+      
+      <!-- Gradient overlays -->
+      <div class="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-transparent"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+      
+      <!-- Shine effect on hover -->
+      <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-r from-transparent via-white/5 to-transparent"></div>
+
+      <!-- Content - sẽ được cập nhật bởi JS -->
+      <div class="relative z-10 h-full flex items-center px-6 md:px-12" id="banner-content">
+        <div class="max-w-xl">
+          <!-- Badge top -->
+          <div class="flex items-center gap-2 mb-4" id="banner-badges">
+            <span class="px-3 py-1 text-[11px] font-bold uppercase tracking-wider bg-red-600 text-white rounded-md shadow-lg">
+              Hot
+            </span>
+            <span class="px-3 py-1 text-[11px] font-semibold bg-white/10 backdrop-blur-sm text-white rounded-md border border-white/10">
+              Đề Cử
+            </span>
+          </div>
+
+          <!-- Title -->
+          <h1 id="banner-title" class="text-2xl md:text-4xl lg:text-5xl font-black text-white mb-4 leading-tight drop-shadow-2xl">
+            <span class="bg-gradient-to-r from-orange-400 via-red-500 to-pink-500 bg-clip-text text-transparent">
+              Đang tải...
+            </span>
+          </h1>
+
+          <!-- Meta row -->
+          <div class="flex flex-wrap items-center gap-3 md:gap-4 mb-4" id="banner-meta">
+            <span class="text-gray-400 text-sm">Đang tải dữ liệu...</span>
+          </div>
+
+          <!-- Description -->
+          <p id="banner-desc" class="text-sm md:text-base text-gray-300 leading-relaxed line-clamp-2 mb-5 max-w-lg">
+            Đang tải thông tin phim...
+          </p>
+
+          <!-- Meta info: Studio, Genre -->
+          <div class="flex flex-wrap items-center gap-4 mb-6 text-xs text-gray-400" id="banner-genre">
+            <div class="flex items-center gap-1.5">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-orange-400">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+              </svg>
+              <span>Season: <span id="banner-season" class="text-gray-300">Đang tải</span></span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-orange-400">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M12 6v6l4 2"></path>
+              </svg>
+              <span>Thể loại: <span id="banner-category" class="text-gray-300">Đang tải</span></span>
+            </div>
+          </div>
+
+          <!-- CTA Button -->
+          <div class="flex items-center gap-3" id="banner-cta">
+            <a id="banner-watch-link" href="watch.html?id=" 
+               class="inline-flex items-center gap-2.5 px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-bold rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-red-500/30 shadow-lg shadow-red-500/20">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <polygon points="5 3 19 12 5 21"></polygon>
+              </svg>
+              Xem Phim
+            </a>
+            <a id="banner-detail-link" href="watch.html?id=" class="inline-flex items-center gap-2 px-5 py-3 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-xl transition-all duration-300 backdrop-blur-sm border border-white/10 hover:border-white/20">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M12 16v-4M12 8h.01"></path>
+              </svg>
+              Chi Tiết
+            </a>
+            <!-- Icon mở rộng - click chuyển sang xem phim -->
+            <a id="banner-expand-link" href="watch.html?id=" class="ml-2 w-10 h-10 rounded-full bg-white/10 hover:bg-orange-500/30 border border-white/20 hover:border-orange-500 flex items-center justify-center text-white hover:text-orange-400 transition-all duration-300 group" title="Xem phim ngay">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <polyline points="9 21 3 21 3 15"></polyline>
+                <line x1="21" y1="3" x2="14" y2="10"></line>
+                <line x1="3" y1="21" x2="10" y2="14"></line>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation dots -->
+      <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-2" id="banner-dots">
+        <button class="w-2 h-2 rounded-full bg-orange-500 shadow-lg shadow-orange-500/50" data-banner-index="0"></button>
+      </div>
+
+      <!-- Bottom gradient fade -->
+      <div class="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-[#0f0f1e] to-transparent"></div>
+    </div>
+  </section>
+  <!-- FILTER & MOVIES SECTION -->
+  <section class="max-w-7xl mx-auto px-4 py-10" id="movies">
+    <div class="flex flex-col md:flex-row items-center justify-between gap-6 mb-8">
+      <h2 class="text-2xl md:text-3xl font-bold">
+        <span class="text-white">Danh Sách </span>
+        <span class="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">Phim Anime</span>
+      </h2>
+
+      <!-- Category Filter -->
+      <div class="flex flex-wrap gap-2 justify-center md:justify-end">
+        <button class="filter-btn active" data-category="all">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+          </svg>
+          Tất Cả
+        </button>
+        <button class="filter-btn" data-category="Action">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="1"></circle>
+            <path d="M12 1v6m0 6v6"></path>
+            <path d="M4.22 4.22l4.24 4.24m4.24 4.24l4.24 4.24"></path>
+          </svg>
+          Hành Động
+        </button>
+        <button class="filter-btn" data-category="Adventure">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+          </svg>
+          Phiêu Lưu
+        </button>
+        <button class="filter-btn" data-category="Drama">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 6h12v12H6z"></path>
+          </svg>
+          Chính Kịch
+        </button>
+        <button class="filter-btn" data-category="Superhero">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"></path>
+          </svg>
+          Siêu Nhân
+        </button>
+      </div>
+    </div>
+
+    <!-- MOVIES GRID -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mt-6" id="movies-grid">
+      <div class="col-span-full flex justify-center py-20">
+        <div class="w-8 h-8 border-3 border-gray-700 border-t-orange-500 rounded-full animate-spin"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-white/5 mt-16 py-10 px-4">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid md:grid-cols-4 gap-8 mb-8">
+        <div>
+          <h3 class="font-bold text-white mb-4">Ani VietSub VN</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">
+            Nền tảng xem phim anime chất lượng cao, miễn phí, không quảng cáo
+          </p>
+        </div>
+        <div>
+          <h4 class="font-bold text-white mb-4">Danh Mục</h4>
+          <ul class="space-y-2 text-sm text-gray-400">
+            <li><a href="#" class="hover:text-orange-500 transition">Hành động</a></li>
+            <li><a href="#" class="hover:text-orange-500 transition">Phiêu Lưu</a></li>
+            <li><a href="#" class="hover:text-orange-500 transition">Chính Kịch</a></li>
+            <li><a href="#" class="hover:text-orange-500 transition">Siêu Nhân</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-bold text-white mb-4">Liên Kết</h4>
+          <ul class="space-y-2 text-sm text-gray-400">
+            <li><a href="#" class="hover:text-orange-500 transition">Trang Chủ</a></li>
+            <li><a href="#" class="hover:text-orange-500 transition">Phim Anime</a></li>
+            <li><a href="#" class="hover:text-orange-500 transition">Liên Hệ</a></li>
+            <li><a href="#" class="hover:text-orange-500 transition">Về Chúng Tôi</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-bold text-white mb-4">Mạng Xã Hội</h4>
+          <div class="flex gap-4">
+            <a href="#" class="text-gray-400 hover:text-orange-500 transition">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"></path>
+              </svg>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-orange-500 transition">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2s9 5 20 5a9.5 9.5 0 00-9-5.5c4.75 2.25 7-7 7-7a10.6 10.6 0 01-9.999 4m-1-9a4 4 0 11-8 0 4 4 0 018 0z"></path>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="border-t border-white/5 pt-8 text-center text-gray-400 text-sm">
+        <p>© 2026 Ani VietSub VN. Tất cả quyền được bảo lưu. • <a href="#" class="hover:text-white transition">Điều Khoản</a> • <a href="#" class="hover:text-white transition">Chính Sách Bảo Mật</a></p>
+        <div class="flex items-center justify-center gap-2 mt-3 text-xs">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-orange-400">
+            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+          </svg>
+          <span>Liên hệ:</span>
+          <a href="mailto:hnggiahung@gmail.com" class="text-orange-400 hover:text-orange-300 transition font-medium">hnggiahung@gmail.com</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    // ========== MOBILE SEARCH ==========
+    document.addEventListener('DOMContentLoaded', () => {
+      const toggleBtn = document.getElementById('mobile-search-toggle');
+      const mobileSearch = document.getElementById('mobile-search');
+      if (toggleBtn && mobileSearch) {
+        toggleBtn.addEventListener('click', () => {
+          mobileSearch.classList.toggle('hidden');
+          const input = document.getElementById('search-input-mobile');
+          if (!mobileSearch.classList.contains('hidden')) {
+            setTimeout(() => input.focus(), 100);
+          }
+        });
+      }
+
+      // Sync both search inputs to same function
+      const searchInput = document.getElementById('search-input');
+      const searchInputMobile = document.getElementById('search-input-mobile');
+      if (searchInput && searchInputMobile) {
+        searchInput.addEventListener('input', (e) => {
+          searchInputMobile.value = e.target.value;
+          if (typeof searchMovies === 'function') searchMovies(e.target.value);
+        });
+        searchInputMobile.addEventListener('input', (e) => {
+          searchInput.value = e.target.value;
+          if (typeof searchMovies === 'function') searchMovies(e.target.value);
+        });
+      }
+
+      // Mobile login button - redirect to Google
+      const loginBtnMobile = document.getElementById('login-btn-mobile');
+      if (loginBtnMobile) {
+        loginBtnMobile.addEventListener('click', () => {
+          window.location.href = 'https://accounts.google.com/o/oauth2/auth?client_id=YOUR_CLIENT_ID&redirect_uri=YOUR_REDIRECT_URI&response_type=code&scope=email%20profile';
+        });
+      }
+    });
+  </script>
+  <script src="js/main.js"></script>
+</body>
+</html>
