@@ -468,8 +468,8 @@ window.searchMovies = function(query) {
 async function loadFallbackData(container) {
     console.log('📁 Đang tải fallback từ data.json...');
     try {
-        console.log('🔍 Đường dẫn fetch data.json:', 'data/data.json');
-        const response = await fetch('data/data.json');
+        console.log('🔍 Đường dẫn fetch data.json:', '/data/data.json');
+        const response = await fetch('/data/data.json');
         console.log('📡 Response status:', response.status, response.statusText);
         console.log('📡 Content-Type:', response.headers.get('content-type'));
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
