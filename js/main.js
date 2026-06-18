@@ -590,26 +590,43 @@ async function fetchMoviesByCategory(slug) {
     }
 }
 
+// ====== CATEGORY SLUG MAP ======
+const CATEGORY_SLUG_MAP = {
+    'all': 'all',
+    'hanh-dong': 'hanh-dong',
+    'phieu-luu': 'phieu-luu',
+    'chinh-kich': 'chinh-kich',
+    'hoat-hinh': 'hoat-hinh',
+    'sieu-nhan': 'sieu-nhan',
+    'anime': 'hoat-hinh',
+    'hoat-hinh-trung-quoc': 'hoat-hinh-trung-quoc',
+    'hai-huoc': 'hai-huoc',
+    'kinh-di': 'kinh-di',
+    'tinh-cam': 'tinh-cam',
+    'tam-ly': 'tam-ly',
+    'vien-tuong': 'vien-tuong',
+    'vo-thuat': 'vo-thuat'
+};
+
 // ====== FILTER ======
 async function filterByCategory(category) {
     const container = document.getElementById('movies-grid');
     if (!container) return;
 
-    // Lấy slug từ nút active (ưu tiên data-slug, fallback data-category)
-    const activeBtn = document.querySelector(`.filter-btn[data-category="${category}"]`);
-    const slug = activeBtn ? (activeBtn.dataset.slug || category) : category;
+    // Tra slug từ map, fallback về chính category nếu không có
+    const slug = CATEGORY_SLUG_MAP[category] || category;
+    console.log('🔍 [filterByCategory] category:', category, '→ slug:', slug);
 
     container.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3';
 
     // Cập nhật trạng thái active cho nút
     document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.classList.remove('active', 'bg-gray-600', 'border-gray-500');
-        btn.classList.add('bg-gray-700', 'border-gray-600');
+        btn.classList.remove('active');
     });
 
+    const activeBtn = document.querySelector(`.filter-btn[data-category="${category}"]`);
     if (activeBtn) {
-        activeBtn.classList.remove('bg-gray-700', 'border-gray-600');
-        activeBtn.classList.add('active', 'bg-gray-600', 'border-gray-500');
+        activeBtn.classList.add('active');
     }
 
     // Xóa sạch danh sách cũ + reset trạng thái
@@ -629,7 +646,7 @@ async function filterByCategory(category) {
     }
 
     // === NẾU LÀ "hoat-hinh" (ANIME) THÌ TẢI TOÀN BỘ NHIỀU TRANG ===
-    if (category === 'hoat-hinh' || slug === 'hoat-hinh') {
+    if (slug === 'hoat-hinh') {
         await loadAllAnimeMovies(container);
         return;
     }
@@ -652,7 +669,9 @@ async function filterByCategory(category) {
     container.innerHTML = '';
 
     if (!apiMovies || apiMovies.length === 0) {
+        const url = `https://ophim1.com/v1/api/the-loai/${slug}?page=1`;
         console.warn('⚠️ API trả về 0 phim cho thể loại:', slug);
+        console.warn('🔗 URL đã gọi:', url);
         container.innerHTML = `
             <div class="col-span-full flex flex-col items-center justify-center py-20 text-gray-400">
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mb-4 opacity-50">
