@@ -607,3 +607,132 @@ body {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* ========== MOBILE OVERLAY MENU (Hamburger) ========== */
+/* Chá»‰ hiá»‡n trÃªn mobile <= 768px */
+.mobile-overlay {
+  display: none;
+}
+
+.overlay-bg {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-overlay {
+    display: block;
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 85%;
+    max-width: 320px;
+    height: 100vh;
+    height: 100dvh;
+    background: #12121a;
+    border-left: 1px solid rgba(255,255,255,0.08);
+    z-index: 1000;
+    overflow-y: auto;
+    transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: -4px 0 20px rgba(0,0,0,0.5);
+  }
+
+  .mobile-overlay.open {
+    right: 0;
+  }
+
+  .overlay-bg {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .overlay-bg.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .mobile-overlay-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .mobile-overlay-nav {
+    padding: 8px 0;
+  }
+
+  .mobile-overlay-link {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 20px;
+    color: #d1d5db;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500;
+    transition: background 0.2s, color 0.2s;
+    border-left: 3px solid transparent;
+  }
+
+  .mobile-overlay-link svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    opacity: 0.6;
+  }
+
+  .mobile-overlay-link:hover {
+    background: rgba(255,255,255,0.05);
+    color: #fff;
+  }
+
+  .mobile-overlay-link.active {
+    color: #fff;
+    border-left-color: #6b7280;
+    background: rgba(255,255,255,0.05);
+  }
+
+  .mobile-overlay-link.active svg {
+    opacity: 1;
+  }
+
+  .mobile-overlay-footer {
+    padding: 16px 20px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    margin-top: 8px;
+  }
+
+  .mobile-overlay-login {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    color: #fff;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background 0.2s;
+  }
+
+  .mobile-overlay-login:hover {
+    background: rgba(255,255,255,0.12);
+  }
+
+  .mobile-overlay-login svg {
+    width: 20px;
+    height: 20px;
+    opacity: 0.7;
+  }
+}
