@@ -1,25 +1,52 @@
 # ====== Cấu hình Deploy Netlify cho Web phim hoạt hình ======
-# Dự án tĩnh HTML/CSS/JS - Không dùng Hugo
+# Dự án tĩnh HTML/CSS/JS - Tối ưu toàn diện
 
 [build]
   # Chỉ định thư mục gốc chứa index.html
   publish = "."
   
   # Dự án này không cần build command vì là HTML/CSS/JS tĩnh
-  # Không gọi hugo hay bất kỳ framework nào
   command = "echo 'Static site - no build required'"
+
+# ====== III. Cache Policy: Cache-Control headers cho Netlify ======
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/css/*"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000, immutable"
+
+[[headers]]
+  for = "/js/*"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000, immutable"
+
+[[headers]]
+  for = "/*.json"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, must-revalidate"
+
+# ====== Security Headers ======
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-XSS-Protection = "1; mode=block"
+    # IV. Unicode: Force UTF-8 for HTML
+    Content-Type = "text/html; charset=UTF-8"
 
 # ====== Redirect Rules ======
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-  # Cho phép SPA routing (nếu cần)
-
-# ====== Custom Headers ======
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Frame-Options = "DENY"
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
