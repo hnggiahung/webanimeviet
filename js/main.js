@@ -12,17 +12,72 @@ const MAX_RETRIES = 2;
 // ====== BIẾN GLOBAL ======
 let allMovies = [];
 let displayCount = 12;
+const LAZY_STEP = 12; // Số phim load thêm mỗi lần
 let currentCategory = 'all';
 let currentFiltered = null;
-let currentPage = 1;          // <-- Biến toàn cục: trang hiện tại
-let totalPages = 1;           // <-- Tổng số trang API
-let isLoadingMore = false;    // Chống gọi trùng
-let renderedMovieIds = new Set(); // Theo dõi ID phim đã render để tránh trùng lặp
+let currentPage = 1;
+let totalPages = 1;
+let isLoadingMore = false;
+let renderedMovieIds = new Set();
+let intersectionObserver = null; // Biến lưu IntersectionObserver
 
 // ====== BANNER ======
 let bannerInterval = null;
 let bannerMovies = [];
 let currentBannerIndex = 0;
+
+// ====== KEYWORDS LỌC ANIME (CỨNG) ======
+const ANIME_KEYWORDS = ['hoạt hình', 'anime', 'animation', 'hoat hinh', 'cartoon', 'hoathinh', 'animated'];
+
+/**
+ * Kiểm tra phim có phải là anime/hoạt hình hay không
+ * Dựa trên category name và description
+ */
+function isAnimeMovie(movie) {
+    if (!movie) return false;
+
+    // Kiểm tra category
+    if (Array.isArray(movie.category)) {
+        const catNames = movie.category.map(c => (typeof c === 'object' ? c.name : '').toLowerCase().trim()).filter(Boolean);
+        for (const name of catNames) {
+            if (ANIME_KEYWORDS.some(keyword => name.includes(keyword))) {
+                return true;
+            }
+        }
+    }
+
+    // Kiểm tra description/content
+    const desc = (movie.content || movie.description || '').toLowerCase();
+    if (ANIME_KEYWORDS.some(keyword => desc.includes(keyword))) {
+        return true;
+    }
+
+    // Kiểm tra category_slug nếu có
+    if (Array.isArray(movie.category)) {
+        const catSlugs = movie.category.map(c => (typeof c === 'object' ? c.slug : '')).filter(Boolean);
+        for (const slug of catSlugs) {
+            if (ANIME_KEYWORDS.some(keyword => slug.includes(keyword))) {
+                return true;
+            }
+        }
+    }
+
+    // Kiểm tra type nếu có
+    const type = (movie.type || '').toLowerCase();
+    if (ANIME_KEYWORDS.some(keyword => type.includes(keyword))) {
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ * Lọc mảng phim chỉ giữ lại anime
+ */
+function filterAnimeMovies(movies) {
+    if (!movies || !Array.isArray(movies)) return [];
+    return movies.filter(isAnimeMovie);
+}
 
 function buildImageUrl(thumb_url, poster_url) {
     const img = thumb_url || poster_url || '';
@@ -108,6 +163,8 @@ function createMovieCardHTML(movie) {
                         <img src="${imgSrc}" 
                              alt="${title}" 
                              class="movie-card-img"
+                             width="200"
+                             height="300"
                              loading="lazy"
                              onerror="this.onerror=null; this.src='${PLACEHOLDER}'; this.style.opacity='0.5';">
                         <span class="episode-badge">${displayEp}</span>
@@ -229,7 +286,10 @@ window.searchMovies = function(query) {
         displayCount = 12;
         container.innerHTML = '';
         renderedMovieIds.clear();
+        // Hủy IntersectionObserver cũ và setup lại
+        destroyLazyLoader();
         renderMovies(allMovies.slice(0, displayCount), container);
+        setupLazyLoader(container);
         return;
     }
 
@@ -242,6 +302,7 @@ window.searchMovies = function(query) {
     currentFiltered = filtered;
     container.innerHTML = '';
     renderedMovieIds.clear();
+    destroyLazyLoader();
 
     if (!filtered.length) {
         container.innerHTML = `
@@ -258,50 +319,61 @@ window.searchMovies = function(query) {
 
     displayCount = 12;
     renderMovies(filtered.slice(0, displayCount), container);
+    setupLazyLoader(container);
 };
 
 // ====== HÀM CHÍNH: fetchMovies - TẢI PHIM TỪ API ======
 async function fetchMovies(container, page) {
-    console.log('📡 Đang tải trang:', page);  // LOG quan trọng: in ra trang đang tải
+    console.log('📡 Đang tải trang:', page);
 
-    // URL: https://ophim1.com/danh-sach/phim-moi-cap-nhat?page=${page}
     const url = `https://ophim1.com/danh-sach/phim-moi-cap-nhat?page=${page}`;
     console.log('🔗 URL:', url);
 
     try {
         const data = await fetchWithRetry(url);
 
-        // Cập nhật CDN nếu có
         const cdnDomain = data?.data?.APP_DOMAIN_CDN_IMAGE;
         if (cdnDomain) {
             IMG_BASE = cdnDomain.endsWith('/') ? cdnDomain + 'uploads/movies/' : cdnDomain + '/uploads/movies/';
         }
 
-        // Lấy thông tin phân trang
         const paginate = data?.data?.paginate || {};
         totalPages = paginate.total_page || 1;
         console.log('📊 Tổng số trang:', totalPages);
 
-        const apiMovies = data?.data?.items || data?.items || [];
+        let apiMovies = data?.data?.items || data?.items || [];
         if (!apiMovies || apiMovies.length === 0) {
             console.log('⚠️ Không có phim nào ở trang', page);
             if (!allMovies.length) showEmptyState(container);
             return [];
         }
 
+        // === BỘ LỌC NỘI DUNG: Chỉ giữ lại Anime ===
+        const filteredMovies = filterAnimeMovies(apiMovies);
+        console.log(`🎬 Sau lọc anime: ${filteredMovies.length}/${apiMovies.length} phim`);
+        
+        // Fallback: nếu lọc ra 0 phim thì dùng tất cả (tránh trang trống)
+        if (filteredMovies.length > 0) {
+            apiMovies = filteredMovies;
+        } else {
+            console.log('⚠️ Không tìm thấy phim anime sau lọc, dùng tất cả phim');
+            // Vẫn giữ nguyên apiMovies gốc
+        }
+
         if (page === 1) {
-            // === TRANG 1: Xóa sạch container THỦ CÔNG, render bằng insertAdjacentHTML ===
             container.innerHTML = '';
             renderedMovieIds.clear();
+            destroyLazyLoader();
             cacheMovies(apiMovies);
             allMovies = apiMovies;
             syncWindowExports();
             renderMovies(allMovies.slice(0, displayCount), container);
+            // Setup lazy loader sau khi render lần đầu
+            setupLazyLoader(container);
             updateBanner(apiMovies);
             console.log('✅ Render trang 1:', apiMovies.length, 'phim');
             hideLoadingSpinner();
         } else {
-            // === TRANG > 1: GHÉP VÀO CUỐI (chỉ dùng insertAdjacentHTML, KHÔNG clear) ===
             renderMovies(apiMovies, container);
             allMovies = allMovies.concat(apiMovies);
             syncWindowExports();
@@ -320,7 +392,74 @@ async function fetchMovies(container, page) {
     }
 }
 
-// ====== INFINITE SCROLL ======
+// ====== INTERSECTION OBSERVER - LAZY LOADING DANH SÁCH PHIM ======
+function setupLazyLoader(container) {
+    // Hủy observer cũ nếu có
+    destroyLazyLoader();
+
+    if (!container) return;
+    
+    // Tạo sentinel element
+    let sentinel = document.getElementById('lazy-load-sentinel');
+    if (!sentinel) {
+        sentinel = document.createElement('div');
+        sentinel.id = 'lazy-load-sentinel';
+        sentinel.className = 'col-span-full h-1';
+        container.appendChild(sentinel);
+    }
+
+    intersectionObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                loadMoreMovies(container);
+            }
+        });
+    }, {
+        rootMargin: '200px', // Kích hoạt trước khi scroll đến 200px
+        threshold: 0
+    });
+
+    intersectionObserver.observe(sentinel);
+    console.log('♾️ Lazy Loader (IntersectionObserver) đã được kích hoạt');
+}
+
+function destroyLazyLoader() {
+    if (intersectionObserver) {
+        intersectionObserver.disconnect();
+        intersectionObserver = null;
+    }
+    const sentinel = document.getElementById('lazy-load-sentinel');
+    if (sentinel) sentinel.remove();
+}
+
+function loadMoreMovies(container) {
+    if (!container) container = document.getElementById('movies-grid');
+    if (!container) return;
+
+    // Chỉ hoạt động ở chế độ 'all' (không lọc, không tìm kiếm)
+    if (currentCategory !== 'all' || currentFiltered !== null) return;
+
+    const currentCount = container.querySelectorAll('.movie-card').length;
+    const totalAvailable = allMovies.length;
+
+    // Nếu đã render hết, chuyển sang infinite scroll API
+    if (currentCount >= totalAvailable) {
+        // Thử load thêm từ API
+        if (!isLoadingMore && currentPage < totalPages) {
+            loadNextPage();
+        }
+        return;
+    }
+
+    // Load thêm 12 phim tiếp theo từ allMovies
+    const nextBatch = allMovies.slice(currentCount, currentCount + LAZY_STEP);
+    if (nextBatch.length > 0) {
+        renderMovies(nextBatch, container);
+        console.log(`📄 Lazy load: +${nextBatch.length} phim (hiện tại: ${currentCount + nextBatch.length}/${allMovies.length})`);
+    }
+}
+
+// ====== INFINITE SCROLL (cho API) ======
 function showLoadingSpinner() {
     const container = document.getElementById('movies-grid');
     if (!container) return;
@@ -369,14 +508,14 @@ async function loadNextPage() {
     }
 
     isLoadingMore = true;
-    currentPage++;  // <-- TĂNG TRANG LÊN
+    currentPage++;
     showLoadingSpinner();
 
     const container = document.getElementById('movies-grid');
-    const newMovies = await fetchMovies(container, currentPage);  // <-- GỌI fetchMovies với trang mới
+    const newMovies = await fetchMovies(container, currentPage);
 
     if (!newMovies || newMovies.length === 0) {
-        currentPage--; // Không có dữ liệu, lùi lại
+        currentPage--;
         hideLoadingSpinner();
         isLoadingMore = false;
         return;
@@ -391,24 +530,7 @@ async function loadNextPage() {
     isLoadingMore = false;
 }
 
-function handleScroll() {
-    // Chỉ hoạt động ở chế độ 'all' (không lọc, không tìm kiếm)
-    if (currentCategory !== 'all' || currentFiltered !== null) return;
-
-    const scrollY = window.scrollY;
-    const windowHeight = window.innerHeight;
-    const documentHeight = document.documentElement.scrollHeight;
-
-    // Khi cuộn cách cuối 300px thì tải
-    if (scrollY + windowHeight >= documentHeight - 300) {
-        loadNextPage();
-    }
-}
-
-function setupInfiniteScroll() {
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    console.log('♾️ Infinite Scroll đã được kích hoạt');
-}
+// ====== KHÔNG CÒN DÙNG handleScroll (đã thay bằng IntersectionObserver) ======
 
 // ====== DOMContentLoaded ======
 document.addEventListener('DOMContentLoaded', () => {
@@ -416,6 +538,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!container) return;
 
     container.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3';
+
+    // Bước 0: Xóa cache cũ nếu phiên bản code thay đổi (fix lỗi hiển thị)
+    try {
+        const oldCache = localStorage.getItem(CACHE_KEY);
+        if (oldCache) {
+            const parsed = JSON.parse(oldCache);
+            // Nếu cache có phim không anime (category toàn tiếng Anh), xóa cache để fetch lại
+            const filteredCache = filterAnimeMovies(parsed);
+            if (parsed.length > 0 && filteredCache.length === 0) {
+                console.log('🗑️ Cache cũ không có anime, xóa để fetch lại');
+                localStorage.removeItem(CACHE_KEY);
+                localStorage.removeItem(CACHE_TIME_KEY);
+            }
+        }
+    } catch (e) {}
 
     // Bước 1: Render từ cache ngay lập tức
     const cached = getCachedMovies();
@@ -425,14 +562,16 @@ document.addEventListener('DOMContentLoaded', () => {
         container.innerHTML = '';
         renderedMovieIds.clear();
         renderMovies(allMovies.slice(0, displayCount), container);
+        setupLazyLoader(container);
         console.log('📦 Render từ cache:', cached.length, 'phim');
     }
 
     // Bước 2: Gọi API trang 1
     fetchMovies(container, 1).then(() => {
-        setupInfiniteScroll(); // Kích hoạt scroll sau khi có dữ liệu
+        // IntersectionObserver đã được setup bên trong fetchMovies
     }).catch(() => {
-        setupInfiniteScroll(); // Vẫn kích hoạt scroll kể cả lỗi
+        // Vẫn setup lazy loader kể cả lỗi
+        setupLazyLoader(container);
     });
 
     // RANDOM ANIME BUTTON
@@ -457,7 +596,6 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loadAllAnimeMovies(container) {
     console.log('🎬 [ANIME] Bắt đầu tải toàn bộ phim anime...');
     
-    // Hiển thị loading
     container.innerHTML = `
         <div class="col-span-full flex flex-col items-center justify-center py-20 text-gray-400">
             <div class="w-8 h-8 border-2 border-gray-400 border-t-white rounded-full animate-spin mb-4"></div>
@@ -466,27 +604,22 @@ async function loadAllAnimeMovies(container) {
         </div>`;
 
     try {
-        // Bước 1: Gọi trang 1 để lấy tổng số trang
         const firstUrl = 'https://ophim1.com/v1/api/the-loai/hoat-hinh?page=1';
         const firstResponse = await fetchWithRetry(firstUrl);
         
         const totalPage = firstResponse?.data?.paginate?.total_page || 1;
         console.log('📊 [ANIME] Tổng số trang:', totalPage);
         
-        // Lấy phim từ trang 1
         let allAnimeMovies = firstResponse?.data?.items || [];
         
-        // Cập nhật CDN
         const cdnDomain = firstResponse?.data?.APP_DOMAIN_CDN_IMAGE;
         if (cdnDomain) {
             IMG_BASE = cdnDomain.endsWith('/') ? cdnDomain + 'uploads/movies/' : cdnDomain + '/uploads/movies/';
         }
         
-        // Bước 2: Tải các trang còn lại (tối đa 5 trang để tránh quá tải)
         const maxPages = Math.min(totalPage, 5);
         
         for (let page = 2; page <= maxPages; page++) {
-            // Cập nhật loading text
             container.innerHTML = `
                 <div class="col-span-full flex flex-col items-center justify-center py-20 text-gray-400">
                     <div class="w-8 h-8 border-2 border-gray-400 border-t-white rounded-full animate-spin mb-4"></div>
@@ -505,13 +638,11 @@ async function loadAllAnimeMovies(container) {
                 }
             } catch (e) {
                 console.warn(`⚠️ [ANIME] Lỗi trang ${page}:`, e.message);
-                // Tiếp tục tải trang khác
             }
         }
         
         console.log(`✅ [ANIME] Tổng cộng: ${allAnimeMovies.length} phim`);
         
-        // Xóa loading
         container.innerHTML = '';
         
         if (!allAnimeMovies || allAnimeMovies.length === 0) {
@@ -529,10 +660,10 @@ async function loadAllAnimeMovies(container) {
             return;
         }
         
-        // Render tất cả phim
+        destroyLazyLoader();
         renderMovies(allAnimeMovies, container);
+        setupLazyLoader(container);
         
-        // Thêm thông báo số lượng phim
         const countEl = document.createElement('div');
         countEl.className = 'col-span-full text-center text-gray-500 text-xs py-2';
         countEl.textContent = `🎬 Đã tải tổng cộng ${allAnimeMovies.length} phim anime`;
@@ -551,7 +682,7 @@ async function loadAllAnimeMovies(container) {
                 <p class="text-lg font-semibold mb-1 text-red-400">Lỗi kết nối</p>
                 <p class="text-sm opacity-60">Không thể tải dữ liệu phim anime.</p>
                 <button onclick="location.reload()" 
-                        class="mt-4 px-5 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm font-medium transition-colors">
+                        class="mt-4 px-5 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm font-medium">
                     Thử lại
                 </button>
             </div>`;
@@ -559,11 +690,6 @@ async function loadAllAnimeMovies(container) {
 }
 
 // ====== HÀM FETCH THEO THỂ LOẠI (ĐỘC LẬP) ======
-/**
- * fetchMoviesByCategory(slug) - Gọi API thể loại, trả về danh sách phim
- * @param {string} slug - Slug thể loại (vd: hanh-dong, phieu-luu, hoat-hinh...)
- * @returns {Promise<Array>} - Mảng phim, hoặc [] nếu lỗi/không có
- */
 async function fetchMoviesByCategory(slug) {
     const url = `https://ophim1.com/v1/api/the-loai/${slug}?page=1`;
     console.log('📡 [fetchMoviesByCategory] Đang tải thể loại:', slug);
@@ -573,13 +699,11 @@ async function fetchMoviesByCategory(slug) {
         const response = await fetchWithRetry(url);
         console.log('📦 [fetchMoviesByCategory] Response:', response);
 
-        // Cập nhật CDN nếu có
         const cdnDomain = response?.data?.APP_DOMAIN_CDN_IMAGE;
         if (cdnDomain) {
             IMG_BASE = cdnDomain.endsWith('/') ? cdnDomain + 'uploads/movies/' : cdnDomain + '/uploads/movies/';
         }
 
-        // API Ophim trả về: { status: true, data: { items: [...], paginate: {...}, ... } }
         const apiMovies = response?.data?.items || [];
         console.log('🎬 [fetchMoviesByCategory] Số phim:', apiMovies.length);
 
@@ -613,13 +737,11 @@ async function filterByCategory(category) {
     const container = document.getElementById('movies-grid');
     if (!container) return;
 
-    // Tra slug từ map, fallback về chính category nếu không có
     const slug = CATEGORY_SLUG_MAP[category] || category;
     console.log('🔍 [filterByCategory] category:', category, '→ slug:', slug);
 
     container.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3';
 
-    // Cập nhật trạng thái active cho nút
     document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.classList.remove('active');
     });
@@ -629,11 +751,10 @@ async function filterByCategory(category) {
         activeBtn.classList.add('active');
     }
 
-    // Xóa sạch danh sách cũ + reset trạng thái
     container.innerHTML = '';
     renderedMovieIds.clear();
+    destroyLazyLoader();
 
-    // Vô hiệu hóa infinite scroll khi đang xem thể loại
     currentCategory = category;
     currentFiltered = 'category';
 
@@ -645,16 +766,13 @@ async function filterByCategory(category) {
         return;
     }
 
-    // === NẾU LÀ "hoat-hinh" (ANIME) THÌ TẢI TOÀN BỘ NHIỀU TRANG ===
     if (slug === 'hoat-hinh') {
         await loadAllAnimeMovies(container);
         return;
     }
 
-    // === GỌI API THỂ LOẠI QUA HÀM fetchMoviesByCategory ===
     currentPage = 1;
 
-    // Hiển thị loading
     container.innerHTML = `
         <div class="col-span-full flex justify-center py-20">
             <div class="flex items-center gap-3 text-gray-400">
@@ -665,7 +783,6 @@ async function filterByCategory(category) {
 
     const apiMovies = await fetchMoviesByCategory(slug);
 
-    // Xóa loading
     container.innerHTML = '';
 
     if (!apiMovies || apiMovies.length === 0) {
@@ -686,8 +803,8 @@ async function filterByCategory(category) {
         return;
     }
 
-    // Render danh sách mới từ API thể loại
     renderMovies(apiMovies, container);
+    setupLazyLoader(container);
     console.log('✅ Đã tải', apiMovies.length, 'phim thể loại', slug);
 }
 
@@ -813,7 +930,7 @@ function showErrorState(container) {
             <p class="text-lg font-semibold mb-1 text-red-400">Lỗi kết nối</p>
             <p class="text-sm opacity-60">Không thể tải dữ liệu. Vui lòng thử lại.</p>
             <button onclick="location.reload()" 
-                    class="mt-4 px-5 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm font-medium transition-colors">
+                    class="mt-4 px-5 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm font-medium">
                 Thử lại
             </button>
         </div>`;
