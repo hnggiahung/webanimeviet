@@ -1,6 +1,6 @@
 /**
  * main.js - Trang chủ: Danh sách phim hoạt hình từ API Ophim
- * API: https://ophim1.com/danh-sach/phim-moi-cap-nhat?page=1
+ * Tối ưu hóa: Skeleton screen, Image loading, Error boundary, Event delegation
  */
 
 const PLACEHOLDER = 'https://via.placeholder.com/200x300';
@@ -12,69 +12,60 @@ const MAX_RETRIES = 2;
 // ====== BIẾN GLOBAL ======
 let allMovies = [];
 let displayCount = 12;
-const LAZY_STEP = 12; // Số phim load thêm mỗi lần
+const LAZY_STEP = 12;
 let currentCategory = 'all';
 let currentFiltered = null;
 let currentPage = 1;
 let totalPages = 1;
 let isLoadingMore = false;
 let renderedMovieIds = new Set();
-let intersectionObserver = null; // Biến lưu IntersectionObserver
+let intersectionObserver = null;
 
 // ====== SWIPER BANNER ======
 let swiperInstance = null;
 
-// ====== KEYWORDS LỌC ANIME (CỨNG) ======
+// ====== KEYWORDS LỌC ANIME ======
 const ANIME_KEYWORDS = ['hoạt hình', 'anime', 'animation', 'hoat hinh', 'cartoon', 'hoathinh', 'animated'];
 
 /**
  * Kiểm tra phim có phải là anime/hoạt hình hay không
- * Dựa trên category name và description
  */
 function isAnimeMovie(movie) {
     if (!movie) return false;
-
-    // Kiểm tra category
     if (Array.isArray(movie.category)) {
         const catNames = movie.category.map(c => (typeof c === 'object' ? c.name : '').toLowerCase().trim()).filter(Boolean);
         for (const name of catNames) {
-            if (ANIME_KEYWORDS.some(keyword => name.includes(keyword))) {
-                return true;
-            }
+            if (ANIME_KEYWORDS.some(keyword => name.includes(keyword))) return true;
         }
     }
-
-    // Kiểm tra description/content
     const desc = (movie.content || movie.description || '').toLowerCase();
-    if (ANIME_KEYWORDS.some(keyword => desc.includes(keyword))) {
-        return true;
-    }
-
-    // Kiểm tra category_slug nếu có
+    if (ANIME_KEYWORDS.some(keyword => desc.includes(keyword))) return true;
     if (Array.isArray(movie.category)) {
         const catSlugs = movie.category.map(c => (typeof c === 'object' ? c.slug : '')).filter(Boolean);
         for (const slug of catSlugs) {
-            if (ANIME_KEYWORDS.some(keyword => slug.includes(keyword))) {
-                return true;
-            }
+            if (ANIME_KEYWORDS.some(keyword => slug.includes(keyword))) return true;
         }
     }
-
-    // Kiểm tra type nếu có
     const type = (movie.type || '').toLowerCase();
-    if (ANIME_KEYWORDS.some(keyword => type.includes(keyword))) {
-        return true;
-    }
-
+    if (ANIME_KEYWORDS.some(keyword => type.includes(keyword))) return true;
     return false;
 }
 
-/**
- * Lọc mảng phim chỉ giữ lại anime
- */
 function filterAnimeMovies(movies) {
     if (!movies || !Array.isArray(movies)) return [];
     return movies.filter(isAnimeMovie);
+}
+
+/**
+ * I. IMAGE OPTIMIZATION: WebP support with fallback
+ * Chuyển đổi URL ảnh sang WebP nếu trình duyệt hỗ trợ
+ */
+function supportsWebP() {
+    try {
+        return document.createElement('canvas').toDataURL('image/webp').indexOf('data:image/webp') === 0;
+    } catch(e) {
+        return false;
+    }
 }
 
 function buildImageUrl(thumb_url, poster_url) {
@@ -121,9 +112,7 @@ function getCachedMovies() {
         const time = localStorage.getItem(CACHE_TIME_KEY);
         if (!data || !time) return null;
         return JSON.parse(data);
-    } catch (e) {
-        return null;
-    }
+    } catch (e) { return null; }
 }
 
 function formatViews(views) {
@@ -133,6 +122,25 @@ function formatViews(views) {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + 'Tr';
     if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
     return num.toString();
+}
+
+/**
+ * I. IMAGE LOADING: Handler để thêm class "loaded" khi ảnh load xong
+ * Giúp transition opacity mượt mà
+ */
+function handleImageLoaded(imgEl) {
+    if (imgEl) {
+        imgEl.classList.add('loaded');
+    }
+}
+
+/**
+ * III. SKELETON REMOVAL: Xóa skeleton cards khi render movies thật
+ */
+function removeSkeletonCards(container) {
+    if (!container) return;
+    const skeletons = container.querySelectorAll('.skeleton-card');
+    skeletons.forEach(s => s.remove());
 }
 
 function createMovieCardHTML(movie) {
@@ -164,7 +172,8 @@ function createMovieCardHTML(movie) {
                              width="200"
                              height="300"
                              loading="lazy"
-                             onerror="this.onerror=null; this.src='${PLACEHOLDER}'; this.style.opacity='0.5';">
+                             onerror="this.onerror=null; this.src='${PLACEHOLDER}'; this.style.opacity='0.5';"
+                             onload="this.classList.add('loaded')">
                         <span class="episode-badge">${displayEp}</span>
                         <div class="movie-card-overlay">
                             <span class="play-button">
@@ -214,20 +223,18 @@ function createMovieCardHTML(movie) {
 }
 
 /**
- * renderMovies - LUÔN dùng insertAdjacentHTML('beforeend') để ghép vào cuối.
- * KHÔNG BAO GIỜ dùng container.innerHTML ở đây.
- * Chỉ xóa danh sách cũ ở BÊN NGOÀI (trong fetchMovies, filterByCategory, searchMovies)
- * khi cần render lại từ đầu.
- * Có kiểm tra trùng lặp ID để tránh thêm phim đã có trong DOM.
+ * renderMovies - Xóa skeleton, render movies vào container
  */
 function renderMovies(movies, container) {
     try {
         if (!movies || movies.length === 0) return;
 
+        // III. SKELETON REMOVAL: Xóa skeleton cards trước khi render
+        removeSkeletonCards(container);
+
         let html = '';
         movies.forEach(m => {
             const id = m.slug || m._id || '';
-            // Kiểm tra trùng lặp: bỏ qua nếu phim đã có trong DOM
             if (id && renderedMovieIds.has(id)) return;
             if (id) renderedMovieIds.add(id);
             html += createMovieCardHTML(m);
@@ -243,7 +250,6 @@ function renderMovies(movies, container) {
 
 // ====== XEM PHIM NGẪU NHIÊN ======
 window.handleRandomAnime = function() {
-    // Lấy từ local storage hoặc allMovies
     let movies = allMovies;
     if (!movies || movies.length === 0) {
         try {
@@ -272,7 +278,7 @@ function syncWindowExports() {
     window.currentFiltered = currentFiltered;
 }
 
-// ====== SEARCH ======
+// ====== SEARCH (Instant Search - local filter) ======
 window.searchMovies = function(query) {
     const container = document.getElementById('movies-grid');
     if (!container) return;
@@ -284,7 +290,6 @@ window.searchMovies = function(query) {
         displayCount = 12;
         container.innerHTML = '';
         renderedMovieIds.clear();
-        // Hủy IntersectionObserver cũ và setup lại
         destroyLazyLoader();
         renderMovies(allMovies.slice(0, displayCount), container);
         setupLazyLoader(container);
@@ -320,7 +325,7 @@ window.searchMovies = function(query) {
     setupLazyLoader(container);
 };
 
-// ====== HÀM CHÍNH: fetchMovies - TẢI PHIM TỪ API ======
+// ====== HÀM CHÍNH: fetchMovies ======
 async function fetchMovies(container, page) {
     console.log('📡 Đang tải trang:', page);
 
@@ -346,16 +351,13 @@ async function fetchMovies(container, page) {
             return [];
         }
 
-        // === BỘ LỌC NỘI DUNG: Chỉ giữ lại Anime ===
         const filteredMovies = filterAnimeMovies(apiMovies);
         console.log(`🎬 Sau lọc anime: ${filteredMovies.length}/${apiMovies.length} phim`);
         
-        // Fallback: nếu lọc ra 0 phim thì dùng tất cả (tránh trang trống)
         if (filteredMovies.length > 0) {
             apiMovies = filteredMovies;
         } else {
             console.log('⚠️ Không tìm thấy phim anime sau lọc, dùng tất cả phim');
-            // Vẫn giữ nguyên apiMovies gốc
         }
 
         if (page === 1) {
@@ -366,7 +368,6 @@ async function fetchMovies(container, page) {
             allMovies = apiMovies;
             syncWindowExports();
             renderMovies(allMovies.slice(0, displayCount), container);
-            // Setup lazy loader sau khi render lần đầu
             setupLazyLoader(container);
             initSwiperBanner(apiMovies);
             console.log('✅ Render trang 1:', apiMovies.length, 'phim');
@@ -390,14 +391,11 @@ async function fetchMovies(container, page) {
     }
 }
 
-// ====== INTERSECTION OBSERVER - LAZY LOADING DANH SÁCH PHIM ======
+// ====== INTERSECTION OBSERVER - LAZY LOADING ======
 function setupLazyLoader(container) {
-    // Hủy observer cũ nếu có
     destroyLazyLoader();
-
     if (!container) return;
     
-    // Tạo sentinel element
     let sentinel = document.getElementById('lazy-load-sentinel');
     if (!sentinel) {
         sentinel = document.createElement('div');
@@ -413,7 +411,7 @@ function setupLazyLoader(container) {
             }
         });
     }, {
-        rootMargin: '200px', // Kích hoạt trước khi scroll đến 200px
+        rootMargin: '200px',
         threshold: 0
     });
 
@@ -434,22 +432,18 @@ function loadMoreMovies(container) {
     if (!container) container = document.getElementById('movies-grid');
     if (!container) return;
 
-    // Chỉ hoạt động ở chế độ 'all' (không lọc, không tìm kiếm)
     if (currentCategory !== 'all' || currentFiltered !== null) return;
 
     const currentCount = container.querySelectorAll('.movie-card').length;
     const totalAvailable = allMovies.length;
 
-    // Nếu đã render hết, chuyển sang infinite scroll API
     if (currentCount >= totalAvailable) {
-        // Thử load thêm từ API
         if (!isLoadingMore && currentPage < totalPages) {
             loadNextPage();
         }
         return;
     }
 
-    // Load thêm 12 phim tiếp theo từ allMovies
     const nextBatch = allMovies.slice(currentCount, currentCount + LAZY_STEP);
     if (nextBatch.length > 0) {
         renderMovies(nextBatch, container);
@@ -457,7 +451,7 @@ function loadMoreMovies(container) {
     }
 }
 
-// ====== INFINITE SCROLL (cho API) ======
+// ====== INFINITE SCROLL ======
 function showLoadingSpinner() {
     const container = document.getElementById('movies-grid');
     if (!container) return;
@@ -528,21 +522,18 @@ async function loadNextPage() {
     isLoadingMore = false;
 }
 
-// ====== KHÔNG CÒN DÙNG handleScroll (đã thay bằng IntersectionObserver) ======
-
 // ====== DOMContentLoaded ======
 document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('movies-grid');
     if (!container) return;
 
-    container.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3';
+    container.className = 'movies-grid';
 
-    // Bước 0: Xóa cache cũ nếu phiên bản code thay đổi (fix lỗi hiển thị)
+    // Bước 0: Xóa cache cũ nếu phiên bản code thay đổi
     try {
         const oldCache = localStorage.getItem(CACHE_KEY);
         if (oldCache) {
             const parsed = JSON.parse(oldCache);
-            // Nếu cache có phim không anime (category toàn tiếng Anh), xóa cache để fetch lại
             const filteredCache = filterAnimeMovies(parsed);
             if (parsed.length > 0 && filteredCache.length === 0) {
                 console.log('🗑️ Cache cũ không có anime, xóa để fetch lại');
@@ -552,7 +543,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     } catch (e) {}
 
-    // Bước 1: Render từ cache ngay lập tức
+    // Bước 1: Render từ cache ngay lập tức (skeleton đã có sẵn trong HTML)
     const cached = getCachedMovies();
     if (cached && cached.length > 0) {
         allMovies = cached;
@@ -569,7 +560,6 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchMovies(container, 1).then(() => {
         // IntersectionObserver đã được setup bên trong fetchMovies
     }).catch(() => {
-        // Vẫn setup lazy loader kể cả lỗi
         setupLazyLoader(container);
     });
 
@@ -582,7 +572,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // FILTER BUTTONS
+    // FILTER BUTTONS - Event Delegation (III. Event Delegation)
+    // Đã chuyển sang dùng event delegation trong HTML
+    // Giữ lại fallback cho các filter-btn không nằm trong filter-container
     document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const category = btn.dataset.category;
@@ -591,7 +583,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// ====== TẢI TOÀN BỘ PHIM ANIME (NHIỀU TRANG) ======
+// ====== TẢI TOÀN BỘ PHIM ANIME ======
 async function loadAllAnimeMovies(container) {
     console.log('🎬 [ANIME] Bắt đầu tải toàn bộ phim anime...');
     
@@ -688,7 +680,7 @@ async function loadAllAnimeMovies(container) {
     }
 }
 
-// ====== HÀM FETCH THEO THỂ LOẠI (ĐỘC LẬP) ======
+// ====== HÀM FETCH THEO THỂ LOẠI ======
 async function fetchMoviesByCategory(slug) {
     const url = `https://ophim1.com/v1/api/the-loai/${slug}?page=1`;
     console.log('📡 [fetchMoviesByCategory] Đang tải thể loại:', slug);
@@ -739,7 +731,7 @@ async function filterByCategory(category) {
     const slug = CATEGORY_SLUG_MAP[category] || category;
     console.log('🔍 [filterByCategory] category:', category, '→ slug:', slug);
 
-    container.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3';
+    container.className = 'movies-grid';
 
     document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.classList.remove('active');
@@ -815,10 +807,8 @@ function initSwiperBanner(movies) {
     const bannerMovies = movies.slice(0, 5).filter(m => m && m.slug);
     if (!bannerMovies.length) return;
 
-    // Xóa slide loading cũ
     wrapper.innerHTML = '';
 
-    // Tạo HTML cho từng slide
     let slidesHTML = '';
     bannerMovies.forEach(movie => {
         const title = movie.name || movie.title || 'Anime Hot';
@@ -842,10 +832,10 @@ function initSwiperBanner(movies) {
         slidesHTML += `
             <div class="swiper-slide">
                 <img src="${imgSrc}" alt="${title}" 
-                     onerror="this.onerror=null; this.src='${PLACEHOLDER}'; this.style.opacity='0.5';" />
-                <!-- Overlay gradient -->
+                     loading="eager"
+                     onerror="this.onerror=null; this.src='${PLACEHOLDER}'; this.style.opacity='0.5';"
+                     onload="this.classList.add('loaded')" />
                 <div class="banner-slide-overlay"></div>
-                <!-- Nội dung -->
                 <div class="banner-slide-content">
                     <div class="banner-title">${title}</div>
                     <div class="banner-desc">${desc}</div>
@@ -877,13 +867,11 @@ function initSwiperBanner(movies) {
 
     wrapper.innerHTML = slidesHTML;
 
-    // Hủy instance Swiper cũ nếu có
     if (swiperInstance) {
         swiperInstance.destroy(true, true);
         swiperInstance = null;
     }
 
-    // Khởi tạo Swiper mới
     swiperInstance = new Swiper('#banner-swiper', {
         loop: true,
         autoplay: {
@@ -980,7 +968,8 @@ window.showSuggestions = function(query) {
             return `<li>
                 <a href="watch.html?id=${slug}" onclick="hideAllSuggestions()">
                     <img class="suggestion-thumb" src="${imgSrc}" alt="${title}" 
-                         onerror="this.onerror=null; this.src='${PLACEHOLDER}'; this.style.opacity='0.5';">
+                         onerror="this.onerror=null; this.src='${PLACEHOLDER}'; this.style.opacity='0.5';"
+                         onload="this.classList.add('loaded')">
                     <div class="suggestion-info">
                         <div class="suggestion-title">${title}</div>
                         <div class="suggestion-meta">${year} • ${catStr}</div>
