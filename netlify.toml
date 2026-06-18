@@ -5,7 +5,7 @@
   publish = "."
   command = "echo 'Static site - no build required'"
 
-# ====== III. Cache Policy: Cache-Control headers ======
+# ====== Cache Policy: Cache-Control headers ======
 [[headers]]
   for = "/assets/*"
   [headers.values]
@@ -39,11 +39,12 @@
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
     X-XSS-Protection = "1; mode=block"
-    # Cho phép API call từ client-side
     Access-Control-Allow-Origin = "*"
 
 # ====== Redirect Rules ======
-# Chỉ redirect khi file không tồn tại (tránh lỗi SPA)
+# QUAN TRỌNG: Không dùng /* catch-all vì nó chặn cả file JSON, JS, CSS
+# Chỉ redirect cụ thể khi cần
+
 [[redirects]]
   from = "/home"
   to = "/home.html"
@@ -59,13 +60,12 @@
   to = "/start.html"
   status = 200
 
-# ====== SPA Fallback - Quan trọng: Chuyển hướng mọi request không tìm thấy file về index.html ======
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
+  from = "/control-panel"
+  to = "/control-panel.html"
   status = 200
 
-# 404 fallback
+# 404 fallback - Chỉ redirect khi file thực sự không tồn tại
 [[redirects]]
   from = "/404"
   to = "/index.html"
