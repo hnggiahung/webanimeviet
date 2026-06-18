@@ -16,6 +16,9 @@
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
 
+  <!-- Swiper.js CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
   <script>
     tailwind.config = {
       theme: {
@@ -44,39 +47,167 @@
       }
     }
 
-    /* Banner height responsive cố định, object-cover tránh méo */
-    .banner-container {
+    /* ===== SWIPER BANNER STYLES ===== */
+    .banner-swiper {
+      width: 100%;
       height: 200px;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      position: relative !important;
     }
     @media (min-width: 640px) {
-      .banner-container {
+      .banner-swiper {
         height: 240px;
+        border-radius: 1rem;
       }
     }
     @media (min-width: 768px) {
-      .banner-container {
+      .banner-swiper {
         height: 360px;
       }
     }
+    .banner-swiper .swiper-slide {
+      position: relative;
+      overflow: hidden;
+      height: 100%;
+    }
+    .banner-swiper .swiper-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+    .banner-swiper .swiper-pagination {
+      bottom: 12px !important;
+      z-index: 20;
+    }
+    .banner-swiper .swiper-pagination-bullet {
+      width: 8px;
+      height: 8px;
+      background: rgba(255,255,255,0.3);
+      opacity: 1;
+      border-radius: 999px;
+      transition: all 0.3s;
+    }
+    .banner-swiper .swiper-pagination-bullet-active {
+      width: 20px;
+      background: #d1d5db;
+      border-radius: 999px;
+    }
 
-    /* Comment badge trên banner */
-    .comment-badge {
+    /* Overlay gradient đè lên ảnh */
+    .banner-slide-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 50%, transparent 100%);
+      pointer-events: none;
+    }
+
+    /* Nội dung text trên banner */
+    .banner-slide-content {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 15;
+      padding: 24px 20px 48px;
+      pointer-events: auto;
+    }
+    @media (min-width: 768px) {
+      .banner-slide-content {
+        padding: 32px 40px 52px;
+      }
+    }
+    .banner-slide-content .banner-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.2;
+      margin-bottom: 4px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    @media (min-width: 768px) {
+      .banner-slide-content .banner-title {
+        font-size: 1.875rem;
+      }
+    }
+    @media (min-width: 1024px) {
+      .banner-slide-content .banner-title {
+        font-size: 2.25rem;
+      }
+    }
+    .banner-slide-content .banner-desc {
+      font-size: 0.75rem;
+      color: #d1d5db;
+      line-height: 1.4;
+      margin-bottom: 8px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    }
+    @media (min-width: 768px) {
+      .banner-slide-content .banner-desc {
+        font-size: 0.875rem;
+      }
+    }
+    .banner-slide-content .banner-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+    .banner-slide-content .banner-badge {
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      padding: 4px 10px;
+      padding: 3px 8px;
       background: rgba(255,255,255,0.1);
       backdrop-filter: blur(4px);
       border: 1px solid rgba(255,255,255,0.1);
       border-radius: 999px;
       color: #d1d5db;
-      font-size: 12px;
+      font-size: 11px;
       cursor: pointer;
       transition: all 0.2s;
     }
-    .comment-badge:hover {
+    .banner-slide-content .banner-badge:hover {
       background: rgba(255,255,255,0.2);
       color: #fff;
+    }
+    .banner-slide-content .banner-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: #374151;
+      color: #fff;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      border-radius: 999px;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .banner-slide-content .banner-cta:hover {
+      background: #4b5563;
+    }
+    .banner-slide-content .banner-comment {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 999px;
+      color: #d1d5db;
+      font-size: 11px;
     }
   </style>
 </head>
@@ -192,85 +323,18 @@
     <div class="grid grid-cols-1 lg:grid-cols-[2fr,1fr] gap-6">
       <!-- LEFT COLUMN (2fr): Banner + Filter & Movies -->
       <div class="min-w-0 space-y-6">
-        <!-- HERO BANNER - Dynamic từ API -->
+        <!-- HERO BANNER - Swiper.js Slider -->
         <div id="hero-banner">
-          <div id="banner-container" class="relative banner-container rounded-xl md:rounded-2xl overflow-hidden">
-            <!-- Background Image will be set by JS -->
-            <div id="banner-bg" 
-              class="absolute inset-0 bg-cover bg-center bg-no-repeat"
-              style="background-image: url('https://placehold.co/1400x600/1a0f0a/718096?text=Anime+Banner&font=roboto');"
-            ></div>
-            
-            <!-- Solid overlay -->
-            <div class="absolute inset-0 bg-[#0a0a0f]/70"></div>
-
-            <!-- Content - updated by JS -->
-            <div class="relative z-10 h-full flex items-center px-5 md:px-10" id="banner-content">
-              <div class="max-w-xl">
-                <div class="flex items-center gap-2 mb-2" id="banner-badges">
-                  <span class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-gray-700 text-white rounded-full">
-                    Hot
-                  </span>
-                  <span class="px-2 py-0.5 text-[10px] font-semibold bg-white/10 text-white rounded-full border border-white/10">
-                    Đề Cử
-                  </span>
-                </div>
-
-                <h1 id="banner-title" class="text-xl md:text-3xl lg:text-4xl font-bold text-white mb-2 leading-tight">
-                  Đang tải...
-                </h1>
-
-                <div class="flex flex-wrap items-center gap-2 md:gap-3 mb-2" id="banner-meta">
-                  <span class="text-gray-400 text-sm">Đang tải dữ liệu...</span>
-                </div>
-
-                <p id="banner-desc" class="text-sm text-gray-300 leading-relaxed line-clamp-2 mb-3 max-w-lg">
-                  Đang tải thông tin phim...
-                </p>
-
-                <div class="flex flex-wrap items-center gap-3 mb-3 text-xs text-gray-400" id="banner-genre">
-                  <div class="flex items-center gap-1.5">
-                    <span>Season: <span id="banner-season" class="text-gray-300">Đang tải</span></span>
-                  </div>
-                  <div class="flex items-center gap-1.5">
-                    <span>Thể loại: <span id="banner-category" class="text-gray-300">Đang tải</span></span>
-                  </div>
-                </div>
-
-                <!-- CTA Buttons + Comment badge -->
-                <div class="flex items-center gap-3" id="banner-cta">
-                  <a id="banner-watch-link" href="watch.html?id=" 
-                     class="inline-flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-full text-sm">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                      <polygon points="5 3 19 12 5 21"></polygon>
-                    </svg>
-                    Xem Phim
-                  </a>
-                  <a id="banner-detail-link" href="watch.html?id=" class="inline-flex items-center gap-2 px-3 py-2 bg-white/10 hover:bg-white/20 text-white font-medium rounded-full border border-white/10 text-sm">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <path d="M12 16v-4M12 8h.01"></path>
-                    </svg>
-                    Chi Tiết
-                  </a>
-                  <!-- Comment badge -->
-                  <span class="comment-badge hidden sm:inline-flex" id="banner-comment-badge">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                    </svg>
-                    <span id="banner-comment-count">0</span>
-                  </span>
-                </div>
+          <!-- Swiper container -->
+          <div class="swiper banner-swiper" id="banner-swiper">
+            <div class="swiper-wrapper" id="banner-swiper-wrapper">
+              <!-- Các slide sẽ được JS inject động -->
+              <div class="swiper-slide !flex items-center justify-center bg-gray-800">
+                <div class="text-gray-400 text-sm">Đang tải banner...</div>
               </div>
             </div>
-
-            <!-- Navigation dots -->
-            <div class="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex gap-2" id="banner-dots">
-              <button class="w-2 h-2 rounded-full bg-gray-500" data-banner-index="0"></button>
-            </div>
-
-            <!-- Bottom solid fade -->
-            <div class="absolute bottom-0 left-0 right-0 h-12 bg-[#0a0a0f]"></div>
+            <!-- Pagination dots -->
+            <div class="swiper-pagination" id="banner-swiper-pagination"></div>
           </div>
         </div>
 
@@ -572,6 +636,9 @@
 
   <!-- Firebase Config & Auth Logic -->
   <script src="js/firebase.js"></script>
+
+  <!-- Swiper.js JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
   <!-- JavaScript -->
   <script>
