@@ -1,0 +1,25 @@
+# ====== Cấu hình Deploy Netlify cho Web phim hoạt hình ======
+# Dự án tĩnh HTML/CSS/JS - Không dùng Hugo
+
+[build]
+  # Chỉ định thư mục gốc chứa index.html
+  publish = "."
+  
+  # Dự án này không cần build command vì là HTML/CSS/JS tĩnh
+  # Không gọi hugo hay bất kỳ framework nào
+  command = "echo 'Static site - no build required'"
+
+# ====== Redirect Rules ======
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  # Cho phép SPA routing (nếu cần)
+
+# ====== Custom Headers ======
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
