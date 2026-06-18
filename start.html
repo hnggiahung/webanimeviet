@@ -3,222 +3,115 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AnimeStream - Chào Mừng</title>
+  <title>Ani VietSub Vn - Chào Mừng Phát Phim Mới Nhất</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          animation: {
-            'glow': 'glow 2s ease-in-out infinite alternate',
-            'float': 'float 6s ease-in-out infinite',
-            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-          },
-          keyframes: {
-            glow: {
-              '0%': { boxShadow: '0 0 5px rgba(255, 107, 0, 0.2), 0 0 20px rgba(255, 107, 0, 0.1)' },
-              '100%': { boxShadow: '0 0 10px rgba(255, 107, 0, 0.4), 0 0 40px rgba(255, 107, 0, 0.2)' },
-            },
-            float: {
-              '0%, 100%': { transform: 'translateY(0px)' },
-              '50%': { transform: 'translateY(-10px)' },
-            }
-          }
-        }
-      }
-    }
-  </script>
   <style>
     body {
       background: linear-gradient(135deg, #0a0a0f 0%, #1a0f0a 30%, #0f0f1e 60%, #0a0a12 100%);
       color: #ffffff;
       position: relative;
       overflow-x: hidden;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     }
 
-    /* Logo as background watermark - blended beautifully */
     body::before {
       content: '';
       position: fixed;
       inset: 0;
       background: 
-        radial-gradient(circle at 20% 30%, rgba(180, 60, 30, 0.12) 0%, transparent 50%),
-        radial-gradient(circle at 80% 70%, rgba(200, 80, 20, 0.08) 0%, transparent 50%),
-        radial-gradient(circle at 50% 50%, rgba(100, 30, 10, 0.05) 0%, transparent 60%);
+        radial-gradient(circle at 20% 30%, rgba(180, 60, 30, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(200, 80, 20, 0.05) 0%, transparent 50%);
       pointer-events: none;
       z-index: 0;
     }
 
-    /* Logo watermark pattern */
     body::after {
       content: '';
       position: fixed;
       inset: 0;
       background: url('logo.jpg.jpg') no-repeat center center;
       background-size: 60% auto;
-      opacity: 0.03;
+      opacity: 0.02;
       mix-blend-mode: screen;
       pointer-events: none;
       z-index: 0;
     }
 
-    /* Animated floating orbs with logo-inspired colors */
-    .orb-1, .orb-2, .orb-3 {
-      position: fixed;
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 0;
-      filter: blur(80px);
-    }
-    .orb-1 {
-      width: 400px; height: 400px;
-      background: rgba(180, 50, 20, 0.08);
-      top: -100px; right: -100px;
-      animation: float 8s ease-in-out infinite;
-    }
-    .orb-2 {
-      width: 350px; height: 350px;
-      background: rgba(200, 80, 30, 0.06);
-      bottom: -80px; left: -80px;
-      animation: float 10s ease-in-out infinite reverse;
-    }
-    .orb-3 {
-      width: 250px; height: 250px;
-      background: rgba(80, 30, 15, 0.08);
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      animation: float 12s ease-in-out infinite;
-    }
-
-    /* Shimmer button effect */
-    .btn-shimmer {
-      position: relative;
-      overflow: hidden;
-    }
-    .btn-shimmer::after {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -60%;
-      width: 50%;
-      height: 200%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-      transform: rotate(25deg);
-      animation: shimmer 3s ease-in-out infinite;
-    }
-    @keyframes shimmer {
-      0% { left: -60%; }
-      100% { left: 120%; }
-    }
-
-    /* Glass card effect */
     .glass-card {
-      backdrop-filter: blur(20px);
-      background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+      backdrop-filter: blur(10px);
+      background: rgba(255,255,255,0.02);
     }
 
-    /* Premium checkbox style */
     .feature-item {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 10px 14px;
-      border-radius: 12px;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 8px;
       background: rgba(255,255,255,0.02);
       border: 1px solid rgba(255,255,255,0.04);
-      transition: all 0.3s ease;
-      cursor: pointer;
+      transition: background 0.2s ease;
     }
     .feature-item:hover {
-      background: rgba(255, 107, 0, 0.05);
-      border-color: rgba(255, 107, 0, 0.15);
-      transform: translateX(4px);
+      background: rgba(255,255,255,0.05);
     }
     .feature-item .icon-box {
-      width: 32px;
-      height: 32px;
-      border-radius: 10px;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      transition: all 0.3s ease;
-    }
-    .feature-item:hover .icon-box {
-      transform: scale(1.1);
-    }
-
-    /* Security badge pulse */
-    .security-badge {
-      position: relative;
-    }
-    .security-badge::before {
-      content: '';
-      position: absolute;
-      inset: -2px;
-      border-radius: inherit;
-      background: linear-gradient(135deg, rgba(34, 197, 94, 0.3), rgba(34, 197, 94, 0.1));
-      z-index: -1;
-      animation: pulse 2s ease-in-out infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 0.5; }
-      50% { opacity: 1; }
     }
   </style>
 </head>
 <body class="min-h-screen flex items-center justify-center px-4 py-8 relative">
-  <!-- Animated background orbs with logo-inspired colors -->
-  <div class="orb-1"></div>
-  <div class="orb-2"></div>
-  <div class="orb-3"></div>
   <div class="relative z-10 w-full max-w-md">
     <!-- Logo & Header -->
-    <div class="text-center mb-8">
-      <img src="logo.jpg.jpg" alt="AnimeStream Logo" class="w-24 h-24 rounded-2xl mx-auto mb-5 shadow-2xl shadow-orange-500/30 animate-float object-cover border-2 border-white/10" loading="lazy" />
-      <h1 class="text-5xl font-black bg-gradient-to-r from-orange-400 via-red-500 to-pink-500 bg-clip-text text-transparent mb-2">
+    <div class="text-center mb-6">
+      <!-- Logo với bg-container để che phần đen -->
+      <div class="w-24 h-24 mx-auto mb-4 rounded-2xl overflow-hidden bg-gradient-to-br from-orange-600/20 to-gray-800/50 border border-white/10 flex items-center justify-center p-1">
+        <img src="logo.jpg.jpg" alt="AnimeStream Logo" class="w-full h-full object-contain" />
+      </div>
+      <h1 class="text-3xl md:text-4xl font-bold text-white mb-1 tracking-tight">
         ANI VIETSUB VN
       </h1>
-      <p class="text-gray-400 text-sm tracking-wide">Web Phim Anime - Nơi Giải Trí Nhịp Sống</p>
-      <div class="flex items-center justify-center gap-2 mt-3">
-        <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+      <p class="text-gray-400 text-sm">Web Phim Hoạt Hình - Nơi Giải Trí Nhịp Sống</p>
+      <div class="flex items-center justify-center gap-2 mt-2">
+        <span class="w-2 h-2 rounded-full bg-green-400"></span>
         <span class="text-xs text-green-400 font-medium">Online</span>
       </div>
     </div>
 
     <!-- Main Card -->
-    <div class="glass-card border border-white/10 rounded-2xl p-6 md:p-8 space-y-5 shadow-2xl shadow-black/50">
+    <div class="glass-card border border-white/10 rounded-xl p-5 md:p-6 space-y-4">
       
-      <!-- Security Badge -->
-      <div class="security-badge relative rounded-xl p-4 bg-gradient-to-br from-green-500/10 to-emerald-500/5 border border-green-500/20">
+      <!-- Security Info -->
+      <div class="rounded-xl p-3 bg-white/5 border border-white/10">
         <div class="flex items-start gap-3">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shrink-0 shadow-lg shadow-green-500/20">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+          <div class="w-8 h-8 rounded-lg bg-gray-700 flex items-center justify-center shrink-0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
               <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
             </svg>
           </div>
-          <div class="flex-1">
-            <h2 class="font-bold text-green-400 text-sm mb-1.5 flex items-center gap-2">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="text-green-400">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-              </svg>
-              BẢO MẬT & TỐI ƯU
-            </h2>
-            <ul class="text-xs text-gray-300 space-y-1.5">
-              <li class="flex items-center gap-2">
-                <span class="w-1.5 h-1.5 rounded-full bg-green-400"></span>
+          <div>
+            <h2 class="font-bold text-green-400 text-xs mb-1">BẢO MẬT & TỐI ƯU</h2>
+            <ul class="text-xs text-gray-400 space-y-1">
+              <li class="flex items-center gap-1.5">
+                <span class="w-1 h-1 rounded-full bg-green-400"></span>
                 Web có bảo mật cá nhân
               </li>
-              <li class="flex items-center gap-2">
-                <span class="w-1.5 h-1.5 rounded-full bg-green-400"></span>
+              <li class="flex items-center gap-1.5">
+                <span class="w-1 h-1 rounded-full bg-green-400"></span>
                 Đợi 2s cho web load
               </li>
-              <li class="flex items-center gap-2">
-                <span class="w-1.5 h-1.5 rounded-full bg-green-400"></span>
+              <li class="flex items-center gap-1.5">
+                <span class="w-1 h-1 rounded-full bg-green-400"></span>
                 Nếu không vô được xin bật 1.1.1.1
               </li>
-              <li class="flex items-center gap-2">
-                <span class="w-1.5 h-1.5 rounded-full bg-green-400"></span>
+              <li class="flex items-center gap-1.5">
+                <span class="w-1 h-1 rounded-full bg-green-400"></span>
                 Web được tối ưu HTML
               </li>
             </ul>
@@ -227,28 +120,28 @@
       </div>
 
       <!-- Action Buttons -->
-      <div class="space-y-3">
+      <div class="space-y-2.5">
         <a href="index.html" 
-           class="btn-shimmer group block w-full bg-gradient-to-r from-orange-500 via-red-500 to-pink-600 hover:from-orange-400 hover:via-red-400 hover:to-pink-500 text-white font-bold py-3.5 px-4 rounded-xl text-center transition-all duration-300 transform hover:scale-[1.02] hover:shadow-2xl hover:shadow-orange-500/30 animate-glow relative">
-          <span class="relative z-10 flex items-center justify-center gap-2">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+           class="block w-full bg-gray-700 hover:bg-gray-600 text-white font-medium py-3 px-4 rounded-lg text-center transition-colors duration-200">
+          <span class="flex items-center justify-center gap-2">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
               <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
             </svg>
             Vào Trang Chủ
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="group-hover:translate-x-1 transition-transform">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M5 12h14M12 5l7 7-7 7"/>
             </svg>
           </span>
         </a>
         
         <a href="watch.html?id=1" 
-           class="group block w-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 hover:from-blue-500/20 hover:to-purple-500/20 border border-blue-500/20 hover:border-blue-400/40 text-white font-bold py-3.5 px-4 rounded-xl text-center transition-all duration-300 transform hover:scale-[1.02] backdrop-blur-sm">
+           class="block w-full bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium py-3 px-4 rounded-lg text-center transition-colors duration-200">
           <span class="flex items-center justify-center gap-2">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" class="text-blue-400">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" class="text-gray-400">
               <polygon points="5 3 19 12 5 21"></polygon>
             </svg>
             Xem Phim (Demo)
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-blue-400 group-hover:translate-x-1 transition-transform">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-gray-400">
               <path d="M5 12h14M12 5l7 7-7 7"/>
             </svg>
           </span>
@@ -261,34 +154,34 @@
           <div class="w-full border-t border-white/5"></div>
         </div>
         <div class="relative flex justify-center">
-          <span class="bg-[#1a1a2e] px-4 text-[10px] uppercase tracking-widest text-gray-500 font-medium">Tính Năng Chính</span>
+          <span class="bg-[#0f0f1e] px-3 text-[10px] uppercase tracking-widest text-gray-500 font-medium">Tính Năng Chính</span>
         </div>
       </div>
 
-      <!-- Features Grid - Premium Style -->
+      <!-- Features -->
       <div class="grid grid-cols-1 gap-1.5">
-        <div class="feature-item group">
-          <div class="icon-box bg-gradient-to-br from-orange-500/20 to-red-500/10 text-orange-400">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+        <div class="feature-item">
+          <div class="icon-box bg-gray-700 text-gray-300">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
             </svg>
           </div>
-          <span class="text-xs text-gray-300 group-hover:text-white transition-colors">Dark Mode hiện đại với gradient</span>
+          <span class="text-xs text-gray-400">Dark Mode hiện đại với gradient</span>
         </div>
 
-        <div class="feature-item group">
-          <div class="icon-box bg-gradient-to-br from-blue-500/20 to-cyan-500/10 text-blue-400">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <div class="feature-item">
+          <div class="icon-box bg-gray-700 text-gray-300">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="11" cy="11" r="8"></circle>
               <path d="m21 21-4.35-4.35"></path>
             </svg>
           </div>
-          <span class="text-xs text-gray-300 group-hover:text-white transition-colors">Tìm kiếm & lọc phim thông minh</span>
+          <span class="text-xs text-gray-400">Tìm kiếm & lọc phim thông minh</span>
         </div>
 
-        <div class="feature-item group">
-          <div class="icon-box bg-gradient-to-br from-purple-500/20 to-pink-500/10 text-purple-400">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <div class="feature-item">
+          <div class="icon-box bg-gray-700 text-gray-300">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="8" y1="6" x2="21" y2="6"></line>
               <line x1="8" y1="12" x2="21" y2="12"></line>
               <line x1="8" y1="18" x2="21" y2="18"></line>
@@ -297,67 +190,56 @@
               <line x1="3" y1="18" x2="3.01" y2="18"></line>
             </svg>
           </div>
-          <span class="text-xs text-gray-300 group-hover:text-white transition-colors">Mục lục tập (Timestamps)</span>
+          <span class="text-xs text-gray-400">Mục lục tập (Timestamps)</span>
         </div>
 
-        <div class="feature-item group">
-          <div class="icon-box bg-gradient-to-br from-green-500/20 to-emerald-500/10 text-green-400">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <div class="feature-item">
+          <div class="icon-box bg-gray-700 text-gray-300">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
             </svg>
           </div>
-          <span class="text-xs text-gray-300 group-hover:text-white transition-colors">Lưu dấu trang tự động (Bookmark)</span>
+          <span class="text-xs text-gray-400">Lưu dấu trang tự động (Bookmark)</span>
         </div>
 
-        <div class="feature-item group">
-          <div class="icon-box bg-gradient-to-br from-red-500/20 to-orange-500/10 text-red-400">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+        <div class="feature-item">
+          <div class="icon-box bg-gray-700 text-gray-300">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
               <rect x="2" y="2" width="20" height="20" rx="2" ry="2"></rect>
             </svg>
           </div>
-          <span class="text-xs text-gray-300 group-hover:text-white transition-colors">Chế độ Rạp Chiếu Phim (Cinema Mode)</span>
+          <span class="text-xs text-gray-400">Chế độ Rạp Chiếu Phim (Cinema Mode)</span>
         </div>
 
-        <div class="feature-item group">
-          <div class="icon-box bg-gradient-to-br from-teal-500/20 to-cyan-500/10 text-teal-400">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <div class="feature-item">
+          <div class="icon-box bg-gray-700 text-gray-300">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="2" y="2" width="20" height="20" rx="2" ry="2"></rect>
               <path d="M12 18V12M8 10L12 6 16 10"></path>
             </svg>
           </div>
-          <span class="text-xs text-gray-300 group-hover:text-white transition-colors">Responsive Mobile-First</span>
+          <span class="text-xs text-gray-400">Responsive Mobile-First</span>
         </div>
       </div>
 
       <!-- Tips Box -->
-      <div class="relative rounded-xl p-4 bg-gradient-to-br from-blue-500/5 to-indigo-500/5 border border-blue-500/10 overflow-hidden">
-        <div class="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-full -mr-8 -mt-8"></div>
-        <div class="flex items-start gap-3 relative">
-          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center shrink-0 shadow-lg shadow-blue-500/20">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+      <div class="rounded-xl p-3 bg-white/5 border border-white/10">
+        <div class="flex items-start gap-2">
+          <div class="w-7 h-7 rounded-lg bg-gray-700 flex items-center justify-center shrink-0">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
             </svg>
           </div>
           <div>
-            <p class="font-bold text-blue-300 text-xs mb-1.5">💡 Tips:</p>
-            <ul class="text-[11px] text-gray-400 space-y-1.5">
-              <li class="flex items-center gap-1.5">
-                <span class="w-1 h-1 rounded-full bg-blue-400"></span>
-                XEM PHIM ĐƯỢC TỐI ƯU BỞI HTML
-              </li>
-              <li class="flex items-center gap-1.5">
-                <span class="w-1 h-1 rounded-full bg-blue-400"></span>
-                PHÙ HỢP CHO CÁC THIẾT BỊ
-              </li>
-              <li class="flex items-center gap-1.5">
-                <span class="w-1 h-1 rounded-full bg-blue-400"></span>
-                DỮ LIỆU PHIM SẼ ĐƯỢC LƯU
-              </li>
+            <p class="font-bold text-blue-300 text-xs mb-1">💡 Tips:</p>
+            <ul class="text-[11px] text-gray-500 space-y-1">
+              <li>• XEM PHIM ĐƯỢC TỐI ƯU BỞI HTML</li>
+              <li>• PHÙ HỢP CHO CÁC THIẾT BỊ</li>
+              <li>• DỮ LIỆU PHIM SẼ ĐƯỢC LƯU</li>
             </ul>
           </div>
         </div>
       </div>
-
     </div>
 
     <!-- Footer -->
