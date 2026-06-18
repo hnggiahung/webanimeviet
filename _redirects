@@ -1,0 +1,11 @@
+# ====== Netlify Redirects cho SPA ======
+# Quan trọng: File này PHẢI nằm ở thư mục gốc (publish directory)
+
+# SPA fallback - chuyển hướng tất cả request về index.html
+/*    /index.html    200
+
+# Redirect cụ thể cho các trang
+/home    /home.html    200
+/watch    /watch.html    200
+/start    /start.html    200
+/control-panel    /control-panel.html    200
