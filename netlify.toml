@@ -1,5 +1,7 @@
 # ====== Cấu hình Deploy Netlify cho Web phim hoạt hình ======
 # Dự án tĩnh HTML/CSS/JS
+# Lưu ý: File _redirects (cùng cấp) có độ ưu tiên cao hơn netlify.toml
+# và đã xử lý SPA fallback: /* /index.html 200
 
 [build]
   publish = "."
@@ -40,33 +42,3 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     X-XSS-Protection = "1; mode=block"
     Access-Control-Allow-Origin = "*"
-
-# ====== Redirect Rules ======
-# QUAN TRỌNG: Không dùng /* catch-all vì nó chặn cả file JSON, JS, CSS
-# Chỉ redirect cụ thể khi cần
-
-[[redirects]]
-  from = "/home"
-  to = "/home.html"
-  status = 200
-
-[[redirects]]
-  from = "/watch"
-  to = "/watch.html"
-  status = 200
-
-[[redirects]]
-  from = "/start"
-  to = "/start.html"
-  status = 200
-
-[[redirects]]
-  from = "/control-panel"
-  to = "/control-panel.html"
-  status = 200
-
-# 404 fallback - Chỉ redirect khi file thực sự không tồn tại
-[[redirects]]
-  from = "/404"
-  to = "/index.html"
-  status = 404
