@@ -118,8 +118,8 @@ function updateUIForLoggedInUser(user) {
     if (loginBtn) {
         loginBtn.innerHTML = `
             <span class="user-avatar-btn" onclick="signOut()" title="Đăng xuất">
-                <img src="${user.photoURL || 'logo.jpg.jpg'}" alt="${user.displayName || 'User'}" 
-                     onerror="this.src='logo.jpg.jpg'">
+                <img src="${user.photoURL || '/logo.jpg.jpg'}" alt="${user.displayName || 'User'}" 
+                     onerror="this.src='/logo.jpg.jpg'">
                 <span class="avatar-name">${user.displayName || 'User'}</span>
             </span>
         `;
@@ -131,9 +131,9 @@ function updateUIForLoggedInUser(user) {
     const loginBtnMobile = document.getElementById('login-btn-mobile');
     if (loginBtnMobile) {
         loginBtnMobile.innerHTML = `
-            <img src="${user.photoURL || 'logo.jpg.jpg'}" alt="${user.displayName || 'User'}" 
+            <img src="${user.photoURL || '/logo.jpg.jpg'}" alt="${user.displayName || 'User'}" 
                  class="w-6 h-6 rounded-full object-cover"
-                 onerror="this.src='logo.jpg.jpg'">
+                 onerror="this.src='/logo.jpg.jpg'">
         `;
         loginBtnMobile.className = 'p-0.5 bg-transparent hover:bg-transparent';
         loginBtnMobile.onclick = signOut;
