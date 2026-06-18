@@ -468,15 +468,21 @@ window.searchMovies = function(query) {
 async function loadFallbackData(container) {
     console.log('📁 Đang tải fallback từ data.json...');
     try {
+        console.log('🔍 Đường dẫn fetch data.json:', 'data/data.json');
         const response = await fetch('data/data.json');
+        console.log('📡 Response status:', response.status, response.statusText);
+        console.log('📡 Content-Type:', response.headers.get('content-type'));
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const data = await response.json();
+        console.log('📦 Dữ liệu phim (raw):', data);
         let movies = data?.movies || data?.items || [];
         
         if (!movies || movies.length === 0) {
             console.log('⚠️ Fallback data.json không có dữ liệu');
             return [];
         }
+        
+        console.log('🎬 Số phim tìm thấy:', movies.length);
 
         const convertedMovies = movies.map(m => ({
             name: m.title || m.name || 'Không có tên',
