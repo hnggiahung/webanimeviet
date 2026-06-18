@@ -8,6 +8,14 @@
   <meta name="theme-color" content="#0a0a0f" />
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
+  <!-- Redirect to Start page on first visit -->
+  <script>
+    if (!sessionStorage.getItem('visited_start')) {
+      sessionStorage.setItem('visited_start', 'true');
+      window.location.href = 'start.html';
+    }
+  </script>
+
   <!-- I. RESOURCE PRELOADING -->
   <link rel="preload" as="image" href="logo.jpg.jpg" />
 
