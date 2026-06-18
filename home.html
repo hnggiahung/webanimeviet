@@ -37,11 +37,46 @@
       top: 80px;
     }
 
-    /* Ẩn sidebar hoàn toàn trên mobile */
+    /* Trên mobile (dưới 1024px): ẩn sidebar desktop */
     @media (max-width: 1024px) {
-      aside {
+      .desktop-sidebar {
         display: none !important;
       }
+    }
+
+    /* Banner height responsive cố định, object-cover tránh méo */
+    .banner-container {
+      height: 200px;
+    }
+    @media (min-width: 640px) {
+      .banner-container {
+        height: 240px;
+      }
+    }
+    @media (min-width: 768px) {
+      .banner-container {
+        height: 360px;
+      }
+    }
+
+    /* Comment badge trên banner */
+    .comment-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 999px;
+      color: #d1d5db;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .comment-badge:hover {
+      background: rgba(255,255,255,0.2);
+      color: #fff;
     }
   </style>
 </head>
@@ -152,14 +187,14 @@
     </div>
   </header>
 
-  <!-- MAIN CONTENT WITH SIDEBAR: CSS Grid Layout (2fr: Banner + Movies | 1fr: Sidebar) -->
+  <!-- MAIN CONTENT: Grid Layout (2fr: Banner + Movies | 1fr: Sidebar) -->
   <section class="max-w-7xl mx-auto px-4 py-6">
     <div class="grid grid-cols-1 lg:grid-cols-[2fr,1fr] gap-6">
       <!-- LEFT COLUMN (2fr): Banner + Filter & Movies -->
       <div class="min-w-0 space-y-6">
         <!-- HERO BANNER - Dynamic từ API -->
         <div id="hero-banner">
-          <div id="banner-container" class="relative h-[240px] md:h-[360px] rounded-xl md:rounded-2xl overflow-hidden">
+          <div id="banner-container" class="relative banner-container rounded-xl md:rounded-2xl overflow-hidden">
             <!-- Background Image will be set by JS -->
             <div id="banner-bg" 
               class="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -202,7 +237,7 @@
                   </div>
                 </div>
 
-                <!-- CTA Buttons -->
+                <!-- CTA Buttons + Comment badge -->
                 <div class="flex items-center gap-3" id="banner-cta">
                   <a id="banner-watch-link" href="watch.html?id=" 
                      class="inline-flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-full text-sm">
@@ -218,6 +253,13 @@
                     </svg>
                     Chi Tiết
                   </a>
+                  <!-- Comment badge -->
+                  <span class="comment-badge hidden sm:inline-flex" id="banner-comment-badge">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    <span id="banner-comment-count">0</span>
+                  </span>
                 </div>
               </div>
             </div>
@@ -269,10 +311,77 @@
             </div>
           </div>
         </div>
+
+        <!-- MOBILE SIDEBAR: Hiện trên mobile dưới danh sách phim -->
+        <div class="lg:hidden space-y-5 mt-8" id="mobile-sidebar">
+          <!-- Nút Xem Anime Ngẫu Nhiên -->
+          <a href="#" id="random-anime-btn-mobile" class="block w-full px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white text-sm font-bold rounded-full text-center">
+            🎲 Xem Anime Ngẫu Nhiên
+          </a>
+
+          <!-- Khu vực Bình luận Mobile (đã chuyển xuống dưới) -->
+          <div class="bg-[#1f1f1f] border border-white/5 rounded-2xl p-4">
+            <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2 border-b border-white/5 pb-3">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-gray-400">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+              </svg>
+              <span>Bình luận</span>
+              <span class="text-gray-500 font-normal text-xs ml-auto bg-white/5 px-2 py-0.5 rounded-full">0</span>
+            </h3>
+            <div class="space-y-3 mb-4 max-h-[280px] overflow-y-auto scrollbar-thin">
+              <div class="flex gap-2.5 p-2.5 bg-white/[0.03] rounded-xl hover:bg-white/[0.06]">
+                <div class="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center text-white text-xs font-bold shrink-0 mt-0.5">H</div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-1.5 mb-0.5">
+                    <span class="text-white text-xs font-semibold">Hoàng Gia Hưng</span>
+                    <span class="px-1.5 py-0.5 text-[9px] font-bold bg-gray-600 text-gray-300 rounded">VIP</span>
+                    <span class="text-gray-600 text-[10px] ml-auto">2 phút</span>
+                  </div>
+                  <p class="text-gray-400 text-xs leading-relaxed">Phim này hay quá ad Đang mong chờ tập tip</p>
+                </div>
+              </div>
+              <div class="flex gap-2.5 p-2.5 bg-white/[0.03] rounded-xl hover:bg-white/[0.06]">
+                <div class="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center text-white text-xs font-bold shrink-0 mt-0.5">M</div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-1.5 mb-0.5">
+                    <span class="text-white text-xs font-semibold">Minh Anh</span>
+                    <span class="text-gray-600 text-[10px] ml-auto">15 phút</span>
+                  </div>
+                  <p class="text-gray-400 text-xs leading-relaxed">Có ai biết khi nào ra tập mới không ạ</p>
+                </div>
+              </div>
+              <div class="flex gap-2.5 p-2.5 bg-white/[0.03] rounded-xl hover:bg-white/[0.06]">
+                <div class="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center text-white text-xs font-bold shrink-0 mt-0.5">T</div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-1.5 mb-0.5">
+                    <span class="text-white text-xs font-semibold">Thu Thảo</span>
+                    <span class="px-1.5 py-0.5 text-[9px] font-bold bg-gray-600 text-gray-300 rounded">Mod</span>
+                    <span class="text-gray-600 text-[10px] ml-auto">1 giờ</span>
+                  </div>
+                  <p class="text-gray-400 text-xs leading-relaxed">Mình thích nhân vật chính quá Diễn hoạt đẹp.</p>
+                </div>
+              </div>
+            </div>
+            <div class="bg-white/[0.03] border border-white/5 rounded-xl p-3">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center shrink-0">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="text-gray-500">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <p class="text-gray-400 text-xs">Đăng nhập để tham gia bình luận</p>
+                </div>
+                <a href="#" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-xs font-bold rounded-full whitespace-nowrap">Đăng nhập</a>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- RIGHT SIDEBAR (1fr) - Ẩn trên mobile -->
-      <aside class="min-w-0 hidden lg:block">
+      <!-- RIGHT SIDEBAR (1fr) - Chỉ hiện trên desktop (>= 1024px) -->
+      <aside class="min-w-0 hidden lg:block desktop-sidebar">
         <div class="sidebar-sticky space-y-5">
           <!-- Nút Xem Anime Ngẫu Nhiên -->
           <a href="#" id="random-anime-btn" class="block w-full px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white text-sm font-bold rounded-full text-center">
@@ -299,7 +408,7 @@
             </div>
           </div>
 
-          <!-- Khu vực Bình luận Sidebar -->
+          <!-- Khu vực Bình luận Sidebar (Desktop) -->
           <div class="bg-[#1f1f1f] border border-white/5 rounded-2xl p-4">
             <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2 border-b border-white/5 pb-3">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-gray-400">
@@ -309,9 +418,7 @@
               <span class="text-gray-500 font-normal text-xs ml-auto bg-white/5 px-2 py-0.5 rounded-full">0</span>
             </h3>
 
-            <!-- Comment items -->
             <div class="space-y-3 mb-4 max-h-[280px] overflow-y-auto scrollbar-thin">
-              <!-- Sample comment 1 -->
               <div class="flex gap-2.5 p-2.5 bg-white/[0.03] rounded-xl hover:bg-white/[0.06]">
                 <div class="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center text-white text-xs font-bold shrink-0 mt-0.5">
                   H
@@ -326,7 +433,6 @@
                 </div>
               </div>
 
-              <!-- Sample comment 2 -->
               <div class="flex gap-2.5 p-2.5 bg-white/[0.03] rounded-xl hover:bg-white/[0.06]">
                 <div class="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center text-white text-xs font-bold shrink-0 mt-0.5">
                   M
@@ -340,7 +446,6 @@
                 </div>
               </div>
 
-              <!-- Sample comment 3 -->
               <div class="flex gap-2.5 p-2.5 bg-white/[0.03] rounded-xl hover:bg-white/[0.06]">
                 <div class="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center text-white text-xs font-bold shrink-0 mt-0.5">
                   T
@@ -356,7 +461,6 @@
               </div>
             </div>
 
-            <!-- Login to comment CTA -->
             <div class="bg-white/[0.03] border border-white/5 rounded-xl p-3">
               <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center shrink-0">
@@ -548,6 +652,16 @@
         }
       });
 
+      // ========== MOBILE SIDEBAR: Random Anime Button (Mobile) ==========
+      const randomBtnMobile = document.getElementById('random-anime-btn-mobile');
+      if (randomBtnMobile) {
+        randomBtnMobile.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (typeof window.handleRandomAnime === 'function') {
+            window.handleRandomAnime();
+          }
+        });
+      }
     });
   </script>
   <script src="js/main.js"></script>
