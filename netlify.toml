@@ -1,14 +1,11 @@
 # ====== Cấu hình Deploy Netlify cho Web phim hoạt hình ======
-# Dự án tĩnh HTML/CSS/JS - Tối ưu toàn diện
+# Dự án tĩnh HTML/CSS/JS
 
 [build]
-  # Chỉ định thư mục gốc chứa index.html
   publish = "."
-  
-  # Dự án này không cần build command vì là HTML/CSS/JS tĩnh
   command = "echo 'Static site - no build required'"
 
-# ====== III. Cache Policy: Cache-Control headers cho Netlify ======
+# ====== III. Cache Policy: Cache-Control headers ======
 [[headers]]
   for = "/assets/*"
   [headers.values]
@@ -34,7 +31,7 @@
   [headers.values]
     Cache-Control = "public, max-age=3600, must-revalidate"
 
-# ====== Security Headers ======
+# ====== Security & CORS Headers ======
 [[headers]]
   for = "/*"
   [headers.values]
@@ -42,11 +39,28 @@
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
     X-XSS-Protection = "1; mode=block"
-    # IV. Unicode: Force UTF-8 for HTML
-    Content-Type = "text/html; charset=UTF-8"
+    # Cho phép API call từ client-side
+    Access-Control-Allow-Origin = "*"
 
 # ====== Redirect Rules ======
+# Chỉ redirect khi file không tồn tại (tránh lỗi SPA)
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
+  from = "/home"
+  to = "/home.html"
   status = 200
+
+[[redirects]]
+  from = "/watch"
+  to = "/watch.html"
+  status = 200
+
+[[redirects]]
+  from = "/start"
+  to = "/start.html"
+  status = 200
+
+# 404 fallback
+[[redirects]]
+  from = "/404"
+  to = "/index.html"
+  status = 404
