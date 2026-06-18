@@ -59,6 +59,12 @@
   to = "/start.html"
   status = 200
 
+# ====== SPA Fallback - Quan trọng: Chuyển hướng mọi request không tìm thấy file về index.html ======
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
 # 404 fallback
 [[redirects]]
   from = "/404"
