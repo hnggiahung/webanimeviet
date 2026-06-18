@@ -32,61 +32,16 @@
   <link rel="stylesheet" href="css/style.css" />
 
   <style>
-    /* Simple overlay pattern */
-    .hero-pattern {
-      background: linear-gradient(135deg, #0a0a0f 0%, #1a0f0a 30%, #0f0f1e 70%, #0a0a12 100%);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .category-tag {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 4px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s ease;
-    }
-
-    /* Gradient overlay at bottom of poster */
-    .poster-gradient {
-      background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 50%, transparent 100%);
-    }
-
-    .grid-container {
-      margin-top: 24px;
-    }
-
-    /* Custom scrollbar */
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #1a1a2e;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #4a5568;
-      border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #718096;
-    }
-
-    /* Sidebar sticky */
     .sidebar-sticky {
       position: sticky;
       top: 80px;
     }
 
-    /* Compact search bar */
-    .search-bar {
-      transition: border-color 0.2s ease;
-    }
-    .search-bar:focus-within {
-      width: 260px;
-      border-color: #4a5568;
+    /* Ẩn sidebar hoàn toàn trên mobile */
+    @media (max-width: 1024px) {
+      aside {
+        display: none !important;
+      }
     }
   </style>
 </head>
@@ -317,8 +272,8 @@
         </div>
       </div>
 
-      <!-- RIGHT SIDEBAR (1fr) -->
-      <aside class="min-w-0">
+      <!-- RIGHT SIDEBAR (1fr) - Ẩn trên mobile -->
+      <aside class="min-w-0 hidden lg:block">
         <div class="sidebar-sticky space-y-5">
           <!-- Nút Xem Anime Ngẫu Nhiên -->
           <a href="#" id="random-anime-btn" class="block w-full px-4 py-3 bg-red-600 hover:bg-red-500 text-white text-sm font-bold rounded-xl transition-all duration-200 text-center shadow-lg shadow-red-600/20 hover:shadow-red-500/30 hover:scale-[1.02] active:scale-[0.98]">
