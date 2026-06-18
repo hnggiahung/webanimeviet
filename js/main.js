@@ -21,10 +21,8 @@ let isLoadingMore = false;
 let renderedMovieIds = new Set();
 let intersectionObserver = null; // Biến lưu IntersectionObserver
 
-// ====== BANNER ======
-let bannerInterval = null;
-let bannerMovies = [];
-let currentBannerIndex = 0;
+// ====== SWIPER BANNER ======
+let swiperInstance = null;
 
 // ====== KEYWORDS LỌC ANIME (CỨNG) ======
 const ANIME_KEYWORDS = ['hoạt hình', 'anime', 'animation', 'hoat hinh', 'cartoon', 'hoathinh', 'animated'];
@@ -370,7 +368,7 @@ async function fetchMovies(container, page) {
             renderMovies(allMovies.slice(0, displayCount), container);
             // Setup lazy loader sau khi render lần đầu
             setupLazyLoader(container);
-            updateBanner(apiMovies);
+            initSwiperBanner(apiMovies);
             console.log('✅ Render trang 1:', apiMovies.length, 'phim');
             hideLoadingSpinner();
         } else {
@@ -563,6 +561,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderedMovieIds.clear();
         renderMovies(allMovies.slice(0, displayCount), container);
         setupLazyLoader(container);
+        initSwiperBanner(cached);
         console.log('📦 Render từ cache:', cached.length, 'phim');
     }
 
@@ -808,100 +807,97 @@ async function filterByCategory(category) {
     console.log('✅ Đã tải', apiMovies.length, 'phim thể loại', slug);
 }
 
-// ====== BANNER ======
-function updateBanner(movies) {
-    if (bannerInterval) {
-        clearInterval(bannerInterval);
-        bannerInterval = null;
-    }
+// ====== SWIPER BANNER ======
+function initSwiperBanner(movies) {
+    const wrapper = document.getElementById('banner-swiper-wrapper');
+    if (!wrapper) return;
 
-    bannerMovies = movies.slice(0, 5).filter(m => m && m.slug);
+    const bannerMovies = movies.slice(0, 5).filter(m => m && m.slug);
     if (!bannerMovies.length) return;
 
-    currentBannerIndex = 0;
+    // Xóa slide loading cũ
+    wrapper.innerHTML = '';
 
-    function renderBanner(index) {
-        const movie = bannerMovies[index];
-        if (!movie) return;
-
+    // Tạo HTML cho từng slide
+    let slidesHTML = '';
+    bannerMovies.forEach(movie => {
         const title = movie.name || movie.title || 'Anime Hot';
         const slug = movie.slug || '';
         const year = movie.year || '';
         const displayEp = safeEpisodeDisplay(movie.episode_current);
         const thumbUrl = movie.thumb_url || movie.thumb || '';
         const posterUrl = movie.poster_url || '';
-        const bgUrl = buildImageUrl(thumbUrl, posterUrl);
+        const imgSrc = buildImageUrl(thumbUrl, posterUrl);
+        const desc = movie.content || movie.description || `Xem ${title} với chất lượng cao, vietsub, cập nhật nhanh nhất.`;
+        const rating = movie.tmdb?.vote_average || movie.vote_average || '9.0';
+        const quality = movie.quality || 'FHD';
+        const lang = movie.lang || 'Vietsub';
+        const epTotal = movie.episode_total || '??';
 
         let catStr = 'Hoạt hình';
         if (Array.isArray(movie.category)) {
             catStr = movie.category.map(c => (typeof c === 'object' ? c.name : c)).filter(Boolean).slice(0, 3).join(', ');
         }
 
-        const epTotal = movie.episode_total || '??';
-        const quality = movie.quality || 'FHD';
-        const lang = movie.lang || 'Vietsub';
-
-        const bgEl = document.getElementById('banner-bg');
-        if (bgEl) bgEl.style.backgroundImage = `url('${bgUrl}')`;
-
-        const titleEl = document.getElementById('banner-title');
-        if (titleEl) titleEl.textContent = title;
-
-        const metaEl = document.getElementById('banner-meta');
-        if (metaEl) {
-            metaEl.innerHTML = `
-                <div class="flex items-center gap-1.5">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                    <span class="text-white font-bold text-sm">${movie.tmdb?.vote_average || movie.vote_average || '9.0'}</span>
+        slidesHTML += `
+            <div class="swiper-slide">
+                <img src="${imgSrc}" alt="${title}" 
+                     onerror="this.onerror=null; this.src='${PLACEHOLDER}'; this.style.opacity='0.5';" />
+                <!-- Overlay gradient -->
+                <div class="banner-slide-overlay"></div>
+                <!-- Nội dung -->
+                <div class="banner-slide-content">
+                    <div class="banner-title">${title}</div>
+                    <div class="banner-desc">${desc}</div>
+                    <div class="banner-meta-row">
+                        <a href="watch.html?id=${slug}" class="banner-cta">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                <polygon points="5 3 19 12 5 21"></polygon>
+                            </svg>
+                            Xem Phim
+                        </a>
+                        <span class="banner-badge">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            ${rating}
+                        </span>
+                        <span class="banner-badge">${displayEp}</span>
+                        <span class="banner-badge">${year}</span>
+                        <span class="banner-badge">${quality}</span>
+                        <span class="banner-badge">${lang}</span>
+                        <span class="banner-comment">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                            0
+                        </span>
+                    </div>
                 </div>
-                <span class="text-gray-400 text-xs">|</span>
-                <span class="text-gray-300 text-sm">${displayEp}</span>
-                <span class="text-gray-400 text-xs">|</span>
-                <span class="text-gray-300 text-sm">${year}</span>
-                <span class="text-gray-400 text-xs">|</span>
-                <span class="px-2 py-0.5 text-[11px] font-bold bg-gray-700 text-gray-200 rounded">${quality}</span>
-                <span class="text-gray-400 text-xs">|</span>
-                <span class="text-gray-300 text-sm">${lang}</span>`;
-        }
+            </div>`;
+    });
 
-        const descEl = document.getElementById('banner-desc');
-        if (descEl) descEl.textContent = movie.content || movie.description || `Xem ${title} với chất lượng cao, vietsub, cập nhật nhanh nhất.`;
+    wrapper.innerHTML = slidesHTML;
 
-        const seasonEl = document.getElementById('banner-season');
-        if (seasonEl) seasonEl.textContent = epTotal;
-
-        const catBannerEl = document.getElementById('banner-category');
-        if (catBannerEl) catBannerEl.textContent = catStr;
-
-        const watchLink = document.getElementById('banner-watch-link');
-        if (watchLink) watchLink.href = `watch.html?id=${slug}`;
-
-        const detailLink = document.getElementById('banner-detail-link');
-        if (detailLink) detailLink.href = `watch.html?id=${slug}`;
-
-        const dotsContainer = document.getElementById('banner-dots');
-        if (dotsContainer) {
-            dotsContainer.innerHTML = bannerMovies.map((_, i) => `
-                <button class="w-2 h-2 rounded-full transition-all duration-300 ${i === index ? 'bg-gray-400 w-3' : 'bg-white/30 hover:bg-white/50'}" data-banner-index="${i}"></button>
-            `).join('');
-            dotsContainer.querySelectorAll('button').forEach((btn, i) => {
-                btn.addEventListener('click', () => {
-                    if (bannerInterval) clearInterval(bannerInterval);
-                    currentBannerIndex = i;
-                    renderBanner(i);
-                    bannerInterval = setInterval(nextBanner, 6000);
-                });
-            });
-        }
+    // Hủy instance Swiper cũ nếu có
+    if (swiperInstance) {
+        swiperInstance.destroy(true, true);
+        swiperInstance = null;
     }
 
-    function nextBanner() {
-        currentBannerIndex = (currentBannerIndex + 1) % bannerMovies.length;
-        renderBanner(currentBannerIndex);
-    }
-
-    renderBanner(0);
-    bannerInterval = setInterval(nextBanner, 6000);
+    // Khởi tạo Swiper mới
+    swiperInstance = new Swiper('#banner-swiper', {
+        loop: true,
+        autoplay: {
+            delay: 3000,
+            disableOnInteraction: false,
+        },
+        pagination: {
+            el: '#banner-swiper-pagination',
+            clickable: true,
+        },
+        speed: 600,
+        grabCursor: true,
+        watchSlidesProgress: true,
+    });
 }
 
 // ====== UI HELPERS ======
