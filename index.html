@@ -33,6 +33,19 @@
 
   <!-- Swiper.js CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  
+  <!-- Kiểm tra CSS đã load -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const hero = document.querySelector('.hero-banner');
+      if (hero) {
+        const bg = getComputedStyle(hero).backgroundImage;
+        console.log('✅ CSS loaded - hero-banner found, background:', bg ? 'set' : 'not set');
+      } else {
+        console.log('❌ CSS loaded but hero-banner NOT FOUND in DOM');
+      }
+    });
+  </script>
 </head>
 <body>
   <!-- ===== HEADER ===== -->
@@ -263,75 +276,13 @@
   <!-- ===== MAIN CONTENT ===== -->
   <main class="app-container" style="padding-top:var(--gap-2xl);padding-bottom:var(--gap-2xl);">
 
-    <!-- ===== BANNER REDESIGN 2026 ===== -->
-    <div class="banner-wrapper">
-      <div class="banner-layout">
-        <!-- Banner chính (bên trái) -->
-        <div class="banner-main-wrap">
-          <section class="banner-section" id="banner-section">
-            <div class="banner-main" id="banner-main">
-              <!-- Ảnh nền -->
-              <div class="banner-bg" id="banner-bg">
-                <img id="banner-img" src="" alt="" />
-              </div>
-              <!-- Gradient overlay trái tối -->
-              <div class="banner-overlay"></div>
-              
-              <!-- Nội dung bên trái -->
-              <div class="banner-content" id="banner-content">
-                <!-- Rating + Tập + Năm + FHD cùng hàng -->
-                <div class="banner-meta-row" id="banner-meta-row">
-                  <span class="banner-badge banner-badge-rating">⭐ <span id="banner-rating">9.5</span></span>
-                  <span class="banner-badge badge-red" id="banner-episodes">11/12</span>
-                  <span class="banner-badge banner-badge-year">📅 <span id="banner-year">2026</span></span>
-                  <span class="banner-badge badge-fhd">FHD</span>
-                </div>
-                
-                <!-- Tên phim -->
-                <h1 class="banner-title" id="banner-title">Ani VietSub VN</h1>
-                
-                <!-- Mô tả 2 dòng -->
-                <p class="banner-desc" id="banner-desc">Xem phim hoạt hình anime online, chất lượng cao</p>
-                
-                <!-- Studio + Thể loại -->
-                <div class="banner-info-lines">
-                  <span class="banner-info-line">🎬 Studio: <span id="banner-studio">Connect</span></span>
-                  <span class="banner-info-line">🏷 Thể Loại: <span id="banner-genres">Slice of Life, School, Romance</span></span>
-                </div>
-                
-                <!-- Avatars diễn viên -->
-                <div class="banner-avatars" id="banner-avatars">
-                  <div class="avatar-stack">
-                    <div class="avatar-item" style="background:#e53935;">A</div>
-                    <div class="avatar-item" style="background:#43a047;">B</div>
-                    <div class="avatar-item" style="background:#1e88e5;">C</div>
-                    <div class="avatar-item" style="background:#fb8c00;">D</div>
-                    <div class="avatar-item" style="background:#8e24aa;">E</div>
-                    <div class="avatar-more">+3</div>
-                  </div>
-                  <span class="avatar-label">Diễn viên lồng tiếng</span>
-                </div>
-                
-                <!-- Buttons hàng ngang -->
-                <div class="banner-buttons">
-                  <button class="btn-watch" id="btn-watch-banner">▶ Xem Phim</button>
-                  <button class="btn-trailer" id="btn-trailer">▶ Trailer</button>
-                  <button class="btn-fav" id="btn-fav">❤</button>
-                </div>
-              </div>
-            </div>
-            <!-- Dots phân trang -->
-            <div class="banner-dots" id="banner-dots"></div>
-          </section>
-        </div>
-
-        <!-- Sidebar Top Đề Xuất (bên phải) -->
-        <aside class="banner-sidebar" id="banner-sidebar">
-          <div class="banner-sidebar-title">⭐ Đề Xuất</div>
-          <div id="banner-sidebar-list">
-            <!-- Rendered by JS -->
-          </div>
-        </aside>
+    <!-- ===== HERO BANNER MỚI - THAY THẾ HOÀN TOÀN ===== -->
+    <div class="hero-banner" id="hero-banner">
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <h1 id="hero-title">TÊN BỘ PHIM TOP</h1>
+        <p id="hero-desc">Mô tả ngắn gọn về bộ phim này...</p>
+        <button class="btn-watch" id="hero-watch-btn">XEM NGAY</button>
       </div>
     </div>
 
@@ -342,7 +293,7 @@
         <!-- Section Header -->
         <div class="section-header">
           <div class="section-header-left">
-            <h2 class="section-title">Danh Sách Phim Anime</h2>
+            <h2 class="section-title section-title-gold">🔥 Hôm nay có gì</h2>
             <button class="section-new-btn">
               MỚI CẬP NHẬT
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
