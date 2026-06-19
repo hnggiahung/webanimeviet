@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="description" content="Ani VietSub VN - Xem phim hoạt hình anime online, chất lượng cao, cập nhật nhanh nhất" />
   <meta name="keywords" content="anime, phim anime, xem phim, streaming, hoạt hình, vietsub" />
-  <meta name="theme-color" content="#0a0a0f" />
+  <meta name="theme-color" content="#101115" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -13,7 +13,7 @@
   <link rel="icon" type="image/png" href="/assets/favicon.png" />
   <title>Ani VietSub VN - Xem Phim Anime Online</title>
 
-  <!-- Redirect to Start page on first visit (sessionStorage: only once per tab) -->
+  <!-- Redirect to Start page on first visit -->
   <script>
     if (!sessionStorage.getItem('visited_start')) {
       sessionStorage.setItem('visited_start', 'true');
@@ -24,170 +24,71 @@
   <!-- Web App Manifest -->
   <link rel="manifest" href="/manifest.json" />
 
-  <!-- I. RESOURCE PRELOADING -->
+  <!-- Preload -->
   <link rel="preload" as="image" href="/logo.jpg.jpg" />
-  
-  <!-- I. CRITICAL CSS -->
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    html{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,Roboto,Oxygen,Ubuntu,Cantarell,'Helvetica Neue',Arial,sans-serif;font-size:16px;line-height:1.5;-webkit-text-size-adjust:100%;scroll-behavior:smooth;touch-action:manipulation}
-    body{font-family:inherit;background:#0a0a0f;color:#fff;overflow-x:hidden;min-height:100vh;min-height:100dvh;-webkit-font-smoothing:antialiased}
-    :root{--color-bg:#0a0a0f;--color-bg-secondary:#12121a;--color-surface:#1a1a24;--color-border:#222233;--color-text:#fff;--color-text-muted:#888899;--color-primary:#b8281e;--touch-target-min:44px}
-    ::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:var(--color-bg-secondary)}::-webkit-scrollbar-thumb{background:#333344;border-radius:3px}
-    
-    /* Grid layout */
-    .movies-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;min-height:400px}
-    @media(min-width:640px){.movies-grid{grid-template-columns:repeat(4,1fr);gap:10px}}
-    @media(min-width:1024px){.movies-grid{grid-template-columns:repeat(6,1fr);gap:12px}}
-    
-    .movie-card{position:relative;border-radius:8px;overflow:hidden;background:var(--color-bg-secondary);border:1px solid var(--color-border);cursor:pointer;min-height:var(--touch-target-min)}
-    .movie-card:hover{z-index:5}
-    .movie-card-img{width:100%;aspect-ratio:2/3;object-fit:cover;display:block;background:#1e1e2a}
-    .movie-info{padding:10px 12px 12px}
-    .movie-title{color:var(--color-text);font-weight:700;font-size:14px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .movie-meta{display:flex;align-items:center;gap:6px;margin-top:4px;font-size:11px;color:var(--color-text-muted)}
-    .episode-badge{position:absolute;top:8px;right:8px;z-index:5;padding:3px 8px;background:rgba(0,0,0,.7);color:#fff;font-size:11px;font-weight:700;border-radius:999px;line-height:1.2;backdrop-filter:blur(2px)}
-    .glass-card{backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);background:rgba(255,255,255,.02)}
-    
-    /* Banner desktop layout */
-    .hero-section{display:flex;flex-direction:column;gap:16px}
-    @media(min-width:1024px){.hero-section{flex-direction:row;gap:20px}}
-    .hero-banner-wrap{flex:0 0 60%;position:relative}
-    @media(min-width:1024px){.hero-banner-wrap{flex:0 0 65%}}
-    .hero-suggestions{flex:1;display:none}
-    @media(min-width:1024px){.hero-suggestions{display:flex;flex-direction:column;gap:10px}}
-    
-    /* Banner */
-    .banner-swiper{width:100%;aspect-ratio:21/9;max-height:400px;border-radius:.75rem;overflow:hidden;position:relative!important;background:#12121a}
-    @media(min-width:640px){.banner-swiper{aspect-ratio:21/9;max-height:400px;border-radius:1rem}}
-    @media(min-width:1024px){.banner-swiper{max-height:400px;min-height:200px;aspect-ratio:21/9;border-radius:16px}}
-    .banner-swiper .swiper-slide{position:relative;overflow:hidden;height:100%;background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important}
-    .banner-slide-overlay{position:absolute;inset:0;z-index:10;background:linear-gradient(to top,rgba(0,0,0,.85) 0%,rgba(0,0,0,.4) 50%,transparent 100%);pointer-events:none}
-    .banner-slide-content{position:absolute;bottom:0;left:0;right:0;z-index:15;padding:24px 20px 48px;pointer-events:auto}
-    .banner-slide-content .banner-title{font-size:1.25rem;font-weight:700;color:#fff;line-height:1.2;margin-bottom:4px;text-shadow:0 2px 4px rgba(0,0,0,.5)}
-    @media(min-width:768px){.banner-slide-content .banner-title{font-size:1.875rem}}
-    
-    /* Suggestion card */
-    .suggestion-card{display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;cursor:pointer;text-decoration:none;min-height:60px}
-    .suggestion-card:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.12)}
-    .suggestion-card-img{width:44px;height:60px;border-radius:6px;object-fit:cover;flex-shrink:0;background:#1e1e2a}
-    .suggestion-card-info{flex:1;min-width:0}
-    .suggestion-card-title{color:#fff;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .suggestion-card-meta{color:#888899;font-size:11px;margin-top:2px}
-    .suggestion-card-badge{padding:2px 8px;background:rgba(255,255,255,.1);border-radius:999px;color:#aaa;font-size:10px;font-weight:600;white-space:nowrap}
-    
-    /* Tooltip */
-    .movie-tooltip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%) translateY(4px);background:rgba(15,15,30,.95);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 14px;z-index:20;min-width:200px;max-width:260px;opacity:0;pointer-events:none;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 4px 12px rgba(0,0,0,.4)}
-    .movie-tooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:rgba(15,15,30,.95)}
-    .movie-card:hover .movie-tooltip{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
-    .tooltip-item{display:flex;align-items:center;gap:8px;padding:3px 0;font-size:11px;color:var(--color-text-muted);line-height:1.4}
-    .tooltip-item svg{width:14px;height:14px;flex-shrink:0;opacity:.7}
-    .tooltip-item strong{color:var(--color-text);font-weight:600}
-    .play-button{display:flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(0,0,0,.6);border-radius:999px;color:#fff;font-size:12px;font-weight:600;backdrop-filter:blur(4px)}
-    .movie-card-overlay{position:absolute;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;opacity:0;z-index:10}
-    .movie-card:hover .movie-card-overlay{opacity:1}
-    
-    /* Sidebar */
-    .sidebar-module{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:14px;padding:16px}
-    .sidebar-module-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:12px;display:flex;align-items:center;gap:8px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.06)}
-    .sidebar-module-title svg{width:16px;height:16px;color:#888899;flex-shrink:0}
-    
-    /* Keywords */
-    .keyword-tag{display:inline-flex;padding:5px 12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:999px;color:#aaa;font-size:11px;cursor:pointer;text-decoration:none}
-    .keyword-tag:hover{background:rgba(180,40,30,.2);border-color:rgba(180,40,30,.4);color:#fff}
-    
-    /* Top movies */
-    .top-movie-item{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer;text-decoration:none}
-    .top-movie-item:last-child{border-bottom:none}
-    .top-movie-item:hover{background:rgba(255,255,255,.03);margin:0 -6px;padding:8px 6px;border-radius:8px}
-    .top-movie-rank{font-size:20px;font-weight:800;color:#555566;width:28px;text-align:center;flex-shrink:0;line-height:1}
-    .top-movie-rank.top-1{color:#ffd700}.top-movie-rank.top-2{color:#c0c0c0}.top-movie-rank.top-3{color:#cd7f32}
-    .top-movie-info{flex:1;min-width:0}
-    .top-movie-name{color:#ddd;font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
-    .top-movie-year{color:#666;font-size:10px;margin-top:1px}
-    .top-movie-score{font-size:12px;font-weight:700;color:#fbbf24;flex-shrink:0;padding:2px 8px;background:rgba(251,191,36,.1);border-radius:6px;min-width:36px;text-align:center}
-    .top-movie-score svg{width:10px;height:10px;margin-right:2px;vertical-align:-1px}
-    
-    .filter-btn{background:rgba(180,40,30,.15);border:1px solid rgba(180,40,30,.25);color:#d1d5db;padding:8px 14px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-size:13px;font-family:inherit;user-select:none;min-height:var(--touch-target-min)}
-    .filter-btn.active{background:var(--color-primary);border-color:var(--color-primary);color:#fff}
-    header.sticky{position:sticky;top:0;z-index:50;background:rgba(10,10,15,.8);border-bottom:1px solid rgba(255,255,255,.05)}
-    .search-suggestions{position:absolute;top:calc(100%+4px);left:0;right:0;background:var(--color-bg-secondary);border:1px solid var(--color-border);border-radius:8px;overflow:hidden;z-index:100;display:none;max-height:320px;overflow-y:auto}
-    .search-suggestions.active{display:block}
-    .banner-swiper .swiper-pagination{bottom:12px!important;z-index:20}
-    .banner-swiper .swiper-pagination-bullet{width:8px;height:8px;background:rgba(255,255,255,.3);opacity:1;border-radius:999px}
-    .banner-swiper .swiper-pagination-bullet-active{width:20px;background:#d1d5db}
-    .mobile-overlay,.overlay-bg{display:none}
-    .no-touch{display:none}
-    
-    /* Desktop 2-column layout */
-    @media(min-width:1024px){
-      .home-layout{display:grid;grid-template-columns:75% 25%;gap:24px;align-items:start}
-      .home-main{min-width:0}
-      .home-sidebar{min-width:0;position:sticky;top:80px}
-    }
-  </style>
 
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: { extend: { aspectRatio: { '3/4': '3 / 4' } } }
-    }
-  </script>
+  <!-- CSS: Variables + Main Style (NO Tailwind, NO inline CSS) -->
+  <link rel="stylesheet" href="/css/variables.css" />
+  <link rel="stylesheet" href="/css/style.css" />
 
   <!-- Swiper.js CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="/css/style.css" />
 </head>
-<body class="bg-[#0a0a0f] min-h-screen">
-  <!-- HEADER -->
-  <header class="sticky top-0 z-50 bg-[#0a0a0f]/80 border-b border-white/5">
-    <div class="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
-      <a href="/" class="flex items-center shrink-0">
-        <img src="/logo.jpg.jpg" alt="AnimeStream Logo" class="w-10 h-10 rounded-full object-cover" loading="eager" width="40" height="40" />
+<body>
+  <!-- ===== HEADER ===== -->
+  <header class="site-header">
+    <div class="header-inner">
+      <!-- Logo -->
+      <a href="/" class="header-logo">
+        <img src="/logo.jpg.jpg" alt="AnimeStream Logo" loading="eager" width="40" height="40" />
       </a>
 
-      <!-- Navigation + Search (Desktop) -->
-      <nav class="hidden md:flex items-center gap-1">
-        <a href="/" class="px-3 py-1.5 text-sm font-medium text-gray-300 hover:text-white touch-action-manipulation">Trang Chủ</a>
-        <a href="#" class="px-3 py-1.5 text-sm font-medium text-gray-300 hover:text-white touch-action-manipulation">Dạng Anime</a>
-        <a href="#" class="px-3 py-1.5 text-sm font-medium text-gray-300 hover:text-white touch-action-manipulation">Top Anime</a>
-        <a href="#" class="px-3 py-1.5 text-sm font-medium text-gray-300 hover:text-white touch-action-manipulation">Thể Loại</a>
-        <a href="#" class="px-3 py-1.5 text-sm font-medium text-gray-300 hover:text-white touch-action-manipulation">Season</a>
-        <a href="#" class="px-3 py-1.5 text-sm font-medium text-gray-300 hover:text-white touch-action-manipulation">Thư Viện</a>
-        <a href="#" class="px-3 py-1.5 text-sm font-medium text-gray-300 hover:text-white touch-action-manipulation">Lịch Chiếu</a>
-        <div class="w-px h-5 bg-white/10 mx-2"></div>
-        <div class="relative search-bar w-[180px]">
-          <div class="search-wrapper">
-            <div class="flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-3 py-1.5 focus-within:border-gray-500">
-              <svg class="text-gray-400 shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="11" cy="11" r="8"></circle>
-                <path d="m21 21-4.35-4.35"></path>
-              </svg>
-              <input type="text" id="search-input" placeholder="Tìm kiếm..." class="w-full bg-transparent outline-none text-white placeholder-gray-500 text-sm" autocomplete="off" />
-            </div>
-            <div id="search-suggestions-desktop" class="search-suggestions">
-              <ul id="suggestions-list-desktop"></ul>
-            </div>
+      <!-- Desktop Navigation -->
+      <nav class="header-nav">
+        <a href="/">Trang Chủ</a>
+        <a href="#">Dạng Anime</a>
+        <a href="#">Top Anime</a>
+        <a href="#">Thể Loại</a>
+        <a href="#">Season</a>
+        <a href="#">Thư Viện</a>
+        <a href="#">Lịch Chiếu</a>
+
+        <div style="width:1px;height:18px;background:var(--border-color);margin:0 var(--gap-sm);flex-shrink:0;"></div>
+
+        <!-- Search -->
+        <div class="search-bar search-wrapper">
+          <div class="search-bar-inner">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            <input type="text" id="search-input" placeholder="Tìm kiếm..." autocomplete="off" />
+          </div>
+          <div class="search-suggestions" id="search-suggestions-desktop">
+            <ul id="suggestions-list-desktop"></ul>
           </div>
         </div>
-        <a href="#" id="login-btn" 
-           class="ml-2 px-3 py-1.5 bg-red-900/50 hover:bg-red-800/60 text-white text-sm font-medium rounded-full inline-flex items-center gap-1.5 touch-action-manipulation">
+
+        <!-- Login -->
+        <a href="#" id="login-btn" class="login-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+            <polyline points="10 17 15 12 10 7"></polyline>
+            <line x1="15" y1="12" x2="3" y2="12"></line>
+          </svg>
           Đăng nhập
         </a>
       </nav>
 
-      <!-- Mobile: Search + Hamburger -->
-      <div class="md:hidden flex items-center gap-1">
-        <button id="mobile-search-toggle" class="text-gray-400 hover:text-white p-2 rounded-full touch-action-manipulation" aria-label="Tìm kiếm">
+      <!-- Mobile Actions -->
+      <div class="header-mobile-actions">
+        <button id="mobile-search-toggle" class="header-mobile-btn" aria-label="Tìm kiếm">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="11" cy="11" r="8"></circle>
             <path d="m21 21-4.35-4.35"></path>
           </svg>
         </button>
-        <button id="hamburger-btn" class="text-gray-300 hover:text-white p-2 rounded-full touch-action-manipulation" aria-label="Menu">
+        <button id="hamburger-btn" class="header-mobile-btn" aria-label="Menu">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
             <line x1="3" y1="6" x2="21" y2="6"></line>
             <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -195,31 +96,33 @@
           </svg>
         </button>
       </div>
-      <div id="mobile-search" class="hidden md:hidden w-full px-4 pb-3">
-        <div class="search-wrapper">
-          <div class="flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 focus-within:border-gray-500">
-            <svg class="text-gray-400 shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="11" cy="11" r="8"></circle>
-              <path d="m21 21-4.35-4.35"></path>
-            </svg>
-            <input type="text" id="search-input-mobile" placeholder="Tìm kiếm phim anime..." class="w-full bg-transparent outline-none text-white placeholder-gray-500 text-sm" autocomplete="off" />
-          </div>
-          <div id="search-suggestions-mobile" class="search-suggestions">
-            <ul id="suggestions-list-mobile"></ul>
-          </div>
+    </div>
+
+    <!-- Mobile Search Panel -->
+    <div id="mobile-search" class="mobile-search-panel">
+      <div class="search-bar search-wrapper">
+        <div class="search-bar-inner">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+          <input type="text" id="search-input-mobile" placeholder="Tìm kiếm phim anime..." autocomplete="off" />
+        </div>
+        <div class="search-suggestions" id="search-suggestions-mobile">
+          <ul id="suggestions-list-mobile"></ul>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- Overlay background -->
+  <!-- Overlay for mobile menu -->
   <div id="overlay-bg" class="overlay-bg"></div>
 
   <!-- ===== MOBILE OVERLAY MENU ===== -->
   <div id="mobile-overlay" class="mobile-overlay">
     <div class="mobile-overlay-header">
-      <span class="text-white font-bold text-base">Danh Mục</span>
-      <button id="hamburger-close" class="text-gray-400 hover:text-white p-1 touch-action-manipulation" aria-label="Đóng menu">
+      <span style="font-weight:var(--font-weight-bold);font-size:var(--font-size-lg);color:var(--text-main);">Danh Mục</span>
+      <button id="hamburger-close" class="header-mobile-btn" aria-label="Đóng menu">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
           <line x1="18" y1="6" x2="6" y2="18"></line>
           <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -227,198 +130,227 @@
       </button>
     </div>
     <nav class="mobile-overlay-nav">
-      <a href="/" class="mobile-overlay-link active"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>Trang Chủ</a>
-      <a href="#" class="mobile-overlay-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16" fill="currentColor"></polygon></svg>Dạng Anime</a>
-      <a href="#" class="mobile-overlay-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>Top Anime</a>
-      <a href="#" class="mobile-overlay-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>Thể Loại</a>
-      <a href="#" class="mobile-overlay-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>Season</a>
-      <a href="#" class="mobile-overlay-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>Thư Viện</a>
-      <a href="#" class="mobile-overlay-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line></svg>Lịch Chiếu</a>
+      <a href="/" class="mobile-overlay-link active">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+        Trang Chủ
+      </a>
+      <a href="#" class="mobile-overlay-link">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16" fill="currentColor"></polygon></svg>
+        Dạng Anime
+      </a>
+      <a href="#" class="mobile-overlay-link">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+        Top Anime
+      </a>
+      <a href="#" class="mobile-overlay-link">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+        Thể Loại
+      </a>
+      <a href="#" class="mobile-overlay-link">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        Season
+      </a>
+      <a href="#" class="mobile-overlay-link">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+        Thư Viện
+      </a>
+      <a href="#" class="mobile-overlay-link">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line></svg>
+        Lịch Chiếu
+      </a>
     </nav>
     <div class="mobile-overlay-footer">
-      <a href="#" id="login-btn-overlay" class="mobile-overlay-login"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>Đăng nhập</a>
+      <a href="#" id="login-btn-overlay" class="mobile-overlay-login">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+        Đăng nhập
+      </a>
     </div>
   </div>
 
   <!-- ===== MAIN CONTENT ===== -->
-  <section class="max-w-7xl mx-auto px-4 py-6">
-    <!-- HERO SECTION: Banner + Suggestions -->
-    <div class="hero-section mb-6">
-      <!-- Banner - Left side -->
+  <main class="app-container" style="padding-top:var(--gap-2xl);padding-bottom:var(--gap-2xl);">
+
+    <!-- HERO: Banner + Suggestions -->
+    <section class="hero-section">
+      <!-- Banner -->
       <div class="hero-banner-wrap">
-        <div id="hero-banner">
-          <div class="swiper banner-swiper" id="banner-swiper">
-            <div class="swiper-wrapper" id="banner-swiper-wrapper">
-              <div class="swiper-slide" style="background: linear-gradient(135deg, #12121a 0%, #1a1a2e 50%, #0a0a0f 100%);">
-                <div class="banner-slide-overlay"></div>
-                <div class="banner-slide-content">
-                  <div class="banner-title">Ani VietSub VN</div>
-                  <div class="banner-desc">Xem phim hoạt hình anime online, chất lượng cao, cập nhật nhanh nhất</div>
-                  <div class="banner-meta-row">
-                    <span class="banner-badge">🎬 Anime</span>
-                    <span class="banner-badge">FHD</span>
-                    <span class="banner-badge">Vietsub</span>
-                  </div>
+        <div class="swiper banner-swiper" id="banner-swiper">
+          <div class="swiper-wrapper" id="banner-swiper-wrapper">
+            <div class="swiper-slide banner-slide" style="background:linear-gradient(135deg, #12121a 0%, #1a1a2e 50%, #101115 100%);">
+              <div class="banner-slide-overlay"></div>
+              <div class="banner-slide-content">
+                <div class="banner-title">Ani VietSub VN</div>
+                <div class="banner-desc">Xem phim hoạt hình anime online, chất lượng cao, cập nhật nhanh nhất</div>
+                <div class="banner-meta-row">
+                  <span class="banner-badge">🎬 Anime</span>
+                  <span class="banner-badge">FHD</span>
+                  <span class="banner-badge">Vietsub</span>
                 </div>
               </div>
             </div>
-            <div class="swiper-pagination" id="banner-swiper-pagination"></div>
           </div>
+          <div class="swiper-pagination" id="banner-swiper-pagination"></div>
         </div>
       </div>
 
-      <!-- Suggestions - Right side (Desktop only) -->
+      <!-- Suggestions (Desktop only) -->
       <div class="hero-suggestions">
-        <div class="flex items-center gap-2 mb-1">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-yellow-500">
+        <div class="hero-suggestions-header">
+          <svg viewBox="0 0 24 24" fill="currentColor">
             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
           </svg>
-          <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Đề Xuất Nhanh</span>
+          <span>Đề Xuất Nhanh</span>
         </div>
-        <div id="suggestions-list" class="flex flex-col gap-2 flex-1 overflow-hidden">
-        </div>
+        <div id="suggestions-list" style="display:flex;flex-direction:column;gap:var(--gap-sm);flex:1;overflow:hidden;"></div>
       </div>
-    </div>
+    </section>
 
     <!-- DESKTOP 2-COLUMN LAYOUT -->
     <div class="home-layout">
-      <!-- LEFT COLUMN (75%): Filter + Movie Grid -->
-      <div class="home-main min-w-0">
-        <!-- Filter -->
-        <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-4">
-          <h2 class="text-lg md:text-xl font-bold text-white">Danh Sách Phim Anime</h2>
-          <div class="flex flex-wrap gap-2 justify-center md:justify-end" id="filter-container">
-            <button class="filter-btn active bg-red-800/60 border-red-700/50 rounded-full" data-category="all" data-slug="all">Tất Cả</button>
-            <button class="filter-btn bg-red-900/40 border-red-800/30 rounded-full" data-category="hanh-dong" data-slug="hanh-dong">Hành Động</button>
-            <button class="filter-btn bg-red-900/40 border-red-800/30 rounded-full" data-category="phieu-luu" data-slug="phieu-luu">Phiêu Lưu</button>
-            <button class="filter-btn bg-red-900/40 border-red-800/30 rounded-full" data-category="chinh-kich" data-slug="chinh-kich">Chính Kịch</button>
-            <button class="filter-btn bg-red-900/40 border-red-800/30 rounded-full" data-category="hoat-hinh" data-slug="hoat-hinh">🎬 Anime</button>
-            <button class="filter-btn bg-red-900/40 border-red-800/30 rounded-full" data-category="sieu-nhan" data-slug="sieu-nhan">Siêu Nhân</button>
+      <!-- LEFT COLUMN: Filter + Movie Grid -->
+      <div class="home-main">
+        <!-- Section Header -->
+        <div class="section-header">
+          <div class="section-header-left">
+            <h2 class="section-title">Danh Sách Phim Anime</h2>
+            <button class="section-new-btn">
+              MỚI CẬP NHẬT
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+          </div>
+          <div class="filter-tabs" id="filter-container">
+            <button class="filter-tab active" data-category="all" data-slug="all">Tất cả</button>
+            <button class="filter-tab" data-category="hanh-dong" data-slug="hanh-dong">Hành Động</button>
+            <button class="filter-tab" data-category="phieu-luu" data-slug="phieu-luu">Phiêu Lưu</button>
+            <button class="filter-tab" data-category="chinh-kich" data-slug="chinh-kich">Chính Kịch</button>
+            <button class="filter-tab" data-category="hoat-hinh" data-slug="hoat-hinh">🎬 Anime</button>
+            <button class="filter-tab" data-category="sieu-nhan" data-slug="sieu-nhan">Siêu Nhân</button>
           </div>
         </div>
 
-        <!-- Movie Grid -->
-        <div class="movies-grid" id="movies-grid">
+        <!-- Anime Grid -->
+        <div class="anime-grid" id="movies-grid">
+          <!-- Cards rendered by JS -->
         </div>
 
-        <!-- MOBILE SIDEBAR -->
-        <div class="lg:hidden space-y-5 mt-8" id="mobile-sidebar">
-          <a href="#" id="random-anime-btn-mobile" class="block w-full px-4 py-3 bg-red-900/50 hover:bg-red-800/60 text-white text-sm font-bold rounded-full text-center touch-action-manipulation">🎲 Xem Anime Ngẫu Nhiên</a>
-          
+        <!-- Load More Button -->
+        <button class="load-more-btn" id="load-more-btn">XEM THÊM...</button>
+
+        <!-- Mobile Sidebar (hidden on desktop via CSS) -->
+        <div class="mobile-sidebar">
+          <a href="#" id="random-anime-btn-mobile" class="random-anime-btn">🎲 Xem Anime Ngẫu Nhiên</a>
+
           <!-- Keywords Mobile -->
           <div class="sidebar-module">
-            <h3 class="sidebar-module-title">
+            <div class="sidebar-module-header">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
-              Từ Khóa Phim Mới
-            </h3>
-            <div id="sidebar-keywords-mobile" class="flex flex-wrap gap-2">
+              <h3 class="sidebar-module-title">Từ Khóa Phim Mới</h3>
             </div>
+            <div id="sidebar-keywords-mobile" class="keywords-wrap"></div>
           </div>
 
           <!-- Top Movies Mobile -->
           <div class="sidebar-module">
-            <h3 class="sidebar-module-title">
+            <div class="sidebar-module-header">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-              Top Phim
-            </h3>
-            <div id="sidebar-top-movies-mobile" class="space-y-1">
+              <h3 class="sidebar-module-title">Top Phim</h3>
             </div>
+            <div id="sidebar-top-movies-mobile"></div>
           </div>
         </div>
       </div>
 
-      <!-- RIGHT SIDEBAR (25%) - Desktop only -->
-      <aside class="home-sidebar hidden lg:block">
-        <div class="space-y-5">
-          <!-- Random Anime Button -->
-          <a href="#" id="random-anime-btn" class="block w-full px-4 py-3 bg-red-900/50 hover:bg-red-800/60 text-white text-sm font-bold rounded-full text-center touch-action-manipulation">🎲 Xem Anime Ngẫu Nhiên</a>
+      <!-- RIGHT SIDEBAR (Desktop only) -->
+      <aside class="home-sidebar">
+        <div class="sidebar-inner">
+          <a href="#" id="random-anime-btn" class="random-anime-btn">🎲 Xem Anime Ngẫu Nhiên</a>
 
           <!-- Community Video -->
-          <div class="bg-white/[0.02] border border-white/5 rounded-xl overflow-hidden">
-            <div class="relative w-full" style="aspect-ratio: 16/9; background: #0a0a0f;">
-              <video class="w-full h-full object-cover" autoplay muted loop playsinline poster="https://via.placeholder.com/400x225/0a0a0f/666666?text=Community+Anime">
+          <div class="community-video">
+            <div class="community-video-player">
+              <video autoplay muted loop playsinline poster="data:image/svg+xml,%3Csvg xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27 width%3D%27400%27 height%3D%27225%27 viewBox%3D%270 0 400 225%27%3E%3Crect width%3D%27400%27 height%3D%27225%27 fill%3D%27%23101115%27%2F%3E%3Ctext x%3D%27200%27 y%3D%27112%27 text-anchor%3D%27middle%27 font-family%3D%27sans-serif%27 font-size%3D%2714%27 fill%3D%27%23666%27%3ECommunity Anime%3C%2Ftext%3E%3C%2Fsvg%3E">
                 <source src="/assets/banner.mp4" type="video/mp4" />
               </video>
-              <div class="absolute inset-0 flex flex-col items-center justify-center p-4 text-center bg-black/30">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="text-gray-400 mb-2">
+              <div class="community-video-overlay">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                   <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                 </svg>
-                <p class="text-white text-xs font-bold">Cộng Đồng Anime</p>
-                <p class="text-gray-300 text-[10px] mt-1">Tham gia thảo luận ngay!</p>
+                <p>Cộng Đồng Anime</p>
+                <p class="sub-text">Tham gia thảo luận ngay!</p>
               </div>
             </div>
-            <div class="p-3 bg-white/[0.02]">
-              <p class="text-gray-400 text-[10px] text-center">🎬 Video giới thiệu & thảo luận phim mới</p>
+            <div class="community-video-footer">
+              <p>🎬 Video giới thiệu & thảo luận phim mới</p>
             </div>
           </div>
 
-          <!-- Từ khóa phim mới (Sidebar) -->
+          <!-- Keywords -->
           <div class="sidebar-module">
-            <h3 class="sidebar-module-title">
+            <div class="sidebar-module-header">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
-              Từ Khóa Phim Mới
-            </h3>
-            <div id="sidebar-keywords" class="flex flex-wrap gap-2">
+              <h3 class="sidebar-module-title">Từ Khóa Phim Mới</h3>
             </div>
+            <div id="sidebar-keywords" class="keywords-wrap"></div>
           </div>
 
-          <!-- Top phim (Sidebar) -->
+          <!-- Top Movies -->
           <div class="sidebar-module">
-            <h3 class="sidebar-module-title">
+            <div class="sidebar-module-header">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-              Top Phim
-            </h3>
-            <div id="sidebar-top-movies" class="space-y-1">
+              <h3 class="sidebar-module-title">Top Phim</h3>
             </div>
+            <div id="sidebar-top-movies"></div>
           </div>
         </div>
       </aside>
     </div>
-  </section>
+  </main>
 
-  <!-- FOOTER -->
-  <footer class="border-t border-white/5 mt-12 py-8 px-4">
-    <div class="max-w-7xl mx-auto">
-      <div class="grid md:grid-cols-4 gap-6 mb-6">
-        <div>
-          <h3 class="font-bold text-white mb-3">Ani VietSub VN</h3>
-          <p class="text-gray-400 text-sm leading-relaxed">Nền tảng xem phim anime chất lượng cao, miễn phí</p>
+  <!-- ===== FOOTER ===== -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h3>Ani VietSub VN</h3>
+          <p>Nền tảng xem phim anime chất lượng cao, miễn phí</p>
         </div>
-        <div>
-          <h4 class="font-bold text-white mb-3">Danh Mục</h4>
-          <ul class="space-y-1.5 text-sm text-gray-400">
-            <li><a href="#" class="hover:text-white touch-action-manipulation">Hành động</a></li>
-            <li><a href="#" class="hover:text-white touch-action-manipulation">Phiêu Lưu</a></li>
-            <li><a href="#" class="hover:text-white touch-action-manipulation">Chính Kịch</a></li>
-            <li><a href="#" class="hover:text-white touch-action-manipulation">Siêu Nhân</a></li>
+        <div class="footer-col">
+          <h4>Danh Mục</h4>
+          <ul>
+            <li><a href="#">Hành động</a></li>
+            <li><a href="#">Phiêu Lưu</a></li>
+            <li><a href="#">Chính Kịch</a></li>
+            <li><a href="#">Siêu Nhân</a></li>
           </ul>
         </div>
-        <div>
-          <h4 class="font-bold text-white mb-3">Liên Kết</h4>
-          <ul class="space-y-1.5 text-sm text-gray-400">
-            <li><a href="/" class="hover:text-white touch-action-manipulation">Trang Chủ</a></li>
-            <li><a href="#" class="hover:text-white touch-action-manipulation">Phim Anime</a></li>
-            <li><a href="#" class="hover:text-white touch-action-manipulation">Liên Hệ</a></li>
-            <li><a href="#" class="hover:text-white touch-action-manipulation">Về Chúng Tôi</a></li>
+        <div class="footer-col">
+          <h4>Liên Kết</h4>
+          <ul>
+            <li><a href="/">Trang Chủ</a></li>
+            <li><a href="#">Phim Anime</a></li>
+            <li><a href="#">Liên Hệ</a></li>
+            <li><a href="#">Về Chúng Tôi</a></li>
           </ul>
         </div>
-        <div>
-          <h4 class="font-bold text-white mb-3">Mạng Xã Hội</h4>
-          <div class="flex gap-3">
-            <a href="#" class="text-gray-400 hover:text-white touch-action-manipulation">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"></path></svg>
+        <div class="footer-col">
+          <h4>Mạng Xã Hội</h4>
+          <div class="footer-social">
+            <a href="#" aria-label="Facebook">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"></path></svg>
             </a>
-            <a href="#" class="text-gray-400 hover:text-white touch-action-manipulation">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2s9 5 20 5a9.5 9.5 0 00-9-5.5c4.75 2.25 7-7 7-7a10.6 10.6 0 01-9.999 4m-1-9a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+            <a href="#" aria-label="Twitter">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2s9 5 20 5a9.5 9.5 0 00-9-5.5c4.75 2.25 7-7 7-7a10.6 10.6 0 01-9.999 4m-1-9a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
             </a>
           </div>
         </div>
       </div>
-      <div class="border-t border-white/5 pt-6 text-center text-gray-400 text-sm">
-        <p>© 2026 Ani VietSub VN. Tất cả quyền được bảo lưu. • <a href="#" class="hover:text-white touch-action-manipulation">Điều Khoản</a> • <a href="#" class="hover:text-white touch-action-manipulation">Chính Sách Bảo Mật</a></p>
-        <div class="flex items-center justify-center gap-2 mt-2 text-xs">
+      <div class="footer-bottom">
+        <p>© 2026 Ani VietSub VN. Tất cả quyền được bảo lưu. • <a href="#">Điều Khoản</a> • <a href="#">Chính Sách Bảo Mật</a></p>
+        <div class="footer-contact">
           <span>Liên hệ:</span>
-          <a href="mailto:hnggiahung@gmail.com" class="text-gray-400 hover:text-white font-medium touch-action-manipulation">hnggiahung@gmail.com</a>
+          <a href="mailto:hnggiahung@gmail.com" style="font-weight:var(--font-weight-medium);">hnggiahung@gmail.com</a>
         </div>
       </div>
     </div>
@@ -432,102 +364,104 @@
   <!-- Swiper.js -->
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
-  <!-- Inline scripts -->
+  <!-- Minimal inline JS for UI interactions only -->
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // Mobile Search Toggle
-      const toggleBtn = document.getElementById('mobile-search-toggle');
-      const mobileSearch = document.getElementById('mobile-search');
-      if (toggleBtn && mobileSearch) {
-        toggleBtn.addEventListener('click', () => {
-          mobileSearch.classList.toggle('hidden');
-          const input = document.getElementById('search-input-mobile');
-          if (!mobileSearch.classList.contains('hidden')) setTimeout(() => input.focus(), 100);
-        });
-      }
-
-      // Sync search inputs
-      const searchInput = document.getElementById('search-input');
-      const searchInputMobile = document.getElementById('search-input-mobile');
-      if (searchInput && searchInputMobile) {
-        searchInput.addEventListener('input', (e) => {
-          searchInputMobile.value = e.target.value;
-          if (typeof window.searchMovies === 'function') window.searchMovies(e.target.value);
-          if (typeof window.showSuggestions === 'function') window.showSuggestions(e.target.value);
-        });
-        searchInputMobile.addEventListener('input', (e) => {
-          searchInput.value = e.target.value;
-          if (typeof window.searchMovies === 'function') window.searchMovies(e.target.value);
-          if (typeof window.showSuggestions === 'function') window.showSuggestions(e.target.value);
-        });
-        searchInput.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' && typeof window.searchMovies === 'function') {
-            window.searchMovies(e.target.value);
-            if (typeof window.hideAllSuggestions === 'function') window.hideAllSuggestions();
-          }
-        });
-        searchInputMobile.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' && typeof window.searchMovies === 'function') {
-            window.searchMovies(e.target.value);
-            if (typeof window.hideAllSuggestions === 'function') window.hideAllSuggestions();
-          }
-        });
-        searchInput.addEventListener('focus', (e) => {
-          if (e.target.value.trim() && typeof window.showSuggestions === 'function') window.showSuggestions(e.target.value);
-        });
-        searchInputMobile.addEventListener('focus', (e) => {
-          if (e.target.value.trim() && typeof window.showSuggestions === 'function') window.showSuggestions(e.target.value);
-        });
-        searchInput.addEventListener('blur', () => setTimeout(() => { if (typeof window.hideAllSuggestions === 'function') window.hideAllSuggestions(); }, 200));
-        searchInputMobile.addEventListener('blur', () => setTimeout(() => { if (typeof window.hideAllSuggestions === 'function') window.hideAllSuggestions(); }, 200));
-      }
-
-      // Click outside to hide suggestions
-      document.addEventListener('click', (e) => {
-        const dd = document.getElementById('search-suggestions-desktop');
-        const md = document.getElementById('search-suggestions-mobile');
-        const dw = document.querySelector('.search-bar .search-wrapper');
-        const mw = document.querySelector('#mobile-search .search-wrapper');
-        if (dd && dw && !dw.contains(e.target) && !dd.contains(e.target)) dd.classList.remove('active');
-        if (md && mw && !mw.contains(e.target) && !md.contains(e.target)) md.classList.remove('active');
+  document.addEventListener('DOMContentLoaded', function() {
+    // Mobile Search Toggle
+    var toggleBtn = document.getElementById('mobile-search-toggle');
+    var mobileSearch = document.getElementById('mobile-search');
+    if (toggleBtn && mobileSearch) {
+      toggleBtn.addEventListener('click', function() {
+        mobileSearch.classList.toggle('open');
+        var input = document.getElementById('search-input-mobile');
+        if (mobileSearch.classList.contains('open')) {
+          setTimeout(function() { input.focus(); }, 100);
+        }
       });
+    }
 
-      // Random Anime Button (Mobile)
-      const randomBtnMobile = document.getElementById('random-anime-btn-mobile');
-      if (randomBtnMobile) {
-        randomBtnMobile.addEventListener('click', (e) => {
-          e.preventDefault();
-          if (typeof window.handleRandomAnime === 'function') window.handleRandomAnime();
-        });
-      }
+    // Sync search inputs
+    var searchInput = document.getElementById('search-input');
+    var searchInputMobile = document.getElementById('search-input-mobile');
+    if (searchInput && searchInputMobile) {
+      searchInput.addEventListener('input', function(e) {
+        searchInputMobile.value = e.target.value;
+        if (typeof window.searchMovies === 'function') window.searchMovies(e.target.value);
+        if (typeof window.showSuggestions === 'function') window.showSuggestions(e.target.value);
+      });
+      searchInputMobile.addEventListener('input', function(e) {
+        searchInput.value = e.target.value;
+        if (typeof window.searchMovies === 'function') window.searchMovies(e.target.value);
+        if (typeof window.showSuggestions === 'function') window.showSuggestions(e.target.value);
+      });
+      searchInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && typeof window.searchMovies === 'function') {
+          window.searchMovies(e.target.value);
+          if (typeof window.hideAllSuggestions === 'function') window.hideAllSuggestions();
+        }
+      });
+      searchInputMobile.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && typeof window.searchMovies === 'function') {
+          window.searchMovies(e.target.value);
+          if (typeof window.hideAllSuggestions === 'function') window.hideAllSuggestions();
+        }
+      });
+      searchInput.addEventListener('focus', function(e) {
+        if (e.target.value.trim() && typeof window.showSuggestions === 'function') window.showSuggestions(e.target.value);
+      });
+      searchInputMobile.addEventListener('focus', function(e) {
+        if (e.target.value.trim() && typeof window.showSuggestions === 'function') window.showSuggestions(e.target.value);
+      });
+      searchInput.addEventListener('blur', function() {
+        setTimeout(function() { if (typeof window.hideAllSuggestions === 'function') window.hideAllSuggestions(); }, 200);
+      });
+      searchInputMobile.addEventListener('blur', function() {
+        setTimeout(function() { if (typeof window.hideAllSuggestions === 'function') window.hideAllSuggestions(); }, 200);
+      });
+    }
 
-      // Hamburger Menu
-      const hamburgerBtn = document.getElementById('hamburger-btn');
-      const hamburgerClose = document.getElementById('hamburger-close');
-      const mobileOverlay = document.getElementById('mobile-overlay');
-      const overlayBg = document.getElementById('overlay-bg');
-      function openMenu() { if (mobileOverlay) mobileOverlay.classList.add('open'); if (overlayBg) overlayBg.classList.add('open'); document.body.style.overflow = 'hidden'; }
-      function closeMenu() { if (mobileOverlay) mobileOverlay.classList.remove('open'); if (overlayBg) overlayBg.classList.remove('open'); document.body.style.overflow = ''; }
-      if (hamburgerBtn) hamburgerBtn.addEventListener('click', openMenu);
-      if (hamburgerClose) hamburgerClose.addEventListener('click', closeMenu);
-      if (overlayBg) overlayBg.addEventListener('click', closeMenu);
-      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
+    // Click outside to hide suggestions
+    document.addEventListener('click', function(e) {
+      var dd = document.getElementById('search-suggestions-desktop');
+      var md = document.getElementById('search-suggestions-mobile');
+      var dw = document.querySelector('.search-bar.search-wrapper');
+      var mw = document.querySelector('.mobile-search-panel .search-wrapper');
+      if (dd && dw && !dw.contains(e.target) && !dd.contains(e.target)) dd.classList.remove('active');
+      if (md && mw && !mw.contains(e.target) && !md.contains(e.target)) md.classList.remove('active');
     });
-  </script>
 
-  <!-- Filter event delegation -->
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const filterContainer = document.getElementById('filter-container');
-      if (filterContainer) {
-        filterContainer.addEventListener('click', function(e) {
-          const btn = e.target.closest('.filter-btn');
-          if (!btn) return;
-          const category = btn.dataset.category;
-          if (typeof window.filterByCategory === 'function') window.filterByCategory(category);
-        });
-      }
-    });
+    // Random Anime Button (Mobile)
+    var randomBtnMobile = document.getElementById('random-anime-btn-mobile');
+    if (randomBtnMobile) {
+      randomBtnMobile.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (typeof window.handleRandomAnime === 'function') window.handleRandomAnime();
+      });
+    }
+
+    // Hamburger Menu
+    var hamburgerBtn = document.getElementById('hamburger-btn');
+    var hamburgerClose = document.getElementById('hamburger-close');
+    var mobileOverlay = document.getElementById('mobile-overlay');
+    var overlayBg = document.getElementById('overlay-bg');
+    function openMenu() { if (mobileOverlay) mobileOverlay.classList.add('open'); if (overlayBg) overlayBg.classList.add('open'); document.body.style.overflow = 'hidden'; }
+    function closeMenu() { if (mobileOverlay) mobileOverlay.classList.remove('open'); if (overlayBg) overlayBg.classList.remove('open'); document.body.style.overflow = ''; }
+    if (hamburgerBtn) hamburgerBtn.addEventListener('click', openMenu);
+    if (hamburgerClose) hamburgerClose.addEventListener('click', closeMenu);
+    if (overlayBg) overlayBg.addEventListener('click', closeMenu);
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeMenu(); });
+
+    // Filter event delegation
+    var filterContainer = document.getElementById('filter-container');
+    if (filterContainer) {
+      filterContainer.addEventListener('click', function(e) {
+        var btn = e.target.closest('.filter-tab');
+        if (!btn) return;
+        var category = btn.dataset.category;
+        if (typeof window.filterByCategory === 'function') window.filterByCategory(category);
+      });
+    }
+  });
   </script>
 
   <script src="/js/main.js"></script>
