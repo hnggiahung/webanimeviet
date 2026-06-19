@@ -314,8 +314,8 @@ async function autoSync() {
     console.log('🔄 [SYNC] Bắt đầu đồng bộ anime tự động...');
 
     try {
-        const allMovies = await fetchAllAnimeFromAPI();
-        const result = saveMoviesToCache(allMovies);
+        const fetchedMovies = await fetchAllAnimeFromAPI();
+        const result = saveMoviesToCache(fetchedMovies);
 
         const container = document.getElementById('anime-groups-container');
         if (container && document.querySelector('.app-container')) {
@@ -325,7 +325,8 @@ async function autoSync() {
                 if (cached && cached.length > 0) {
                     container.innerHTML = '';
                     renderedMovieIds.clear();
-                    destroyLazyLoader();
+                    destroyImageLazyLoader();
+                    window.allMovies = cached;
                     allMovies = cached;
                     syncWindowExports();
                     renderMovieGroups(allMovies, container);
@@ -556,9 +557,7 @@ function renderMovieGroups(movies, container) {
 function initImageLazyLoader(container) {
     if (!container) container = document;
     
-    if (imageObserver) {
-        // Chỉ observe ảnh mới, không hủy observer cũ
-    } else {
+    if (!imageObserver) {
         imageObserver = new IntersectionObserver(
             (entries) => {
                 entries.forEach(entry => {
@@ -579,6 +578,7 @@ function initImageLazyLoader(container) {
         );
     }
     
+    // Observe ALL images with data-src in container (including new ones)
     container.querySelectorAll('img[data-src]').forEach(img => {
         imageObserver.observe(img);
     });
