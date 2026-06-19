@@ -1,42 +1,75 @@
 /* ============================================================
-   ANIME VIETSUB VN - HỆ THỐNG BIẾN TOÀN CỤC (CSS VARIABLES)
+   ANIME VIETSUB VN - HỆ THỐNG THIẾT KẾ CHUẨN (DESIGN SYSTEM)
+   Phiên bản: 2.0 - Neon Glassmorphism
    ============================================================ */
 
 :root {
-  /* ---------- Màu sắc chủ đạo ---------- */
-  --bg-body: #101115;
-  --bg-panel: #1a1c22;
-  --bg-card: #181a20;
-  --bg-hover: #22242b;
-  --bg-input: #12141a;
+  /* ========== MÀU NỀN ========== */
+  /* TUYỆT ĐỐI KHÔNG dùng #000000 - dùng #0a0a0a cho độ sâu */
+  --bg-body: #0a0a0a;
+  --bg-panel: #0f0f0f;
+  --bg-card: #141414;
+  --bg-hover: #1a1a1a;
+  --bg-input: #0d0d0d;
+
+  /* Nền đỏ/ xanh hỗ trợ */
   --bg-red-primary: #c62828;
   --bg-red-hover: #e53935;
   --bg-green: #2e7d32;
   --bg-green-hover: #388e3c;
   --bg-yellow: #f9a825;
-  --bg-overlay: rgba(0, 0, 0, 0.55);
-  --bg-glass: rgba(255, 255, 255, 0.02);
-  --bg-glass-hover: rgba(255, 255, 255, 0.05);
 
-  /* ---------- Màu chữ ---------- */
+  /* ========== GLASSMORPHISM (LỚP PHỦ THỦY TINH) ========== */
+  /* Overlay dùng rgba với alpha 0.7 - 0.85 */
+  --bg-overlay: rgba(10, 10, 10, 0.85);
+  --bg-overlay-medium: rgba(10, 10, 10, 0.75);
+  --bg-overlay-light: rgba(10, 10, 10, 0.70);
+
+  /* Glass dùng cho Card/Overlay, alpha 0.7-0.85 */
+  --bg-glass: rgba(255, 255, 255, 0.03);
+  --bg-glass-hover: rgba(255, 255, 255, 0.06);
+  --bg-glass-card: rgba(20, 20, 20, 0.8);
+  --bg-glass-dropdown: rgba(15, 15, 15, 0.85);
+  --bg-glass-popup: rgba(15, 15, 15, 0.85);
+  --bg-glass-footer: rgba(10, 10, 10, 0.85);
+
+  /* ========== MÀU NEON CHỦ ĐẠO ========== */
+  --neon-primary: #00f2ff;
+  --neon-primary-rgb: 0, 242, 255;
+  --neon-primary-dim: rgba(0, 242, 255, 0.15);
+  --neon-primary-glow: 0 4px 20px rgba(0, 242, 255, 0.2);
+  --neon-primary-glow-strong: 0 0 30px rgba(0, 242, 255, 0.3);
+  --neon-text-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
+
+  /* ========== MÀU CHỮ ========== */
   --text-main: #ffffff;
   --text-sub: #9ca3af;
   --text-dim: #6b7280;
-  --text-link: #60a5fa;
+  --text-link: #00f2ff;
   --text-active: #ffffff;
 
-  /* ---------- Màu đặc biệt ---------- */
+  /* ========== MÀU ĐẶC BIỆT ========== */
   --red-primary: #c62828;
   --red-primary-light: #ef5350;
   --yellow-star: #fbbf24;
   --green-complete: #4caf50;
 
-  /* ---------- Đường viền ---------- */
-  --border-color: rgba(255, 255, 255, 0.06);
-  --border-color-hover: rgba(255, 255, 255, 0.12);
+  /* ========== ĐƯỜNG VIỀN (BORDER) ========== */
+  /* Tất cả card: border: 1px solid rgba(255, 255, 255, 0.05) */
+  --border-color: rgba(255, 255, 255, 0.05);
+  --border-color-hover: rgba(255, 255, 255, 0.10);
   --border-red: rgba(198, 40, 40, 0.3);
+  --border-neon: rgba(0, 242, 255, 0.3);
+  --border-neon-active: 1px solid rgba(0, 242, 255, 0.5);
 
-  /* ---------- Typography ---------- */
+  /* ========== BLUR (ĐỘ MỜ) ========== */
+  /* backdrop-filter: blur(15px) cho Dropdown, Pop-up, Footer */
+  --blur-default: 15px;
+  --blur-header: 10px;
+  --blur-overlay: 8px;
+  --blur-strong: 20px;
+
+  /* ========== TYPOGRAPHY ========== */
   --font-stack: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', Arial, sans-serif;
   --font-mono: 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', monospace;
   --font-size-xs: 10px;
@@ -55,7 +88,7 @@
   --line-height-normal: 1.5;
   --line-height-relaxed: 1.6;
 
-  /* ---------- Border Radius ---------- */
+  /* ========== BORDER RADIUS ========== */
   --radius-xs: 4px;
   --radius-sm: 6px;
   --radius-md: 8px;
@@ -63,7 +96,7 @@
   --radius-xl: 14px;
   --radius-pill: 9999px;
 
-  /* ---------- Khoảng cách ---------- */
+  /* ========== KHOẢNG CÁCH (GAP) ========== */
   --gap-xs: 4px;
   --gap-sm: 8px;
   --gap-md: 12px;
@@ -71,7 +104,7 @@
   --gap-xl: 20px;
   --gap-2xl: 24px;
 
-  /* ---------- Kích thước ---------- */
+  /* ========== KÍCH THƯỚC ========== */
   --max-width-container: 1360px;
   --header-height: 56px;
   --sidebar-width: 28%;
@@ -79,19 +112,38 @@
   --touch-target: 44px;
   --card-min-width: 150px;
 
-  /* ---------- Shadows ---------- */
+  /* ========== SHADOWS ========== */
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
   --shadow-overlay: -4px 0 20px rgba(0, 0, 0, 0.5);
+  --shadow-neon: 0 4px 20px rgba(0, 242, 255, 0.2);
 
-  /* ---------- Transitions ---------- */
+  /* ========== TRANSITIONS ========== */
   --transition-fast: 0.15s ease;
   --transition-base: 0.2s ease;
   --transition-slow: 0.3s ease;
+
+  /* ========== Z-INDEX LAYERS ========== */
+  --z-bg: 0;
+  --z-content: 10;
+  --z-header: 100;
+  --z-dropdown: 500;
+  --z-overlay: 900;
+  --z-popup: 1000;
 }
 
-/* ===== Reset toàn cục ===== */
+/* ===== BACKDROP-FILTER SUPPORT CHECK ===== */
+/* Fallback cho trình duyệt không hỗ trợ backdrop-filter */
+@supports not (backdrop-filter: blur(15px)) {
+  :root {
+    --bg-glass-dropdown: rgba(10, 10, 10, 0.9);
+    --bg-glass-popup: rgba(10, 10, 10, 0.9);
+    --bg-glass-footer: rgba(10, 10, 10, 0.9);
+  }
+}
+
+/* ========== CSS RESET & NORMALIZE ========== */
 *, *::before, *::after {
   margin: 0;
   padding: 0;
@@ -140,7 +192,7 @@ ul, ol {
   list-style: none;
 }
 
-/* ===== Scrollbar ===== */
+/* ========== SCROLLBAR ========== */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -149,9 +201,39 @@ ul, ol {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #333344;
+  background: #2a2a2a;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #444455;
+  background: #3a3a3a;
+}
+
+/* ========== MEDIA QUERIES BREAKPOINTS ========== */
+/* Mobile: 375px, Tablet: 768px, Desktop: 1440px */
+@media (max-width: 374px) {
+  :root {
+    --max-width-container: 100%;
+    --header-height: 50px;
+  }
+}
+
+@media (min-width: 375px) and (max-width: 767px) {
+  :root {
+    --max-width-container: 100%;
+    --header-height: 54px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1439px) {
+  :root {
+    --max-width-container: 720px;
+    --header-height: 56px;
+  }
+}
+
+@media (min-width: 1440px) {
+  :root {
+    --max-width-container: 1360px;
+    --header-height: 56px;
+  }
 }
