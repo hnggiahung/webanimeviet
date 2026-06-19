@@ -1,0 +1,385 @@
+/* ============================================================
+   COMPONENT: MOVIE CARD v3.0
+   Thiết kế: UI/UX Premium — Vuông vức, sắc sảo
+   ============================================================
+   Quy chuẩn:
+     - border-radius: 4px-6px (cảm giác vuông)
+     - Gradient overlay: 60% dưới cùng
+     - Glassmorphism: backdrop-filter: blur(10px)
+     - Hover: scale(1.03) + tăng độ sáng ảnh
+   ============================================================ */
+
+/* ----- Container Grid (Bố cục lưới) ----- */
+.movie-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 20px;
+}
+
+/* Mobile: 2 cột, gap nhỏ hơn */
+@media (max-width: 480px) {
+  .movie-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+}
+
+/* ============================================================
+   MOVIE CARD — Thẻ phim chính
+   ============================================================
+   - position: relative (làm container absolute cho các layer con)
+   - border-radius: 4px (vuông vức, sắc sảo)
+   - overflow: hidden (giữ gradient và ảnh nằm gọn)
+   - aspect-ratio: 2/3 (tỉ lệ poster chuẩn)
+   ============================================================ */
+.movie-card {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  background: #141414;
+
+  /* Hiệu ứng hover: scale(1.03) + box-shadow */
+  transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              box-shadow 0.35s ease;
+  transform: scale(1);
+  will-change: transform;
+}
+
+/* Hover: phóng to nhẹ + đổ bóng tạo depth */
+.movie-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5),
+              0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 10;
+}
+
+/* ============================================================
+   LINK — Bao bọc toàn bộ thẻ
+   ============================================================ */
+.movie-card-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+}
+
+/* ============================================================
+   POSTER — Ảnh nền phim
+   ============================================================
+   - object-fit: cover (không méo ảnh)
+   - hover: tăng độ sáng + phóng to nhẹ
+   ============================================================ */
+.movie-card-poster {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease, filter 0.35s ease;
+  will-change: transform;
+}
+
+/* Hover: phóng to ảnh + tăng độ sáng */
+.movie-card:hover .movie-card-poster {
+  transform: scale(1.06);
+  filter: brightness(1.1);
+}
+
+/* ============================================================
+   GRADIENT OVERLAY — Lớp phủ tối phía dưới
+   ============================================================
+   - Che phủ 60% chiều cao phía dưới
+   - gradient từ trong suốt → đen (rgba(0,0,0,0.9))
+   - Giúp chữ tiêu đề và nút nổi bật
+   ============================================================ */
+.movie-card-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60%;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.9) 0%,
+    rgba(0, 0, 0, 0.5) 40%,
+    transparent 100%
+  );
+  pointer-events: none; /* Click xuyên qua overlay */
+  z-index: 1;
+}
+
+/* ============================================================
+   BADGES — Huy hiệu thông tin (Layer trên cùng)
+   ============================================================ */
+
+/* Badge điểm số — Góc trên bên trái */
+.movie-card-badge-score {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 6px;
+  background: rgba(0, 0, 0, 0.75);
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+}
+
+.movie-card-badge-score svg {
+  width: 9px;
+  height: 9px;
+  color: #fbbf24;
+  flex-shrink: 0;
+}
+
+/* Badge tập phim — Góc trên bên phải */
+.movie-card-badge-episode {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 3;
+  min-width: 36px;
+  min-height: 36px;
+  border-radius: 50%;
+  background: rgba(198, 40, 40, 0.9);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 9px;
+  line-height: 1.1;
+  font-weight: 700;
+  padding: 2px;
+  border: none;
+}
+
+.movie-card-badge-episode.complete {
+  background: rgba(46, 125, 50, 0.9);
+}
+
+/* ============================================================
+   NỘI DUNG — Tiêu đề + Meta (Phía dưới cùng)
+   ============================================================
+   - position: absolute; bottom: 0
+   - pointer-events: none (để click xuyên qua)
+   ============================================================ */
+.movie-card-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  padding: 14px 12px 12px;
+  pointer-events: none;
+}
+
+/* Tiêu đề phim — font-weight: 600, font-size 14px */
+.movie-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1.35;
+  margin-bottom: 3px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+}
+
+/* Meta: năm, chất lượng, tập — chữ nhỏ, mờ */
+.movie-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.65);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  margin-bottom: 6px;
+}
+
+.movie-card-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* ============================================================
+   ACTION BUTTONS — Nhóm nút chức năng
+   ============================================================
+   - Góc dưới cùng bên trái
+   - pointer-events: auto (có thể click)
+   ============================================================ */
+.movie-card-actions {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+/* ----- Nút "Xem Phim" (Màu đỏ đậm chủ đạo) ----- */
+.movie-card-btn-play {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 14px;
+  background: #c62828;        /* Đỏ đậm chủ đạo */
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 600;
+  border: none;
+  border-radius: 4px;         /* Vuông vức 4px */
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s ease, transform 0.2s ease;
+  touch-action: manipulation;
+  min-height: 34px;
+  letter-spacing: 0.2px;
+}
+
+.movie-card-btn-play:hover {
+  background: #e53935;        /* Đỏ sáng hơn khi hover */
+  transform: scale(1.04);
+}
+
+.movie-card-btn-play svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+  fill: currentColor;
+}
+
+/* ----- Nút "3 chấm" — Glassmorphism ----- */
+/* backdrop-filter: blur(10px) tạo hiệu ứng kính */
+.movie-card-btn-more {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 4px;         /* Vuông vức 4px */
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #fff;
+  cursor: pointer;
+  transition: opacity 0.3s ease, background 0.2s ease, transform 0.2s ease;
+  touch-action: manipulation;
+
+  /* Mặc định ẩn — hiện khi hover vào card */
+  opacity: 0;
+  transform: translateY(4px);
+}
+
+.movie-card:hover .movie-card-btn-more {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.movie-card-btn-more:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.movie-card-btn-more svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   RESPONSIVE — Mobile tối ưu
+   ============================================================ */
+@media (max-width: 480px) {
+  .movie-card {
+    border-radius: 3px;
+  }
+
+  .movie-card-info {
+    padding: 10px 8px 8px;
+  }
+
+  .movie-card-title {
+    font-size: 12px;
+    -webkit-line-clamp: 1;
+    font-weight: 600;
+  }
+
+  .movie-card-meta {
+    font-size: 9px;
+    margin-bottom: 4px;
+  }
+
+  .movie-card-btn-play {
+    padding: 5px 10px;
+    font-size: 10px;
+    min-height: 30px;
+    border-radius: 3px;
+  }
+
+  .movie-card-btn-more {
+    width: 30px;
+    height: 30px;
+    opacity: 1;       /* Luôn hiển thị trên mobile */
+    transform: none;
+    border-radius: 3px;
+  }
+
+  .movie-card-badge-score {
+    top: 5px;
+    left: 5px;
+    padding: 2px 5px;
+    font-size: 9px;
+  }
+
+  .movie-card-badge-episode {
+    top: 5px;
+    right: 5px;
+    min-width: 30px;
+    min-height: 30px;
+    font-size: 8px;
+  }
+
+  .movie-card-overlay {
+    height: 55%;
+  }
+}
+
+/* ============================================================
+   SKELETON LOADING — Trạng thái chờ tải
+   ============================================================ */
+.movie-card-skeleton {
+  aspect-ratio: 2 / 3;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-loading {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ============================================================
+   FALLBACK — Khi ảnh lỗi
+   ============================================================ */
+.movie-card-img-error {
+  opacity: 0.3;
+  filter: grayscale(1);
+}
