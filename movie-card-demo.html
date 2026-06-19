@@ -214,12 +214,23 @@
      */
     function createMovieCardHTML(movie) {
       const episodeClass = movie.isComplete ? 'movie-card-badge-episode complete' : 'movie-card-badge-episode';
-      const episodeText = movie.isComplete ? 'HOÀN<br>TẤT' : movie.episode;
       
-      // Icons SVG inline
-      const starIcon = '<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
-      const playIcon = '<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21"/></svg>';
-      const moreIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>';
+      // Lấy số tập từ movie.episode (ví dụ "Tập 720" → 720)
+      let epNumber = '';
+      const epMatch = movie.episode.match(/\d+/);
+      const epNum = epMatch ? epMatch[0] : '';
+      const epNumClass = epNum.length > 2 ? 'episode-number small' : 'episode-number';
+      
+      let episodeLabelHtml;
+      if (movie.isComplete) {
+        episodeLabelHtml = `
+                <span class="episode-label">HOÀN</span>
+                <span class="episode-number">TẤT</span>`;
+      } else {
+        episodeLabelHtml = `
+                <span class="episode-label">TẬP</span>
+                <span class="${epNumClass}">${epNum}</span>`;
+      }
       
       return `
         <div class="movie-card" data-id="${movie.id}">
@@ -239,34 +250,23 @@
             
             <!-- Badge diem so - goc tren trai -->
             <div class="movie-card-badge-score">
-              ${starIcon}
+              <span class="star-icon">★</span>
               ${movie.score}
             </div>
             
-            <!-- Badge tap phim - goc tren phai -->
-            <div class="${episodeClass}">${episodeText}</div>
+            <!-- Badge tap phim - goc tren phai (hinh tron) -->
+            <div class="${episodeClass}">${episodeLabelHtml}</div>
             
-            <!-- Noi dung - tieu de + meta -->
+            <!-- Noi dung - tieu de + luot xem -->
             <div class="movie-card-info">
               <div class="movie-card-title">${movie.title}</div>
-              <div class="movie-card-meta">
-                <span class="movie-card-meta-item">${movie.year}</span>
-                <span class="movie-card-meta-item">•</span>
-                <span class="movie-card-meta-item">${movie.quality}</span>
-                <span class="movie-card-meta-item">•</span>
-                <span class="movie-card-meta-item">${movie.episode}</span>
-              </div>
+              <div class="movie-card-views">Lượt xem: 133,437</div>
             </div>
             
-            <!-- Nhom nut - goc duoi trai -->
+            <!-- Nhom nut - an -->
             <div class="movie-card-actions">
-              <button class="movie-card-btn-play" onclick="event.stopPropagation(); alert('Dang phat: ${movie.title}')">
-                ${playIcon}
-                Xem Phim
-              </button>
-              <button class="movie-card-btn-more" onclick="event.stopPropagation(); alert('Menu: ${movie.title}')" title="Xem them">
-                ${moreIcon}
-              </button>
+              <button class="movie-card-btn-play">Xem Phim</button>
+              <button class="movie-card-btn-more">...</button>
             </div>
             
           </a>
