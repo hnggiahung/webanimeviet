@@ -26,7 +26,6 @@
 
   <!-- I. RESOURCE PRELOADING -->
   <link rel="preload" as="image" href="/logo.jpg.jpg" />
-  <link rel="preload" as="image" href="https://img.ophim.live/uploads/movies/thumb_1.jpg" />
   
   <!-- I. CRITICAL CSS -->
   <style>
@@ -36,15 +35,14 @@
     :root{--color-bg:#0a0a0f;--color-bg-secondary:#12121a;--color-surface:#1a1a24;--color-border:#222233;--color-text:#fff;--color-text-muted:#888899;--color-primary:#b8281e;--touch-target-min:44px}
     ::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:var(--color-bg-secondary)}::-webkit-scrollbar-thumb{background:#333344;border-radius:3px}
     
-    /* 6-column grid on desktop - tối ưu diện tích */
+    /* Grid layout */
     .movies-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;min-height:400px}
     @media(min-width:640px){.movies-grid{grid-template-columns:repeat(4,1fr);gap:10px}}
     @media(min-width:1024px){.movies-grid{grid-template-columns:repeat(6,1fr);gap:12px}}
     
-    .movie-card{position:relative;border-radius:8px;overflow:hidden;background:var(--color-bg-secondary);border:1px solid var(--color-border);cursor:pointer;transition:border-color .15s ease,transform .3s ease;will-change:transform;min-height:var(--touch-target-min)}
-    .movie-card:hover{transform:scale(1.05);z-index:5}
-    .movie-card-img{width:100%;aspect-ratio:2/3;object-fit:cover;display:block;background:#1e1e2a;transition:opacity .2s ease}
-    .movie-card-img[loading="lazy"]{opacity:0}.movie-card-img.loaded,.movie-card-img[loading="eager"]{opacity:1}
+    .movie-card{position:relative;border-radius:8px;overflow:hidden;background:var(--color-bg-secondary);border:1px solid var(--color-border);cursor:pointer;min-height:var(--touch-target-min)}
+    .movie-card:hover{z-index:5}
+    .movie-card-img{width:100%;aspect-ratio:2/3;object-fit:cover;display:block;background:#1e1e2a}
     .movie-info{padding:10px 12px 12px}
     .movie-title{color:var(--color-text);font-weight:700;font-size:14px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .movie-meta{display:flex;align-items:center;gap:6px;margin-top:4px;font-size:11px;color:var(--color-text-muted)}
@@ -59,7 +57,7 @@
     .hero-suggestions{flex:1;display:none}
     @media(min-width:1024px){.hero-suggestions{display:flex;flex-direction:column;gap:10px}}
     
-    /* Banner - background-image */
+    /* Banner */
     .banner-swiper{width:100%;aspect-ratio:21/9;max-height:400px;border-radius:.75rem;overflow:hidden;position:relative!important;background:#12121a}
     @media(min-width:640px){.banner-swiper{aspect-ratio:21/9;max-height:400px;border-radius:1rem}}
     @media(min-width:1024px){.banner-swiper{max-height:400px;min-height:200px;aspect-ratio:21/9;border-radius:16px}}
@@ -70,7 +68,7 @@
     @media(min-width:768px){.banner-slide-content .banner-title{font-size:1.875rem}}
     
     /* Suggestion card */
-    .suggestion-card{display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;cursor:pointer;transition:all .2s ease;text-decoration:none;min-height:60px}
+    .suggestion-card{display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;cursor:pointer;text-decoration:none;min-height:60px}
     .suggestion-card:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.12)}
     .suggestion-card-img{width:44px;height:60px;border-radius:6px;object-fit:cover;flex-shrink:0;background:#1e1e2a}
     .suggestion-card-info{flex:1;min-width:0}
@@ -78,28 +76,28 @@
     .suggestion-card-meta{color:#888899;font-size:11px;margin-top:2px}
     .suggestion-card-badge{padding:2px 8px;background:rgba(255,255,255,.1);border-radius:999px;color:#aaa;font-size:10px;font-weight:600;white-space:nowrap}
     
-    /* Tooltip styles */
-    .movie-tooltip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%) translateY(4px);background:rgba(15,15,30,.95);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 14px;z-index:20;min-width:200px;max-width:260px;opacity:0;pointer-events:none;transition:none;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 4px 12px rgba(0,0,0,.4)}
+    /* Tooltip */
+    .movie-tooltip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%) translateY(4px);background:rgba(15,15,30,.95);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 14px;z-index:20;min-width:200px;max-width:260px;opacity:0;pointer-events:none;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 4px 12px rgba(0,0,0,.4)}
     .movie-tooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:rgba(15,15,30,.95)}
     .movie-card:hover .movie-tooltip{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
-    .tooltip-item{display:flex;align-items:center;gap:8px;padding:3px 0;font-size:11px;color:var(--color-text-muted);line-height:1.4;white-space:nowrap}
+    .tooltip-item{display:flex;align-items:center;gap:8px;padding:3px 0;font-size:11px;color:var(--color-text-muted);line-height:1.4}
     .tooltip-item svg{width:14px;height:14px;flex-shrink:0;opacity:.7}
     .tooltip-item strong{color:var(--color-text);font-weight:600}
     .play-button{display:flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(0,0,0,.6);border-radius:999px;color:#fff;font-size:12px;font-weight:600;backdrop-filter:blur(4px)}
-    .movie-card-overlay{position:absolute;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;opacity:0;z-index:10;transition:opacity .2s ease}
+    .movie-card-overlay{position:absolute;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;opacity:0;z-index:10}
     .movie-card:hover .movie-card-overlay{opacity:1}
     
-    /* Sidebar modules */
+    /* Sidebar */
     .sidebar-module{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:14px;padding:16px}
     .sidebar-module-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:12px;display:flex;align-items:center;gap:8px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.06)}
     .sidebar-module-title svg{width:16px;height:16px;color:#888899;flex-shrink:0}
     
     /* Keywords */
-    .keyword-tag{display:inline-flex;padding:5px 12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:999px;color:#aaa;font-size:11px;cursor:pointer;transition:all .2s ease;text-decoration:none}
+    .keyword-tag{display:inline-flex;padding:5px 12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:999px;color:#aaa;font-size:11px;cursor:pointer;text-decoration:none}
     .keyword-tag:hover{background:rgba(180,40,30,.2);border-color:rgba(180,40,30,.4);color:#fff}
     
-    /* Top movies list */
-    .top-movie-item{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);transition:background .15s ease;cursor:pointer;text-decoration:none}
+    /* Top movies */
+    .top-movie-item{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer;text-decoration:none}
     .top-movie-item:last-child{border-bottom:none}
     .top-movie-item:hover{background:rgba(255,255,255,.03);margin:0 -6px;padding:8px 6px;border-radius:8px}
     .top-movie-rank{font-size:20px;font-weight:800;color:#555566;width:28px;text-align:center;flex-shrink:0;line-height:1}
@@ -110,20 +108,13 @@
     .top-movie-score{font-size:12px;font-weight:700;color:#fbbf24;flex-shrink:0;padding:2px 8px;background:rgba(251,191,36,.1);border-radius:6px;min-width:36px;text-align:center}
     .top-movie-score svg{width:10px;height:10px;margin-right:2px;vertical-align:-1px}
     
-    .filter-btn{background:rgba(180,40,30,.15);border:1px solid rgba(180,40,30,.25);color:#d1d5db;padding:8px 14px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-size:13px;font-family:inherit;user-select:none;transition:all .2s ease;min-height:var(--touch-target-min)}
+    .filter-btn{background:rgba(180,40,30,.15);border:1px solid rgba(180,40,30,.25);color:#d1d5db;padding:8px 14px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-size:13px;font-family:inherit;user-select:none;min-height:var(--touch-target-min)}
     .filter-btn.active{background:var(--color-primary);border-color:var(--color-primary);color:#fff}
     header.sticky{position:sticky;top:0;z-index:50;background:rgba(10,10,15,.8);border-bottom:1px solid rgba(255,255,255,.05)}
-    .skeleton-poster{width:100%;aspect-ratio:2/3;background:#1e1e2a;position:relative;overflow:hidden}
-    .skeleton-poster::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,#2a2a3a,transparent);animation:sk-shimmer 1.5s infinite}
-    .skeleton-title{height:14px;background:#1e1e2a;border-radius:4px;margin-bottom:8px;position:relative;overflow:hidden}
-    .skeleton-title::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,#2a2a3a,transparent);animation:sk-shimmer 1.5s infinite}
-    .skeleton-meta{height:10px;width:60%;background:#1e1e2a;border-radius:4px;position:relative;overflow:hidden}
-    .skeleton-meta::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,#2a2a3a,transparent);animation:sk-shimmer 1.5s infinite}
-    @keyframes sk-shimmer{0%{left:-100%}100%{left:100%}}
     .search-suggestions{position:absolute;top:calc(100%+4px);left:0;right:0;background:var(--color-bg-secondary);border:1px solid var(--color-border);border-radius:8px;overflow:hidden;z-index:100;display:none;max-height:320px;overflow-y:auto}
     .search-suggestions.active{display:block}
     .banner-swiper .swiper-pagination{bottom:12px!important;z-index:20}
-    .banner-swiper .swiper-pagination-bullet{width:8px;height:8px;background:rgba(255,255,255,.3);opacity:1;border-radius:999px;transition:all .3s}
+    .banner-swiper .swiper-pagination-bullet{width:8px;height:8px;background:rgba(255,255,255,.3);opacity:1;border-radius:999px}
     .banner-swiper .swiper-pagination-bullet-active{width:20px;background:#d1d5db}
     .mobile-overlay,.overlay-bg{display:none}
     .no-touch{display:none}
@@ -258,8 +249,17 @@
         <div id="hero-banner">
           <div class="swiper banner-swiper" id="banner-swiper">
             <div class="swiper-wrapper" id="banner-swiper-wrapper">
-              <div class="swiper-slide !flex items-center justify-center bg-gray-800">
-                <div class="text-gray-400 text-sm">Đang tải banner...</div>
+              <div class="swiper-slide" style="background: linear-gradient(135deg, #12121a 0%, #1a1a2e 50%, #0a0a0f 100%);">
+                <div class="banner-slide-overlay"></div>
+                <div class="banner-slide-content">
+                  <div class="banner-title">Ani VietSub VN</div>
+                  <div class="banner-desc">Xem phim hoạt hình anime online, chất lượng cao, cập nhật nhanh nhất</div>
+                  <div class="banner-meta-row">
+                    <span class="banner-badge">🎬 Anime</span>
+                    <span class="banner-badge">FHD</span>
+                    <span class="banner-badge">Vietsub</span>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="swiper-pagination" id="banner-swiper-pagination"></div>
@@ -276,7 +276,6 @@
           <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Đề Xuất Nhanh</span>
         </div>
         <div id="suggestions-list" class="flex flex-col gap-2 flex-1 overflow-hidden">
-          <!-- JS will inject suggestion cards here -->
         </div>
       </div>
     </div>
@@ -300,15 +299,6 @@
 
         <!-- Movie Grid -->
         <div class="movies-grid" id="movies-grid">
-          <!-- Skeleton cards -->
-          <div class="skeleton-card"><div class="skeleton-poster"></div><div class="skeleton-info"><div class="skeleton-title"></div><div class="skeleton-meta"></div></div></div>
-          <div class="skeleton-card"><div class="skeleton-poster"></div><div class="skeleton-info"><div class="skeleton-title"></div><div class="skeleton-meta"></div></div></div>
-          <div class="skeleton-card"><div class="skeleton-poster"></div><div class="skeleton-info"><div class="skeleton-title"></div><div class="skeleton-meta"></div></div></div>
-          <div class="skeleton-card"><div class="skeleton-poster"></div><div class="skeleton-info"><div class="skeleton-title"></div><div class="skeleton-meta"></div></div></div>
-          <div class="skeleton-card"><div class="skeleton-poster"></div><div class="skeleton-info"><div class="skeleton-title"></div><div class="skeleton-meta"></div></div></div>
-          <div class="skeleton-card"><div class="skeleton-poster"></div><div class="skeleton-info"><div class="skeleton-title"></div><div class="skeleton-meta"></div></div></div>
-          <div class="skeleton-card"><div class="skeleton-poster"></div><div class="skeleton-info"><div class="skeleton-title"></div><div class="skeleton-meta"></div></div></div>
-          <div class="skeleton-card"><div class="skeleton-poster"></div><div class="skeleton-info"><div class="skeleton-title"></div><div class="skeleton-meta"></div></div></div>
         </div>
 
         <!-- MOBILE SIDEBAR -->
@@ -322,7 +312,6 @@
               Từ Khóa Phim Mới
             </h3>
             <div id="sidebar-keywords-mobile" class="flex flex-wrap gap-2">
-              <span class="text-gray-500 text-xs">Đang tải...</span>
             </div>
           </div>
 
@@ -333,7 +322,6 @@
               Top Phim
             </h3>
             <div id="sidebar-top-movies-mobile" class="space-y-1">
-              <div class="text-center text-gray-500 text-xs py-4">Đang tải...</div>
             </div>
           </div>
         </div>
@@ -348,7 +336,7 @@
           <!-- Community Video -->
           <div class="bg-white/[0.02] border border-white/5 rounded-xl overflow-hidden">
             <div class="relative w-full" style="aspect-ratio: 16/9; background: #0a0a0f;">
-              <video class="w-full h-full object-cover" autoplay muted loop playsinline poster="https://via.placeholder.com/400x225/0a0a0f/666666?text=C%E1%BB%99ng+%C4%90%E1%BB%93ng+Anime">
+              <video class="w-full h-full object-cover" autoplay muted loop playsinline poster="https://via.placeholder.com/400x225/0a0a0f/666666?text=Community+Anime">
                 <source src="/assets/banner.mp4" type="video/mp4" />
               </video>
               <div class="absolute inset-0 flex flex-col items-center justify-center p-4 text-center bg-black/30">
@@ -371,7 +359,6 @@
               Từ Khóa Phim Mới
             </h3>
             <div id="sidebar-keywords" class="flex flex-wrap gap-2">
-              <span class="text-gray-500 text-xs">Đang tải...</span>
             </div>
           </div>
 
@@ -382,7 +369,6 @@
               Top Phim
             </h3>
             <div id="sidebar-top-movies" class="space-y-1">
-              <div class="text-center text-gray-500 text-xs py-4">Đang tải...</div>
             </div>
           </div>
         </div>
