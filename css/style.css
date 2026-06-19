@@ -231,129 +231,266 @@ body { background: var(--bg-body); }
 .mobile-search-panel .search-bar { width: 100%; }
 
 /* ============================================================
-   NHÓM 21-30: BANNER & SLIDER
+   NHÓM 21-30: BANNER & SLIDER (NEW DESIGN 2026)
    ============================================================ */
 
-.hero-section {
-  display: flex; flex-direction: column; gap: var(--gap-lg);
-  margin-bottom: var(--gap-2xl);
-}
-@media (min-width: 1024px) { .hero-section { flex-direction: row; gap: var(--gap-xl); } }
-
-.hero-banner-wrap { flex: 0 0 100%; position: relative; overflow: hidden; }
-@media (min-width: 1024px) { .hero-banner-wrap { flex: 0 0 65%; } }
-
-.banner-swiper {
-  width: 100%; aspect-ratio: 16 / 9; max-height: 400px;
-  border-radius: var(--radius-lg); overflow: hidden;
-  position: relative; background: var(--bg-card);
+/* ===== BANNER SECTION ===== */
+.banner-section {
+  width: 100%;
+  background: #0a0a0a;
+  margin-bottom: 32px;
+  position: relative;
 }
 
-.banner-slide {
-  position: relative; overflow: hidden; height: 100%;
-  background-size: cover !important;
-  background-position: center !important;
-  background-repeat: no-repeat !important;
+/* Banner chính */
+.banner-main {
+  position: relative;
+  width: 100%;
+  height: 520px;
+  overflow: hidden;
 }
 
-.banner-slide-overlay {
-  position: absolute; inset: 0; z-index: var(--z-content);
-  background: linear-gradient(to top, rgba(10, 10, 10, 0.85) 0%, rgba(10, 10, 10, 0.3) 50%, transparent 100%);
+/* Ảnh nền */
+.banner-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.banner-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+/* Overlay gradient - tối dần 2 chiều */
+.banner-overlay {
+  position: absolute;
+  inset: 0;
+  background: 
+    linear-gradient(to right, rgba(0,0,0,0.92) 35%, transparent 70%),
+    linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 50%);
   pointer-events: none;
 }
 
-.banner-slide-content {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  z-index: calc(var(--z-content) + 5);
-  padding: 24px 20px 48px; pointer-events: auto;
-}
-@media (min-width: 768px) { .banner-slide-content { padding: 32px 40px 52px; } }
-
-.banner-title {
-  font-size: var(--font-size-xl); font-weight: var(--font-weight-bold);
-  color: var(--text-main); line-height: var(--line-height-tight);
-  margin-bottom: 4px; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-  display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;
-}
-@media (min-width: 768px) { .banner-title { font-size: 1.875rem; } }
-@media (min-width: 1024px) { .banner-title { font-size: 2.25rem; } }
-
-.banner-desc {
-  font-size: 0.75rem; color: #d1d5db; line-height: var(--line-height-relaxed);
-  margin-bottom: var(--gap-sm);
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-}
-@media (min-width: 768px) { .banner-desc { font-size: 0.875rem; } }
-
-.banner-meta-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--gap-sm); }
-
-.banner-badge {
-  display: inline-flex; align-items: center; gap: var(--gap-xs);
-  padding: 3px 8px; background: var(--bg-glass);
-  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: var(--radius-pill); color: #d1d5db;
-  font-size: var(--font-size-sm); min-height: var(--touch-target);
+/* Nội dung text */
+.banner-content {
+  position: absolute;
+  left: 48px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  max-width: 520px;
 }
 
-.banner-cta {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 8px 20px; background: rgba(0, 242, 255, 0.15);
-  color: var(--neon-primary); font-size: 0.875rem; font-weight: var(--font-weight-semibold);
-  border-radius: var(--radius-pill); border: 1px solid rgba(0, 242, 255, 0.3);
-  text-decoration: none; min-height: var(--touch-target);
-  transition: background var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
-}
-.banner-cta:hover { background: rgba(0, 242, 255, 0.25); transform: scale(1.05); box-shadow: var(--shadow-neon); }
-
-/* Swiper Pagination Neon */
-.banner-swiper .swiper-pagination { bottom: 12px !important; z-index: calc(var(--z-content) + 10); }
-.banner-swiper .swiper-pagination-bullet {
-  width: 8px; height: 8px; background: rgba(255, 255, 255, 0.3);
-  opacity: 1; border-radius: var(--radius-pill);
-}
-.banner-swiper .swiper-pagination-bullet-active {
-  width: 20px; background: var(--neon-primary);
-  border-radius: var(--radius-pill); box-shadow: 0 0 6px rgba(0, 242, 255, 0.5);
+/* Meta info (rating, tập, năm...) */
+.banner-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
 }
 
-/* Trending Row */
-.trending-row {
-  display: flex; gap: var(--gap-md); overflow-x: auto;
-  scrollbar-width: none; -ms-overflow-style: none; padding-bottom: var(--gap-sm);
-}
-.trending-row::-webkit-scrollbar { display: none; }
-.trending-item { flex-shrink: 0; width: 140px; }
-
-/* Suggestion Cards */
-.hero-suggestions { flex: 1; display: none; flex-direction: column; gap: var(--gap-sm); }
-@media (min-width: 1024px) { .hero-suggestions { display: flex; } }
-
-.hero-suggestions-header { display: flex; align-items: center; gap: var(--gap-sm); margin-bottom: 4px; }
-.hero-suggestions-header svg { width: 14px; height: 14px; color: var(--yellow-star); }
-.hero-suggestions-header span {
-  font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold);
-  color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px;
+.banner-meta span {
+  font-size: 13px;
+  color: #ccc;
+  background: rgba(255,255,255,0.1);
+  padding: 3px 10px;
+  border-radius: 20px;
 }
 
-.suggestion-card {
-  display: flex; align-items: center; gap: var(--gap-md);
-  padding: 10px 14px; background: var(--bg-glass); border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg); cursor: pointer; text-decoration: none;
-  min-height: 60px;
-  transition: background var(--transition-fast), border-color var(--transition-fast), opacity var(--transition-fast);
-  opacity: 0.8;
+.banner-meta .rating {
+  color: #FFD700;
+  background: rgba(255, 215, 0, 0.15);
 }
-.suggestion-card:hover { background: var(--bg-glass-hover); border-color: var(--border-neon); opacity: 1.0; box-shadow: var(--shadow-neon); }
-.suggestion-card-img { width: 44px; height: 60px; border-radius: var(--radius-sm); object-fit: cover; flex-shrink: 0; background: var(--bg-card); }
-.suggestion-card-info { flex: 1; min-width: 0; }
-.suggestion-card-title { color: var(--text-main); font-size: var(--font-size-base); font-weight: var(--font-weight-semibold); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.suggestion-card-meta { color: var(--text-dim); font-size: var(--font-size-sm); margin-top: 2px; }
 
-.suggestion-card-badge {
-  padding: 2px 8px; background: var(--bg-glass); border-radius: var(--radius-pill);
-  color: #aaa; font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); white-space: nowrap;
+/* Tên phim lớn */
+.banner-section .banner-title {
+  font-size: 42px;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.2;
+  margin: 0 0 12px 0;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+}
+
+/* Mô tả */
+.banner-section .banner-desc {
+  font-size: 14px;
+  color: #bbb;
+  line-height: 1.6;
+  margin-bottom: 16px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Thể loại */
+.banner-genres {
+  font-size: 13px;
+  color: #aaa;
+  margin-bottom: 24px;
+}
+
+/* NÚT XEM PHIM - DẠNG ĐỨNG ĐẸP */
+.banner-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-watch {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 32px;
+  background: transparent;
+  color: #00e5cc;
+  border: 2px solid #00e5cc;
+  border-radius: 50px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  letter-spacing: 0.5px;
+}
+
+.btn-watch:hover {
+  background: #00e5cc;
+  color: #000;
+  transform: scale(1.04);
+}
+
+/* ===== DOTS ===== */
+.banner-dots {
+  position: absolute;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 3;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.4);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.dot.active {
+  width: 24px;
+  border-radius: 4px;
+  background: #00e5cc;
+}
+
+/* ===== HÀNG PHIM HOT PHÍA DƯỚI BANNER ===== */
+.banner-hot-row {
+  background: rgba(255,255,255,0.03);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding: 12px 48px;
+  overflow: hidden;
+}
+
+.hot-list {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.hot-list::-webkit-scrollbar { display: none; }
+
+/* Mỗi item phim hot */
+.hot-item {
+  flex: 0 0 100px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.hot-item:hover { transform: scale(1.05); }
+
+.hot-item.active .hot-thumb {
+  border: 2px solid #00e5cc;
+}
+
+.hot-thumb {
+  position: relative;
+  width: 100px;
+  height: 60px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #1a1a2e;
+}
+
+.hot-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Badge rating nhỏ */
+.hot-badge-rating {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  background: rgba(0,0,0,0.7);
+  color: #FFD700;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 5px;
+  border-radius: 4px;
+}
+
+/* Badge tập - tròn đỏ */
+.hot-badge-ep {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 32px;
+  height: 32px;
+  background: #e53935;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.hot-badge-ep small {
+  font-size: 7px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Tên phim hot */
+.hot-title {
+  font-size: 11px;
+  color: #ccc;
+  margin-top: 6px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .banner-main { height: 320px; }
+  .banner-content { left: 20px; max-width: 90%; }
+  .banner-section .banner-title { font-size: 24px; }
+  .banner-hot-row { padding: 10px 16px; }
 }
 
 /* ============================================================
@@ -361,98 +498,237 @@ body { background: var(--bg-body); }
    ============================================================ */
 
 .anime-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 20px;
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important;
+  gap: 16px !important;
+  width: 100% !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+  overflow: visible !important;
 }
 
+/* Desktop lớn */
+@media (min-width: 1200px) {
+  .anime-grid {
+    grid-template-columns: repeat(6, 1fr) !important;
+    gap: 16px !important;
+  }
+}
+
+/* Desktop nhỏ */
+@media (min-width: 900px) and (max-width: 1199px) {
+  .anime-grid {
+    grid-template-columns: repeat(5, 1fr) !important;
+    gap: 14px !important;
+  }
+}
+
+/* Tablet */
+@media (min-width: 600px) and (max-width: 899px) {
+  .anime-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 12px !important;
+  }
+}
+
+/* Mobile */
+@media (max-width: 599px) {
+  .anime-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 10px !important;
+  }
+}
+
+/* ===== MODERN CARD DESIGN - v2026 ===== */
 .anime-card {
-  position: relative;
-  background-color: transparent !important;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: var(--radius-md);
-  padding: 0; overflow: visible;
-  transition: box-shadow var(--transition-fast), border-color var(--transition-fast), opacity var(--transition-fast);
-  opacity: 0.8;
+  position: relative !important;
+  width: 100% !important;
+  max-width: 200px !important;
+  background: transparent;
+  border: none;
+  padding: 0;
+  overflow: hidden !important;
+  cursor: pointer;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  flex-shrink: 0 !important;
 }
-.anime-card:hover { opacity: 1.0; box-shadow: var(--shadow-neon); border-color: var(--border-neon); }
+.anime-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+  z-index: 5;
+}
 
-.anime-card-link { display: block; text-decoration: none; color: inherit; }
+.anime-card-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
 
+/* Thumbnail - tỉ lệ 2:3 cố định, bo góc 10px */
 .anime-card-thumb {
-  position: relative; width: 100%; aspect-ratio: 2 / 3;
-  border-radius: var(--radius-md) var(--radius-md) 0 0;
-  overflow: hidden; background: var(--bg-card);
+  position: relative !important;
+  width: 100% !important;
+  padding-top: 150% !important; /* tỉ lệ 2:3 */
+  overflow: hidden !important;
+  border-radius: 10px;
+  background: #1a1a2e;
 }
-.anime-card-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s ease; }
-.anime-card:hover .anime-card-thumb img { transform: scale(1.05); }
 
-.anime-card-overlay {
-  position: absolute; inset: 0; background: rgba(10, 10, 10, 0.5);
-  z-index: 1; opacity: 0; transition: opacity var(--transition-fast);
-  display: flex; align-items: center; justify-content: center;
-}
-.anime-card:hover .anime-card-overlay { opacity: 1; }
-
-.play-icon-circle {
-  width: 56px; height: 56px; border-radius: 50%;
-  border: 2px solid rgba(0, 242, 255, 0.6);
-  background: rgba(0, 242, 255, 0.1);
-  display: flex; align-items: center; justify-content: center;
-  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-  transition: transform var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast);
-  transform: scale(0.8);
-}
-.anime-card:hover .play-icon-circle { transform: scale(1); }
-.play-icon-circle:hover { background: rgba(0, 242, 255, 0.25); box-shadow: 0 0 20px rgba(0, 242, 255, 0.4); }
-.play-icon-circle svg { width: 24px; height: 24px; color: var(--neon-primary); margin-left: 3px; }
-
-/* Badges */
-.badge-score {
-  position: absolute; top: 5px; left: 5px; z-index: 2;
-  display: flex; align-items: center; gap: 3px;
-  padding: 3px 6px; background: rgba(10, 10, 10, 0.75);
-  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-  border-radius: 4px; font-size: 11px; font-weight: var(--font-weight-bold);
-  color: #fff; line-height: 1; border: 1px solid rgba(255, 255, 255, 0.05);
-}
-.badge-score svg { width: 10px; height: 10px; color: var(--yellow-star); flex-shrink: 0; }
-
-.badge-episode {
-  position: absolute; top: 5px; right: 5px; z-index: 2;
-  width: 36px; height: 36px; border-radius: 50%;
-  background: rgba(198, 40, 40, 0.85); color: #fff;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  text-align: center; font-size: 11px; line-height: 1.1; font-weight: bold;
-  border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(2px);
-}
-.badge-episode.complete { background: rgba(46, 125, 50, 0.85); }
-
-.anime-card-info { padding: 10px 8px; background: transparent; text-align: center; }
-.anime-card-title { font-size: 14px; font-weight: 600; color: #fff; line-height: 1.4; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.anime-card-views { font-size: 12px; color: #aaa; }
-
-/* Popup thông tin phim */
-.anime-card-popup {
-  position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
-  z-index: var(--z-popup); background: var(--bg-glass-popup);
-  backdrop-filter: blur(var(--blur-default)); -webkit-backdrop-filter: blur(var(--blur-default));
-  border: 1px solid var(--border-color); border-radius: var(--radius-md);
-  padding: var(--gap-md); min-width: 200px;
-  box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
-  opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease;
+/* Skeleton placeholder (shimmer) - hiển thị trên ảnh khi chưa load */
+.anime-card-thumb .skeleton-placeholder {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: linear-gradient(90deg, #1a1a2e 25%, #2a2a4a 50%, #1a1a2e 75%);
+  background-size: 200% 100%;
+  animation: card-shimmer 1.5s ease-in-out infinite;
   pointer-events: none;
+  transition: opacity 0.3s ease;
 }
-@supports not (backdrop-filter: blur(15px)) { .anime-card-popup { background: rgba(10, 10, 10, 0.9); } }
-.anime-card:hover .anime-card-popup { opacity: 1; visibility: visible; }
 
-.anime-card-popup-title { font-size: var(--font-size-md); font-weight: var(--font-weight-bold); color: var(--text-main); margin-bottom: 4px; }
-.anime-card-popup-studio { font-size: var(--font-size-xs); color: var(--text-dim); margin-bottom: 2px; }
-.anime-card-popup-genre { display: flex; flex-wrap: wrap; gap: 4px; margin-top: var(--gap-xs); }
-.anime-card-popup-genre span {
-  font-size: 10px; padding: 2px 6px; background: var(--neon-primary-dim);
-  color: var(--neon-primary); border-radius: var(--radius-pill); border: 1px solid rgba(0, 242, 255, 0.15);
+/* Ẩn skeleton khi parent có class .loaded (ảnh đã load) */
+.anime-card-thumb.loaded .skeleton-placeholder {
+  opacity: 0;
 }
+
+@keyframes card-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.anime-card-thumb img {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center top !important;
+  display: block;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  z-index: 2;
+  opacity: 1;
+  max-width: none !important;
+  max-height: none !important;
+}
+.anime-card:hover .anime-card-thumb img {
+  transform: scale(1.05);
+}
+
+/* Hiển thị ảnh lỗi */
+.anime-card-thumb img.img-error {
+  opacity: 0.5;
+  filter: grayscale(1);
+}
+
+/* Badge điểm - góc trên bên trái (Rating) - ★ 8.6 */
+.badge-score {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 8px;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #FFD700;
+  line-height: 1;
+  border: none;
+}
+.badge-score .star-icon {
+  font-size: 11px;
+  color: #FFD700;
+  line-height: 1;
+  margin: 0;
+}
+
+/* Badge tập - góc trên bên phải (hình tròn) - KHÔNG dùng ::before */
+.badge-episode {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 3;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  border-radius: 50%;
+  background: #e53935;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  padding: 0;
+  overflow: hidden;
+}
+.badge-episode .episode-label {
+  font-size: 9px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 1px;
+}
+.badge-episode .episode-number {
+  font-size: 13px;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+}
+.badge-episode .episode-number.small {
+  font-size: 11px;
+}
+.badge-episode.complete {
+  background: #2e7d32;
+}
+.badge-episode.complete .episode-label {
+  font-size: 8px;
+  letter-spacing: 0.3px;
+}
+.badge-episode.complete .episode-number {
+  font-size: 10px;
+}
+
+/* Thông tin text bên dưới poster */
+.anime-card-info {
+  padding: 8px 4px 0;
+  background: transparent;
+  text-align: left;
+}
+.anime-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1.4;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.anime-card-views {
+  font-size: 12px;
+  color: #999999;
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+/* Ẩn các thành phần không dùng */
+.anime-card-overlay,
+.play-icon-circle,
+.anime-card-popup,
+.anime-card-popup-title,
+.anime-card-popup-studio,
+.anime-card-popup-genre,
 .anime-card-meta { display: none; }
 
 /* Xem thêm Button */
@@ -922,7 +1198,6 @@ body { background: var(--bg-body); }
   
   .banner-swiper { aspect-ratio: 16 / 9; max-height: 250px; }
   
-  .anime-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .anime-card-title { font-size: 13px; }
   .anime-card-views { font-size: 11px; }
   
@@ -1229,16 +1504,11 @@ img[loading="lazy"] {
    RESPONSIVE ADJUSTMENTS
    ============================================================ */
 @media (max-width: 480px) {
-  .anime-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  .anime-card-title { font-size: 13px; }
-  .anime-card-views { font-size: 11px; }
+  .anime-card-title { font-size: 12px; }
+  .anime-card-views { font-size: 10px; }
   .section-title { font-size: var(--font-size-lg); }
   .filter-tab { font-size: var(--font-size-sm); }
   .banner-swiper { aspect-ratio: 16 / 9; max-height: 250px; }
-}
-
-@media (min-width: 481px) and (max-width: 1023px) {
-  .anime-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; }
 }
 
 /* ============================================================
@@ -1276,14 +1546,61 @@ a, button, .filter-tab, .keyword-tag, .load-more-btn, .episode-item {
 /* ============================================================
    RESPONSIVE FIXES
    ============================================================ */
-@media (max-width: 768px) {
-  .header-logo img { width: 35px !important; height: 35px !important; object-fit: cover; border-radius: 50%; }
-  .header-inner { align-items: center; height: 60px; }
-  .hero-banner-wrap { width: 100%; overflow: hidden; box-sizing: border-box; padding: 0; }
-  .banner-swiper { width: 100%; overflow: hidden; box-sizing: border-box; }
-  .banner-slide-content { padding: 16px 14px 36px; }
-  .banner-slide-content .banner-desc { font-size: 13px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .banner-slide-content .banner-meta-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-start; }
-  .banner-slide-content .banner-badge, .banner-slide-content .banner-cta { font-size: 11px; padding: 5px 10px; }
-  .banner-slide-content .banner-badge:nth-child(n+5) { display: none; }
+
+/* ============================================================
+   FIX KHẨN CẤP: Reset layout + chống tràn
+   ============================================================ */
+
+/* Reset cho card phim - ngăn CSS cũ xung đột */
+.anime-card *,
+.movie-card *,
+.card * {
+  box-sizing: border-box !important;
+}
+
+/* Ngăn ảnh tự phóng to */
+img {
+  max-width: 100% !important;
+}
+
+/* Ngăn overflow toàn trang */
+body {
+  overflow-x: hidden !important;
+}
+
+/* Banner/Slider - z-index cao hơn card */
+.banner,
+.hero,
+.hero-banner-wrap,
+.banner-swiper,
+.swiper,
+[class*="banner"],
+[class*="hero"],
+[class*="slider"] {
+  position: relative !important;
+  z-index: 1 !important;
+  width: 100% !important;
+  overflow: hidden !important;
+  max-height: 500px !important;
+}
+
+.banner img,
+.hero img,
+.slider img,
+[class*="banner"] img {
+  width: 100% !important;
+  height: 100% !important;
+  max-height: 500px !important;
+  object-fit: cover !important;
+  object-position: center !important;
+}
+
+/* Phần nội dung bên dưới banner */
+.main-content,
+.content-wrapper,
+[class*="main-content"],
+[class*="content-wrap"] {
+  position: relative !important;
+  z-index: 2 !important;
+  margin-top: 0 !important;
 }
