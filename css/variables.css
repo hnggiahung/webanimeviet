@@ -1,0 +1,157 @@
+/* ============================================================
+   ANIME VIETSUB VN - HỆ THỐNG BIẾN TOÀN CỤC (CSS VARIABLES)
+   ============================================================ */
+
+:root {
+  /* ---------- Màu sắc chủ đạo ---------- */
+  --bg-body: #101115;
+  --bg-panel: #1a1c22;
+  --bg-card: #181a20;
+  --bg-hover: #22242b;
+  --bg-input: #12141a;
+  --bg-red-primary: #c62828;
+  --bg-red-hover: #e53935;
+  --bg-green: #2e7d32;
+  --bg-green-hover: #388e3c;
+  --bg-yellow: #f9a825;
+  --bg-overlay: rgba(0, 0, 0, 0.55);
+  --bg-glass: rgba(255, 255, 255, 0.02);
+  --bg-glass-hover: rgba(255, 255, 255, 0.05);
+
+  /* ---------- Màu chữ ---------- */
+  --text-main: #ffffff;
+  --text-sub: #9ca3af;
+  --text-dim: #6b7280;
+  --text-link: #60a5fa;
+  --text-active: #ffffff;
+
+  /* ---------- Màu đặc biệt ---------- */
+  --red-primary: #c62828;
+  --red-primary-light: #ef5350;
+  --yellow-star: #fbbf24;
+  --green-complete: #4caf50;
+
+  /* ---------- Đường viền ---------- */
+  --border-color: rgba(255, 255, 255, 0.06);
+  --border-color-hover: rgba(255, 255, 255, 0.12);
+  --border-red: rgba(198, 40, 40, 0.3);
+
+  /* ---------- Typography ---------- */
+  --font-stack: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', monospace;
+  --font-size-xs: 10px;
+  --font-size-sm: 11px;
+  --font-size-base: 13px;
+  --font-size-md: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.6;
+
+  /* ---------- Border Radius ---------- */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 14px;
+  --radius-pill: 9999px;
+
+  /* ---------- Khoảng cách ---------- */
+  --gap-xs: 4px;
+  --gap-sm: 8px;
+  --gap-md: 12px;
+  --gap-lg: 15px;
+  --gap-xl: 20px;
+  --gap-2xl: 24px;
+
+  /* ---------- Kích thước ---------- */
+  --max-width-container: 1360px;
+  --header-height: 56px;
+  --sidebar-width: 28%;
+  --main-width: 72%;
+  --touch-target: 44px;
+  --card-min-width: 150px;
+
+  /* ---------- Shadows ---------- */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-overlay: -4px 0 20px rgba(0, 0, 0, 0.5);
+
+  /* ---------- Transitions ---------- */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.2s ease;
+  --transition-slow: 0.3s ease;
+}
+
+/* ===== Reset toàn cục ===== */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-family: var(--font-stack);
+  font-size: 16px;
+  line-height: var(--line-height-normal);
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  touch-action: manipulation;
+}
+
+body {
+  font-family: inherit;
+  background: var(--bg-body);
+  color: var(--text-main);
+  overflow-x: hidden;
+  min-height: 100vh;
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+  border: none;
+  background: none;
+  color: inherit;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+/* ===== Scrollbar ===== */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #333344;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #444455;
+}
