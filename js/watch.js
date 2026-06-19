@@ -1,13 +1,9 @@
 // ========== WATCH.JS - Trang Xem Phim (API Ophim) ==========
-// API chính: https://ophim1.com/phim/{slug}
-// Sửa lỗi: Ưu tiên HLS (m3u8), thêm chọn server, xử lý lỗi toàn diện
+// CHỈ FETCH DATA + VIDEO PLAYER - KHÔNG thao tác .style. - Dùng classList
 
 let IMG_BASE = 'https://img.ophim.live/uploads/movies/';
 const PLACEHOLDER = 'https://via.placeholder.com/200x300';
 
-/**
- * Build URL ảnh an toàn - xử lý relative/absolute, mixed content, fallback
- */
 function buildImageUrl(thumb_url, poster_url) {
     const img = thumb_url || poster_url || '';
     if (!img || img.trim() === '') return PLACEHOLDER;
@@ -139,7 +135,7 @@ function showLoadingState() {
         desc: document.getElementById('movie-description'),
         epContainer: document.getElementById('episode-container')
     };
-    if (els.title && els.title.textContent === 'Đang tải...') return; // already loading
+    if (els.title && els.title.textContent === 'Đang tải...') return;
     if (els.epContainer) els.epContainer.innerHTML = '<div class="col-span-full text-center text-gray-500 text-sm py-8">Đang tải dữ liệu...</div>';
 }
 
@@ -283,7 +279,7 @@ function renderWatchPage() {
     const posterImg = $('movie-poster-img');
     if (posterImg) {
         posterImg.src = buildImageUrl(currentMovie.thumb_url, null);
-        posterImg.onerror = function() { this.onerror = null; this.src = PLACEHOLDER; this.style.opacity = '0.5'; };
+        posterImg.onerror = function() { this.onerror = null; this.src = PLACEHOLDER; this.classList.add('img-error'); };
     }
 
     document.title = `${currentMovie.name} - Xem Phim`;
@@ -295,37 +291,15 @@ function renderWatchPage() {
 function renderServerTabs() {
     const container = document.getElementById('server-tabs');
     if (!container) return;
-    if (allEpisodeServers.length <= 1) { container.innerHTML = ''; container.style.display = 'none'; return; }
-    container.style.display = 'flex';
+    if (allEpisodeServers.length <= 1) { container.innerHTML = ''; container.classList.add('is-hidden'); return; }
+    container.classList.remove('is-hidden');
     container.innerHTML = allEpisodeServers.map((s, i) =>
         `<button class="server-tab px-3 py-1.5 text-xs font-medium rounded-lg transition-all duration-200 ${i === currentServerIndex ? 'bg-orange-500/20 border border-orange-500 text-orange-400' : 'bg-white/5 border border-white/10 text-gray-400 hover:bg-white/10 hover:text-white'}" data-server-index="${i}">${s.server_name || 'Server ' + (i+1)}</button>`
     ).join('');
-    container.querySelectorAll('.server-tab').forEach(b => b.addEventListener('click', () => switchServer(parseInt(b.dataset.serverIndex))));
+    // Event delegation on parent instead of per-button listeners
 }
 
-function switchServer(idx) {
-    if (idx === currentServerIndex || !allEpisodeServers[idx]) return;
-    currentServerIndex = idx;
-    currentEpisodes = (allEpisodeServers[currentServerIndex].server_data || []).map(ep => {
-        if (ep.link_embed) ep.link_embed = ensureHttps(ep.link_embed);
-        if (ep.link_m3u8) ep.link_m3u8 = ensureHttps(ep.link_m3u8);
-        return ep;
-    });
-    currentEpisodeIndex = 0;
-    renderServerTabs();
-    renderEpisodeGrid();
-    const vu = getCurrentVideoUrl();
-    const pl = document.getElementById('video-player');
-    if (pl && vu) {
-        if (isM3u8Url(vu)) { pl.srcdoc = generateHlsPlayerHtml(vu); pl.src = ''; }
-        else { pl.src = vu; pl.srcdoc = ''; }
-    }
-    const ec = document.getElementById('movie-episode-count');
-    if (ec) ec.textContent = currentEpisodes.length ? 'Tập 1' : 'Đang cập nhật';
-    showToast(`Đã chuyển sang ${allEpisodeServers[currentServerIndex].server_name}`, 'info');
-}
-
-// ====== Episode grid ======
+// ====== Episode grid with EVENT DELEGATION ======
 function renderEpisodeGrid() {
     const container = document.getElementById('episode-container');
     if (!container) return;
@@ -345,9 +319,18 @@ function renderEpisodeGrid() {
         d.className = `episode-item rounded-lg cursor-pointer transition-all duration-200 text-center py-2 px-1 text-xs font-medium border ${a ? 'bg-orange-500/20 border-orange-500 text-orange-400 shadow-sm shadow-orange-500/20' : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:text-white hover:border-orange-500/50'}`;
         d.dataset.index = i;
         d.textContent = en;
-        d.addEventListener('click', () => switchEpisode(i));
         container.appendChild(d);
     });
+    // Event delegation: only 1 listener on container
+    if (!container._hasDelegate) {
+        container.addEventListener('click', function(e) {
+            const item = e.target.closest('.episode-item');
+            if (!item) return;
+            const idx = parseInt(item.dataset.index);
+            if (!isNaN(idx)) switchEpisode(idx);
+        });
+        container._hasDelegate = true;
+    }
 }
 
 function switchEpisode(index) {
@@ -359,6 +342,7 @@ function switchEpisode(index) {
         if (isM3u8Url(vu)) { pl.srcdoc = generateHlsPlayerHtml(vu); pl.src = ''; }
         else { pl.src = vu; pl.srcdoc = ''; }
     }
+    // Update all episode items via classList
     document.querySelectorAll('.episode-item').forEach(el => {
         const i = parseInt(el.dataset.index);
         el.className = `episode-item rounded-lg cursor-pointer transition-all duration-200 text-center py-2 px-1 text-xs font-medium border ${i === currentEpisodeIndex ? 'bg-orange-500/20 border-orange-500 text-orange-400 shadow-sm shadow-orange-500/20' : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:text-white hover:border-orange-500/50'}`;
@@ -422,7 +406,7 @@ function continueWatching() {
     if (bk.episodeIndex !== undefined) switchEpisode(bk.episodeIndex);
 }
 
-// ====== Phim liên quan (render vào sidebar #related-sidebar) ======
+// ====== Phim liên quan ======
 async function fetchRelatedMovies() {
     const container = document.getElementById('related-sidebar');
     if (!container) return;
@@ -441,7 +425,7 @@ async function fetchRelatedMovies() {
             const a = document.createElement('a');
             a.href = 'watch.html?id=' + m.slug;
             a.className = 'flex items-center gap-2.5 p-2 rounded-lg hover:bg-white/5 transition-all duration-200 group';
-            a.innerHTML = `<div class="w-14 h-20 rounded-md overflow-hidden bg-gray-700 shrink-0"><img src="${buildImageUrl(m.thumb_url, m.thumb)}" alt="${m.name || m.title}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" loading="lazy" onerror="this.onerror=null;this.src='https://via.placeholder.com/56x80';this.style.opacity='0.5';"></div><div class="flex-1 min-w-0"><h4 class="text-white text-xs font-semibold truncate group-hover:text-orange-400 transition-colors">${m.name || m.title}</h4><p class="text-gray-500 text-[10px] mt-1">${view} lượt xem</p><p class="text-gray-600 text-[10px]">${m.year || ''}</p></div>`;
+            a.innerHTML = `<div class="w-14 h-20 rounded-md overflow-hidden bg-gray-700 shrink-0"><img src="${buildImageUrl(m.thumb_url, m.thumb)}" alt="${m.name || m.title}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" loading="lazy" onerror="this.onerror=null;this.src='https://via.placeholder.com/56x80';this.classList.add('img-error');"></div><div class="flex-1 min-w-0"><h4 class="text-white text-xs font-semibold truncate group-hover:text-orange-400 transition-colors">${m.name || m.title}</h4><p class="text-gray-500 text-[10px] mt-1">${view} lượt xem</p><p class="text-gray-600 text-[10px]">${m.year || ''}</p></div>`;
             container.appendChild(a);
         });
     } catch(e) {
@@ -482,7 +466,7 @@ function renderSidebarTopMovies() {
     if (!top.length) { container.innerHTML = '<div class="text-center text-gray-500 text-xs py-4">Chưa có dữ liệu</div>'; return; }
     container.innerHTML = top.map((m, i) => {
         const view = (m.view || m.views || 0) >= 1000 ? Math.floor((m.view || m.views || 0) / 1000) + 'K' : (m.view || m.views || 0);
-        return `<a href="watch.html?id=${m.slug}" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition-all duration-200 group"><span class="text-xs font-bold w-5 text-center ${i < 3 ? 'text-orange-400' : 'text-gray-500'}">${i+1}</span><div class="w-10 h-14 rounded-md overflow-hidden bg-gray-700 shrink-0"><img src="${buildImageUrl(m.thumb_url, m.thumb)}" alt="${m.name || m.title}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" loading="lazy" onerror="this.onerror=null;this.src='https://via.placeholder.com/40x60';this.style.opacity='0.5';"></div><div class="flex-1 min-w-0"><h4 class="text-white text-xs font-semibold truncate group-hover:text-orange-400 transition-colors">${m.name || m.title}</h4><p class="text-gray-500 text-[10px] mt-0.5">${view} lượt xem</p></div></a>`;
+        return `<a href="watch.html?id=${m.slug}" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition-all duration-200 group"><span class="text-xs font-bold w-5 text-center ${i < 3 ? 'text-orange-400' : 'text-gray-500'}">${i+1}</span><div class="w-10 h-14 rounded-md overflow-hidden bg-gray-700 shrink-0"><img src="${buildImageUrl(m.thumb_url, m.thumb)}" alt="${m.name || m.title}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" loading="lazy" onerror="this.onerror=null;this.src='https://via.placeholder.com/40x60';this.classList.add('img-error');"></div><div class="flex-1 min-w-0"><h4 class="text-white text-xs font-semibold truncate group-hover:text-orange-400 transition-colors">${m.name || m.title}</h4><p class="text-gray-500 text-[10px] mt-0.5">${view} lượt xem</p></div></a>`;
     }).join('');
 }
 
@@ -514,23 +498,16 @@ function submitComment() {
     renderComments();
 }
 
-// ====== Cinema Mode ======
+// ====== Cinema Mode (dùng classList thay vì .style) ======
 function toggleCinemaMode() {
     const vs = document.querySelector('.video-section');
     if (!vs) return;
     vs.classList.toggle('cinema-mode');
+    document.body.classList.toggle('cinema-mode-active');
     if (vs.classList.contains('cinema-mode')) {
-        document.querySelector('header').style.display = 'none';
-        document.querySelector('footer').style.display = 'none';
-        const m = document.querySelector('main');
-        if (m) { m.style.padding = '0'; m.style.maxWidth = '100%'; }
         if (vs.requestFullscreen) vs.requestFullscreen();
         else if (vs.webkitRequestFullscreen) vs.webkitRequestFullscreen();
     } else {
-        document.querySelector('header').style.display = '';
-        document.querySelector('footer').style.display = '';
-        const m = document.querySelector('main');
-        if (m) { m.style.padding = ''; m.style.maxWidth = ''; }
         if (document.exitFullscreen) document.exitFullscreen();
         else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
     }
@@ -552,7 +529,7 @@ function toggleLike() {
     showToast(liked ? 'Đã bỏ yêu thích' : 'Đã thêm vào yêu thích ❤', 'heart');
 }
 
-// ====== Toast ======
+// ====== Toast (dùng classList thay vì .style) ======
 function showToast(message, icon) {
     const ex = document.querySelector('.custom-toast');
     if (ex) ex.remove();
@@ -564,7 +541,7 @@ function showToast(message, icon) {
     else svg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ff6b00" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>';
     t.innerHTML = svg + '<span>' + message + '</span>';
     document.body.appendChild(t);
-    setTimeout(() => { t.style.transition = 'all 0.3s ease'; t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(10px)'; setTimeout(() => t.remove(), 300); }, 2500);
+    setTimeout(() => { t.classList.add('toast-hide'); setTimeout(() => t.remove(), 300); }, 2500);
 }
 
 // ====== Auto-save bookmark ======
@@ -572,7 +549,7 @@ function startAutoSaveBookmark() {
     setInterval(() => { if (currentMovie && currentEpisodes.length) saveBookmark(currentEpisodeIndex); }, 15000);
 }
 
-// ====== Initialize events ======
+// ====== Initialize events (Event Delegation cho server tabs) ======
 function initializeEventListeners() {
     const bid = id => document.getElementById(id);
     const click = (id, fn) => { const el = bid(id); if (el) el.addEventListener('click', fn); };
@@ -585,7 +562,41 @@ function initializeEventListeners() {
     click('comment-submit', submitComment);
     const ci = bid('comment-content');
     if (ci) ci.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submitComment(); } });
+    
+    // Event delegation for server tabs
+    const serverTabs = document.getElementById('server-tabs');
+    if (serverTabs) {
+        serverTabs.addEventListener('click', function(e) {
+            const tab = e.target.closest('.server-tab');
+            if (!tab) return;
+            const idx = parseInt(tab.dataset.serverIndex);
+            if (!isNaN(idx)) switchServer(idx);
+        });
+    }
+    
     startAutoSaveBookmark();
+}
+
+function switchServer(idx) {
+    if (idx === currentServerIndex || !allEpisodeServers[idx]) return;
+    currentServerIndex = idx;
+    currentEpisodes = (allEpisodeServers[currentServerIndex].server_data || []).map(ep => {
+        if (ep.link_embed) ep.link_embed = ensureHttps(ep.link_embed);
+        if (ep.link_m3u8) ep.link_m3u8 = ensureHttps(ep.link_m3u8);
+        return ep;
+    });
+    currentEpisodeIndex = 0;
+    renderServerTabs();
+    renderEpisodeGrid();
+    const vu = getCurrentVideoUrl();
+    const pl = document.getElementById('video-player');
+    if (pl && vu) {
+        if (isM3u8Url(vu)) { pl.srcdoc = generateHlsPlayerHtml(vu); pl.src = ''; }
+        else { pl.src = vu; pl.srcdoc = ''; }
+    }
+    const ec = document.getElementById('movie-episode-count');
+    if (ec) ec.textContent = currentEpisodes.length ? 'Tập 1' : 'Đang cập nhật';
+    showToast(`Đã chuyển sang ${allEpisodeServers[currentServerIndex].server_name}`, 'info');
 }
 
 // ====== Khởi chạy ======
