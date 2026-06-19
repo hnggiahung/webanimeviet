@@ -1,9 +1,9 @@
 /**
  * main.js - Trang chủ: Danh sách phim hoạt hình từ API Ophim
- * Static First: Tối ưu hóa loại bỏ hiệu ứng trễ, loading spinner
+ * CHỈ FETCH DATA - Render sử dụng CSS classes thuần (anime-card, badge-*, anime-grid)
  */
 
-const PLACEHOLDER = 'data:image/svg+xml,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 width%3D%22200%22 height%3D%22300%22 viewBox%3D%220 0 200 300%22%3E%3Crect width%3D%22200%22 height%3D%22300%22 fill%3D%22%2312121a%22%2F%3E%3Ctext x%3D%2250%25%22 y%3D%2250%25%22 dominant-baseline%3D%22middle%22 text-anchor%3D%22middle%22 font-family%3D%22sans-serif%22 font-size%3D%2214%22 fill%3D%22%23555566%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E';
+const PLACEHOLDER = 'data:image/svg+xml,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 width%3D%22200%22 height%3D%22300%22 viewBox%3D%220 0 200 300%22%3E%3Crect width%3D%22200%22 height%3D%22300%22 fill%3D%22%23181a20%22%2F%3E%3Ctext x%3D%2250%25%22 y%3D%2250%25%22 dominant-baseline%3D%22middle%22 text-anchor%3D%22middle%22 font-family%3D%22sans-serif%22 font-size%3D%2214%22 fill%3D%22%23555566%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E';
 const DEMO_BG = 'data:image/svg+xml,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 width%3D%22800%22 height%3D%22400%22 viewBox%3D%220 0 800 400%22%3E%3Crect width%3D%22800%22 height%3D%22400%22 fill%3D%22%2312121a%22/%3E%3Ccircle cx%3D%22400%22 cy%3D%22200%22 r%3D%22100%22 fill%3D%22%232a2a3a%22 opacity%3D%220.5%22/%3E%3Ctext x%3D%2250%25%22 y%3D%2250%25%22 dominant-baseline%3D%22middle%22 text-anchor%3D%22middle%22 font-family%3D%22sans-serif%22 font-size%3D%2224%22 fill%3D%22%23666677%22%3E%F0%9F%8E%AC%3C%2Ftext%3E%3C%2Fsvg%3E';
 let IMG_BASE = 'https://img.ophim.live/uploads/movies/';
 const CACHE_KEY = 'anime_data';
@@ -117,6 +117,13 @@ function formatViews(views) {
     return num.toString();
 }
 
+function getCategoryString(movie) {
+    if (Array.isArray(movie.category)) {
+        return movie.category.map(c => (typeof c === 'object' ? c.name : c)).filter(Boolean).slice(0, 2).join(', ');
+    }
+    return 'Hoạt hình';
+}
+
 function createMovieCardHTML(movie) {
     try {
         const title = movie.name || movie.title || 'Không có tên';
@@ -134,30 +141,48 @@ function createMovieCardHTML(movie) {
             catStr = movie.category.map(c => (typeof c === 'object' ? c.name : c)).filter(Boolean).slice(0, 3).join(', ');
         }
 
+        // Check if episode is "HOÀN TẤT" or complete
+        const isComplete = displayEp.toLowerCase().includes('hoàn') || movie.episode_current === 'full' || movie.status === 'completed';
+        const episodeBadgeClass = isComplete ? 'badge-episode complete' : 'badge-episode';
+        const episodeText = isComplete ? 'HOÀN TẤT' : displayEp;
+
         return `
-            <div class="movie-card" data-slug="${slug}">
-                <a href="watch.html?id=${slug}" class="block">
-                    <div class="relative overflow-hidden bg-gray-700">
+            <div class="anime-card" data-slug="${slug}">
+                <a href="watch.html?id=${slug}" class="anime-card-link">
+                    <div class="anime-card-thumb">
                         <img src="${imgSrc}" 
                              alt="${title}" 
-                             class="movie-card-img"
                              width="200"
                              height="300"
                              loading="lazy"
-                             onerror="this.onerror=null; this.src='${PLACEHOLDER}'; this.style.opacity='0.5';"
+                             onerror="this.onerror=null; this.src='${PLACEHOLDER}';"
                              onload="this.classList.add('loaded')">
-                        <span class="episode-badge">${displayEp}</span>
-                        <div class="movie-card-overlay">
-                            <span class="play-button">
+                        
+                        <!-- BADGE: Điểm số (Góc Trái) -->
+                        <div class="badge-score">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                            </svg>
+                            ${rating}
+                        </div>
+                        
+                        <!-- BADGE: Số Tập / Hoàn Tất (Góc Phải) -->
+                        <div class="${episodeBadgeClass}">${episodeText}</div>
+                        
+                        <!-- Hover Overlay -->
+                        <div class="anime-card-overlay">
+                            <span class="play-btn-overlay">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                                     <polygon points="5 3 19 12 5 21"></polygon>
                                 </svg>
                                 Xem Phim
                             </span>
                         </div>
-                        <div class="movie-tooltip">
+
+                        <!-- TOOLTIP -->
+                        <div class="anime-tooltip">
                             <div class="tooltip-item">
-                                <svg class="star-icon" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                                 <span>Điểm đánh giá: <strong>${rating}</strong></span>
                             </div>
                             <div class="tooltip-item">
@@ -170,11 +195,14 @@ function createMovieCardHTML(movie) {
                             </div>
                         </div>
                     </div>
-                    <div class="movie-info">
-                        <h3 class="movie-title">${title}</h3>
-                        <div class="movie-meta">
-                            <span class="movie-views">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    <div class="anime-card-info">
+                        <h3 class="anime-card-title">${title}</h3>
+                        <div class="anime-card-meta">
+                            <span class="anime-card-views">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
                                 ${views}
                             </span>
                             <span>•</span>
@@ -187,10 +215,11 @@ function createMovieCardHTML(movie) {
             </div>`;
     } catch (e) {
         console.error('❌ Lỗi tạo thẻ phim HTML:', e.message, movie);
-        return `<div class="movie-card bg-gray-800 rounded-lg p-4 text-center text-gray-400 text-sm">
-                    <p>Không thể hiển thị phim</p>
-                    <p class="text-xs opacity-60">${movie?.name || movie?.title || 'Không xác định'}</p>
-                </div>`;
+        return `
+            <div class="anime-card" style="padding:20px;text-align:center;color:var(--text-sub);font-size:var(--font-size-base);">
+                <p>Không thể hiển thị phim</p>
+                <p style="font-size:var(--font-size-xs);opacity:0.6;">${movie?.name || movie?.title || 'Không xác định'}</p>
+            </div>`;
     }
 }
 
@@ -300,7 +329,7 @@ function renderTopMovies() {
         : [];
 
     if (sorted.length === 0) {
-        const fallbackHtml = `<div class="text-center text-gray-500 text-xs py-4">Chưa có dữ liệu</div>`;
+        const fallbackHtml = `<div style="text-align:center;color:var(--text-dim);font-size:var(--font-size-xs);padding:16px;">Chưa có dữ liệu</div>`;
         containers.forEach(c => c.innerHTML = fallbackHtml);
         return;
     }
@@ -392,13 +421,13 @@ window.searchMovies = function(query) {
 
     if (!filtered.length) {
         container.innerHTML = `
-            <div class="col-span-full flex flex-col items-center justify-center py-20 text-gray-400">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mb-4 opacity-50">
+            <div class="empty-state">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                     <circle cx="11" cy="11" r="8"></circle>
                     <path d="m21 21-4.35-4.35"></path>
                 </svg>
-                <p class="text-lg font-semibold mb-1">Không tìm thấy kết quả</p>
-                <p class="text-sm opacity-60">Không tìm thấy phim nào với từ khóa "${q}"</p>
+                <p>Không tìm thấy kết quả</p>
+                <p class="sub-text">Không tìm thấy phim nào với từ khóa "${q}"</p>
             </div>`;
         return;
     }
@@ -434,7 +463,7 @@ async function loadFallbackData(container) {
             modified: { time: m.date || new Date().toISOString().split('T')[0] }
         }));
 
-        const hasMovies = container && container.querySelectorAll('.movie-card').length > 0;
+        const hasMovies = container && container.querySelectorAll('.anime-card').length > 0;
         if (!hasMovies || !allMovies.length) {
             container.innerHTML = '';
             renderedMovieIds.clear();
@@ -527,7 +556,8 @@ function setupLazyLoader(container) {
     if (!sentinel) {
         sentinel = document.createElement('div');
         sentinel.id = 'lazy-load-sentinel';
-        sentinel.className = 'col-span-full h-1';
+        sentinel.style.gridColumn = '1 / -1';
+        sentinel.style.height = '4px';
         container.appendChild(sentinel);
     }
 
@@ -554,7 +584,7 @@ function loadMoreMovies(container) {
     if (!container) return;
     if (currentCategory !== 'all' || currentFiltered !== null) return;
 
-    const currentCount = container.querySelectorAll('.movie-card').length;
+    const currentCount = container.querySelectorAll('.anime-card').length;
     const totalAvailable = allMovies.length;
 
     if (currentCount >= totalAvailable) {
@@ -574,13 +604,19 @@ function showEndOfCatalog() {
 
     const endDiv = document.createElement('div');
     endDiv.id = 'infinite-scroll-end';
-    endDiv.className = 'col-span-full flex flex-col items-center justify-center py-10 text-gray-500';
+    endDiv.style.gridColumn = '1 / -1';
+    endDiv.style.display = 'flex';
+    endDiv.style.flexDirection = 'column';
+    endDiv.style.alignItems = 'center';
+    endDiv.style.justifyContent = 'center';
+    endDiv.style.padding = '40px 0';
+    endDiv.style.color = 'var(--text-dim)';
     endDiv.innerHTML = `
-        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mb-3 opacity-50">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:12px;opacity:0.5;">
             <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
         </svg>
-        <p class="text-sm font-medium">🎉 Bạn đã xem hết tất cả phim!</p>
-        <p class="text-xs opacity-60 mt-1">Có ${allMovies.length} bộ phim đã được tải.</p>`;
+        <p style="font-size:var(--font-size-md);font-weight:var(--font-weight-medium);">🎉 Bạn đã xem hết tất cả phim!</p>
+        <p style="font-size:var(--font-size-base);opacity:0.6;margin-top:4px;">Có ${allMovies.length} bộ phim đã được tải.</p>`;
     container.appendChild(endDiv);
 }
 
@@ -608,7 +644,7 @@ async function loadNextPage() {
 document.addEventListener('DOMContentLoaded', async () => {
     const container = document.getElementById('movies-grid');
     if (!container) return;
-    container.className = 'movies-grid';
+    container.className = 'anime-grid';
 
     // Xóa cache cũ
     try {
@@ -683,9 +719,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         randomBtn.addEventListener('click', (e) => { e.preventDefault(); handleRandomAnime(); });
     }
 
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', () => { const category = btn.dataset.category; filterByCategory(category); });
-    });
+    // Load more button
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', function() {
+            const grid = document.getElementById('movies-grid');
+            const currentCount = grid ? grid.querySelectorAll('.anime-card').length : 0;
+            const totalAvailable = allMovies.length;
+            if (currentCount < totalAvailable) {
+                const nextBatch = allMovies.slice(currentCount, currentCount + LAZY_STEP);
+                if (nextBatch.length > 0) renderMovies(nextBatch, grid);
+            } else if (!isLoadingMore && currentPage < totalPages) {
+                loadNextPage();
+            }
+        });
+    }
 });
 
 async function loadAllAnimeMovies(container) {
@@ -721,15 +769,15 @@ async function loadAllAnimeMovies(container) {
         
         if (!allAnimeMovies || allAnimeMovies.length === 0) {
             container.innerHTML = `
-                <div class="col-span-full flex flex-col items-center justify-center py-20 text-gray-400">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mb-4 opacity-50">
+                <div class="empty-state">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                         <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
                         <line x1="7" y1="2" x2="7" y2="22"></line>
                         <line x1="17" y1="2" x2="17" y2="22"></line>
                         <line x1="2" y1="12" x2="22" y2="12"></line>
                     </svg>
-                    <p class="text-lg font-semibold mb-1">Chưa có phim cho thể loại này</p>
-                    <p class="text-sm opacity-60">Hiện tại chưa có phim thuộc thể loại Anime.</p>
+                    <p>Chưa có phim cho thể loại này</p>
+                    <p class="sub-text">Hiện tại chưa có phim thuộc thể loại Anime.</p>
                 </div>`;
             return;
         }
@@ -741,22 +789,25 @@ async function loadAllAnimeMovies(container) {
         renderTopMovies();
         
         const countEl = document.createElement('div');
-        countEl.className = 'col-span-full text-center text-gray-500 text-xs py-2';
+        countEl.style.gridColumn = '1 / -1';
+        countEl.style.textAlign = 'center';
+        countEl.style.color = 'var(--text-dim)';
+        countEl.style.fontSize = 'var(--font-size-xs)';
+        countEl.style.padding = '8px 0';
         countEl.textContent = `🎬 Đã tải tổng cộng ${allAnimeMovies.length} phim anime`;
         container.appendChild(countEl);
     } catch (err) {
         console.error('⚠️ [ANIME] Lỗi:', err.message);
         container.innerHTML = `
-            <div class="col-span-full flex flex-col items-center justify-center py-20 text-gray-400">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mb-4 text-red-400">
+            <div class="empty-state">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--red-primary);">
                     <circle cx="12" cy="12" r="10"></circle>
                     <line x1="12" y1="8" x2="12" y2="12"></line>
                     <line x1="12" y1="16" x2="12.01" y2="16"></line>
                 </svg>
-                <p class="text-lg font-semibold mb-1 text-red-400">Lỗi kết nối</p>
-                <p class="text-sm opacity-60">Không thể tải dữ liệu phim anime.</p>
-                <button onclick="location.reload()" 
-                        class="mt-4 px-5 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm font-medium">
+                <p style="color:var(--red-primary);">Lỗi kết nối</p>
+                <p class="sub-text">Không thể tải dữ liệu phim anime.</p>
+                <button onclick="location.reload()" style="margin-top:16px;padding:8px 20px;background:var(--bg-hover);border:1px solid var(--border-color);border-radius:var(--radius-lg);color:var(--text-main);font-size:var(--font-size-base);cursor:pointer;">
                     Thử lại
                 </button>
             </div>`;
@@ -791,10 +842,10 @@ async function filterByCategory(category) {
     if (!container) return;
 
     const slug = CATEGORY_SLUG_MAP[category] || category;
-    container.className = 'movies-grid';
+    container.className = 'anime-grid';
 
-    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-    const activeBtn = document.querySelector(`.filter-btn[data-category="${category}"]`);
+    document.querySelectorAll('.filter-tab').forEach(btn => btn.classList.remove('active'));
+    const activeBtn = document.querySelector(`.filter-tab[data-category="${category}"]`);
     if (activeBtn) activeBtn.classList.add('active');
 
     container.innerHTML = '';
@@ -823,15 +874,15 @@ async function filterByCategory(category) {
 
     if (!apiMovies || apiMovies.length === 0) {
         container.innerHTML = `
-            <div class="col-span-full flex flex-col items-center justify-center py-20 text-gray-400">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mb-4 opacity-50">
+            <div class="empty-state">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                     <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
                     <line x1="7" y1="2" x2="7" y2="22"></line>
                     <line x1="17" y1="2" x2="17" y2="22"></line>
                     <line x1="2" y1="12" x2="22" y2="12"></line>
                 </svg>
-                <p class="text-lg font-semibold mb-1">Chưa có phim cho thể loại này</p>
-                <p class="text-sm opacity-60">Hiện tại chưa có phim thuộc thể loại "${slug}".</p>
+                <p>Chưa có phim cho thể loại này</p>
+                <p class="sub-text">Hiện tại chưa có phim thuộc thể loại "${slug}".</p>
             </div>`;
         return;
     }
@@ -871,7 +922,7 @@ function initSwiperBanner(movies) {
         const bgImage = imgSrc !== PLACEHOLDER ? `url('${imgSrc}')` : `url('${DEMO_BG}')`;
 
         slidesHTML += `
-            <div class="swiper-slide" style="background-image: ${bgImage}; background-size: cover; background-position: center; background-repeat: no-repeat;">
+            <div class="swiper-slide banner-slide" style="background-image: ${bgImage};">
                 <div class="banner-slide-overlay"></div>
                 <div class="banner-slide-content">
                     <div class="banner-title">${title}</div>
@@ -891,12 +942,6 @@ function initSwiperBanner(movies) {
                         <span class="banner-badge">${year}</span>
                         <span class="banner-badge">${quality}</span>
                         <span class="banner-badge">${lang}</span>
-                        <span class="banner-comment">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                            </svg>
-                            0
-                        </span>
                     </div>
                 </div>
             </div>`;
@@ -921,40 +966,32 @@ function initSwiperBanner(movies) {
 
 function showEmptyState(container) {
     container.innerHTML = `
-        <div class="col-span-full flex flex-col items-center justify-center py-20 text-gray-400">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mb-4 opacity-50">
+        <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                 <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
                 <line x1="7" y1="2" x2="7" y2="22"></line>
                 <line x1="17" y1="2" x2="17" y2="22"></line>
                 <line x1="2" y1="12" x2="22" y2="12"></line>
             </svg>
-            <p class="text-lg font-semibold mb-1">Không tìm thấy phim</p>
-            <p class="text-sm opacity-60">API hiện tại không có dữ liệu.</p>
+            <p>Không tìm thấy phim</p>
+            <p class="sub-text">API hiện tại không có dữ liệu.</p>
         </div>`;
 }
 
 function showErrorState(container) {
     container.innerHTML = `
-        <div class="col-span-full flex flex-col items-center justify-center py-20 text-gray-400">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mb-4 text-red-400">
+        <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--red-primary);">
                 <circle cx="12" cy="12" r="10"></circle>
                 <line x1="12" y1="8" x2="12" y2="12"></line>
                 <line x1="12" y1="16" x2="12.01" y2="16"></line>
             </svg>
-            <p class="text-lg font-semibold mb-1 text-red-400">Lỗi kết nối</p>
-            <p class="text-sm opacity-60">Không thể tải dữ liệu. Vui lòng thử lại.</p>
-            <button onclick="location.reload()" 
-                    class="mt-4 px-5 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm font-medium">
+            <p style="color:var(--red-primary);">Lỗi kết nối</p>
+            <p class="sub-text">Không thể tải dữ liệu. Vui lòng thử lại.</p>
+            <button onclick="location.reload()" style="margin-top:16px;padding:8px 20px;background:var(--bg-hover);border:1px solid var(--border-color);border-radius:var(--radius-lg);color:var(--text-main);font-size:var(--font-size-base);cursor:pointer;">
                 Thử lại
             </button>
         </div>`;
-}
-
-function getCategoryString(movie) {
-    if (Array.isArray(movie.category)) {
-        return movie.category.map(c => (typeof c === 'object' ? c.name : c)).filter(Boolean).slice(0, 2).join(', ');
-    }
-    return 'Hoạt hình';
 }
 
 window.showSuggestions = function(query) {
