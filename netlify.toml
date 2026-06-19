@@ -3,7 +3,7 @@
 # Lưu ý: File _redirects (cùng cấp) có độ ưu tiên cao hơn netlify.toml
 # và đã xử lý SPA fallback: /* /index.html 200
 
-[build]
+[build] 
   publish = "/"
   command = ""
 
