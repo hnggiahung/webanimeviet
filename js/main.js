@@ -1,6 +1,6 @@
 /**
  * main.js - Trang chủ: Danh sách phim hoạt hình từ API Ophim
- * CHỈ FETCH DATA - Render sử dụng CSS classes thuần (anime-card, badge-*, anime-grid)
+ * CHỈ FETCH DATA - KHÔNG thao tác .style. - Dùng classList + CSS classes
  */
 
 const PLACEHOLDER = 'data:image/svg+xml,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 width%3D%22200%22 height%3D%22300%22 viewBox%3D%220 0 200 300%22%3E%3Crect width%3D%22200%22 height%3D%22300%22 fill%3D%22%23181a20%22%2F%3E%3Ctext x%3D%2250%25%22 y%3D%2250%25%22 dominant-baseline%3D%22middle%22 text-anchor%3D%22middle%22 font-family%3D%22sans-serif%22 font-size%3D%2214%22 fill%3D%22%23555566%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E';
@@ -128,20 +128,13 @@ function createMovieCardHTML(movie) {
     try {
         const title = movie.name || movie.title || 'Không có tên';
         const slug = movie.slug || movie._id || '';
-        const year = movie.year || 'Đang cập nhật';
         const displayEp = safeEpisodeDisplay(movie.episode_current);
         const thumbUrl = movie.thumb_url || movie.thumb || '';
         const posterUrl = movie.poster_url || '';
         const imgSrc = buildImageUrl(thumbUrl, posterUrl);
         const views = formatViews(movie.view || movie.views || 0);
         const rating = movie.tmdb?.vote_average || movie.vote_average || 'N/A';
-        const quality = movie.quality || 'FHD';
-        let catStr = 'Hoạt hình';
-        if (Array.isArray(movie.category)) {
-            catStr = movie.category.map(c => (typeof c === 'object' ? c.name : c)).filter(Boolean).slice(0, 3).join(', ');
-        }
 
-        // Check if episode is "HOÀN TẤT" or complete
         const isComplete = displayEp.toLowerCase().includes('hoàn') || movie.episode_current === 'full' || movie.status === 'completed';
         const episodeBadgeClass = isComplete ? 'badge-episode complete' : 'badge-episode';
         const episodeText = isComplete ? 'HOÀN TẤT' : displayEp;
@@ -155,10 +148,9 @@ function createMovieCardHTML(movie) {
                              width="200"
                              height="300"
                              loading="lazy"
-                             onerror="this.onerror=null; this.src='${PLACEHOLDER}';"
+                             onerror="this.onerror=null; this.classList.add('img-error'); this.src='${PLACEHOLDER}';"
                              onload="this.classList.add('loaded')">
                         
-                        <!-- BADGE: Điểm số (Góc Trái) -->
                         <div class="badge-score">
                             <svg viewBox="0 0 24 24" fill="currentColor">
                                 <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
@@ -166,50 +158,11 @@ function createMovieCardHTML(movie) {
                             ${rating}
                         </div>
                         
-                        <!-- BADGE: Số Tập / Hoàn Tất (Góc Phải) -->
                         <div class="${episodeBadgeClass}">${episodeText}</div>
-                        
-                        <!-- Hover Overlay -->
-                        <div class="anime-card-overlay">
-                            <span class="play-btn-overlay">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                    <polygon points="5 3 19 12 5 21"></polygon>
-                                </svg>
-                                Xem Phim
-                            </span>
-                        </div>
-
-                        <!-- TOOLTIP -->
-                        <div class="anime-tooltip">
-                            <div class="tooltip-item">
-                                <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                                <span>Điểm đánh giá: <strong>${rating}</strong></span>
-                            </div>
-                            <div class="tooltip-item">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                                <span>Năm: <strong>${year}</strong></span>
-                            </div>
-                            <div class="tooltip-item">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-                                <span>Thể loại: <strong>${catStr}</strong></span>
-                            </div>
-                        </div>
                     </div>
                     <div class="anime-card-info">
                         <h3 class="anime-card-title">${title}</h3>
-                        <div class="anime-card-meta">
-                            <span class="anime-card-views">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                    <circle cx="12" cy="12" r="3"/>
-                                </svg>
-                                ${views}
-                            </span>
-                            <span>•</span>
-                            <span>${year}</span>
-                            <span>•</span>
-                            <span>${quality}</span>
-                        </div>
+                        <div class="anime-card-views">${views}</div>
                     </div>
                 </a>
             </div>`;
@@ -265,7 +218,7 @@ function renderSuggestions(movies) {
         html += `
             <a href="watch.html?id=${slug}" class="suggestion-card">
                 <img src="${imgSrc}" alt="${title}" class="suggestion-card-img"
-                     onerror="this.onerror=null; this.src='${PLACEHOLDER}'; this.style.opacity='0.5';">
+                     onerror="this.onerror=null; this.classList.add('img-error'); this.src='${PLACEHOLDER}';">
                 <div class="suggestion-card-info">
                     <div class="suggestion-card-title">${title}</div>
                     <div class="suggestion-card-meta">${year} • ${quality} • ${lang}</div>
@@ -329,7 +282,7 @@ function renderTopMovies() {
         : [];
 
     if (sorted.length === 0) {
-        const fallbackHtml = `<div style="text-align:center;color:var(--text-dim);font-size:var(--font-size-xs);padding:16px;">Chưa có dữ liệu</div>`;
+        const fallbackHtml = `<div class="text-center" style="color:var(--text-dim);font-size:var(--font-size-xs);padding:16px;">Chưa có dữ liệu</div>`;
         containers.forEach(c => c.innerHTML = fallbackHtml);
         return;
     }
@@ -487,7 +440,7 @@ async function loadFallbackData(container) {
 
 async function fetchMovies(container, page) {
     console.log('📡 Đang tải trang:', page);
-    const url = `https://ophim1.com/danh-sach/phim-moi-cap-nhat?page=${page}`;
+    const url = `https://ophim1.com/v1/api/danh-sach/phim-moi-cap-nhat?page=${page}`;
 
     try {
         const data = await fetchWithRetry(url);
@@ -556,8 +509,7 @@ function setupLazyLoader(container) {
     if (!sentinel) {
         sentinel = document.createElement('div');
         sentinel.id = 'lazy-load-sentinel';
-        sentinel.style.gridColumn = '1 / -1';
-        sentinel.style.height = '4px';
+        sentinel.className = 'sentinel';
         container.appendChild(sentinel);
     }
 
@@ -604,13 +556,7 @@ function showEndOfCatalog() {
 
     const endDiv = document.createElement('div');
     endDiv.id = 'infinite-scroll-end';
-    endDiv.style.gridColumn = '1 / -1';
-    endDiv.style.display = 'flex';
-    endDiv.style.flexDirection = 'column';
-    endDiv.style.alignItems = 'center';
-    endDiv.style.justifyContent = 'center';
-    endDiv.style.padding = '40px 0';
-    endDiv.style.color = 'var(--text-dim)';
+    endDiv.className = 'end-of-catalog';
     endDiv.innerHTML = `
         <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:12px;opacity:0.5;">
             <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
@@ -646,25 +592,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!container) return;
     container.className = 'anime-grid';
 
-    // Xóa cache cũ
-    try {
-        const oldCache = localStorage.getItem(CACHE_KEY);
-        if (oldCache) {
-            const parsed = JSON.parse(oldCache);
-            const filteredCache = filterAnimeMovies(parsed);
-            if (parsed.length > 0 && filteredCache.length === 0) {
-                localStorage.removeItem(CACHE_KEY);
-                localStorage.removeItem(CACHE_TIME_KEY);
-            }
-        }
-    } catch (e) {}
+    // NOTE: Logic xóa cache cũ đã được tạm thời vô hiệu hóa
+    // vì nó có thể xóa sạch cache khi API gặp lỗi (thay đổi endpoint, network error...)
+    // Đã fix: sửa endpoint API và không xóa cache khi API trả về rỗng
 
     // Parallel: Load từ cache + fetch API cùng lúc
     const [cached, apiResult] = await Promise.all([
         new Promise(resolve => { const c = getCachedMovies(); resolve(c || []); }),
         (async () => {
             try {
-                const data = await fetchWithRetry('https://ophim1.com/danh-sach/phim-moi-cap-nhat?page=1');
+                const data = await fetchWithRetry('https://ophim1.com/v1/api/danh-sach/phim-moi-cap-nhat?page=1');
                 const cdnDomain = data?.data?.APP_DOMAIN_CDN_IMAGE;
                 if (cdnDomain) {
                     IMG_BASE = cdnDomain.endsWith('/') ? cdnDomain + 'uploads/movies/' : cdnDomain + '/uploads/movies/';
@@ -789,11 +726,7 @@ async function loadAllAnimeMovies(container) {
         renderTopMovies();
         
         const countEl = document.createElement('div');
-        countEl.style.gridColumn = '1 / -1';
-        countEl.style.textAlign = 'center';
-        countEl.style.color = 'var(--text-dim)';
-        countEl.style.fontSize = 'var(--font-size-xs)';
-        countEl.style.padding = '8px 0';
+        countEl.className = 'count-info';
         countEl.textContent = `🎬 Đã tải tổng cộng ${allAnimeMovies.length} phim anime`;
         container.appendChild(countEl);
     } catch (err) {
@@ -1032,7 +965,7 @@ window.showSuggestions = function(query) {
             return `<li>
                 <a href="watch.html?id=${slug}" onclick="hideAllSuggestions()">
                     <img class="suggestion-thumb" src="${imgSrc}" alt="${title}" 
-                         onerror="this.onerror=null; this.src='${PLACEHOLDER}'; this.style.opacity='0.5';"
+                         onerror="this.onerror=null; this.classList.add('img-error'); this.src='${PLACEHOLDER}';"
                          onload="this.classList.add('loaded')">
                     <div class="suggestion-info">
                         <div class="suggestion-title">${title}</div>
