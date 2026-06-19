@@ -4,8 +4,8 @@
 # và đã xử lý SPA fallback: /* /index.html 200
 
 [build]
-  publish = "."
-  command = "echo 'Static site - no build required'"
+  publish = "/"
+  command = ""
 
 # ====== Cache Policy: Cache-Control headers ======
 [[headers]]
