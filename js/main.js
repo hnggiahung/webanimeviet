@@ -527,16 +527,11 @@ function renderSuggestions(movies) {
         const slug = movie.slug || movie._id || '';
         const year = movie.year || '';
         const ep = safeEpisodeDisplay(movie.episode_current);
-        const thumbUrl = movie.thumb_url || movie.thumb || '';
-        const posterUrl = movie.poster_url || '';
-        const imgSrc = buildImageUrl(thumbUrl, posterUrl);
         const quality = movie.quality || 'FHD';
         const lang = movie.lang || 'Vietsub';
 
         html += `
             <a href="watch.html?id=${slug}" class="suggestion-card">
-                <img src="${imgSrc}" alt="${title}" class="suggestion-card-img"
-                     onerror="this.onerror=null; this.classList.add('img-error'); this.src='${PLACEHOLDER}';">
                 <div class="suggestion-card-info">
                     <div class="suggestion-card-title">${title}</div>
                     <div class="suggestion-card-meta">${year} • ${quality} • ${lang}</div>
@@ -945,10 +940,10 @@ async function loadNextPage() {
 }
 
 function setDefaultAnimeTab() {
-    const animeTab = document.querySelector('.filter-tab[data-category="hoat-hinh"]');
-    if (animeTab) {
+    const allTab = document.querySelector('.filter-tab[data-category="all"]');
+    if (allTab) {
         document.querySelectorAll('.filter-tab').forEach(btn => btn.classList.remove('active'));
-        animeTab.classList.add('active');
+        allTab.classList.add('active');
     }
 }
 
@@ -1092,6 +1087,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
     }
+
+    // Init new features
+    initNewFeatures();
 });
 
 // ====== loadAllAnimeMovies - CẢI TIẾN: Dùng fetchAllAnimeFromAPI ======
@@ -1221,22 +1219,28 @@ function initBanner(movies) {
     const bannerEl = document.getElementById('banner-section');
     if (!bannerEl) return;
 
-    // Lọc 5 phim đầu có ảnh
-    bannerMovies = movies.slice(0, 5).filter(m => m && m.slug && m.thumb_url);
+    // Wait for data to be ready before accessing properties
+    if (!movies || !Array.isArray(movies) || movies.length === 0) return;
+
+    // Try to get 5 movies with thumbnails first; fallback to any movies if none have thumbnails
+    const moviesWithThumb = movies.slice(0, 5).filter(m => m && m.slug && m.thumb_url);
+    if (moviesWithThumb.length > 0) {
+        bannerMovies = moviesWithThumb;
+    } else {
+        // Fallback: use movies without thumbnail images, providing placeholder
+        bannerMovies = movies.slice(0, 5).filter(m => m && m.slug);
+    }
+
     if (!bannerMovies.length) return;
 
     bannerCurrentIndex = 0;
 
     // Render dots
     renderBannerDots();
-    // Render hot movies
-    renderHotMovies();
     // Hiển thị banner đầu tiên
     showBannerSlide(0);
     // Auto-slide
     startBannerAutoSlide();
-    // Click hot item
-    setupHotClick();
     // Click watch button
     setupWatchButton();
 }
@@ -1315,25 +1319,47 @@ function setupWatchButton() {
 }
 
 function showBannerSlide(index) {
+    if (!bannerMovies || !bannerMovies.length) return;
     const movie = bannerMovies[index];
     if (!movie) return;
 
     const img = document.getElementById('banner-img');
     const titleEl = document.getElementById('banner-title');
     const descEl = document.getElementById('banner-desc');
-    const genresEl = document.getElementById('banner-genres');
-    const metaEl = document.getElementById('banner-meta');
     const dots = document.querySelectorAll('.dot');
-    const hotItems = document.querySelectorAll('.hot-item');
+    const bannerContent = document.getElementById('banner-content');
+    const bannerBg = document.getElementById('banner-bg');
 
+    // --- Image handling with robust fallback ---
     const thumbUrl = movie.thumb_url || movie.thumb || '';
     const posterUrl = movie.poster_url || '';
-    const imgSrc = buildImageUrl(thumbUrl, posterUrl);
+    const imgSrc = thumbUrl || posterUrl ? buildImageUrl(thumbUrl, posterUrl) : '';
 
     // Cập nhật ảnh nền
     if (img) {
-        img.src = imgSrc !== PLACEHOLDER ? imgSrc : DEMO_BG;
+        if (imgSrc && imgSrc !== PLACEHOLDER) {
+            img.src = imgSrc;
+            img.style.display = '';
+            if (bannerBg) bannerBg.style.background = '';
+        } else {
+            // Fallback: use DEMO_BG as a background instead of a broken image
+            img.style.display = 'none';
+            if (bannerBg) {
+                bannerBg.style.background = `url(${DEMO_BG}) center/cover no-repeat`;
+                bannerBg.style.backgroundColor = '#12121a';
+            }
+        }
         img.alt = movie.name || movie.title || 'Anime';
+    } else if (bannerBg) {
+        // If no img element at all, set background fallback
+        bannerBg.style.background = `url(${DEMO_BG}) center/cover no-repeat`;
+        bannerBg.style.backgroundColor = '#12121a';
+    }
+
+    // Ensure content is always visible even when image is missing
+    if (bannerContent) {
+        bannerContent.style.opacity = '1';
+        bannerContent.style.visibility = 'visible';
     }
 
     // Cập nhật title
@@ -1346,42 +1372,13 @@ function showBannerSlide(index) {
         descEl.textContent = movie.content || movie.description || `Xem ${movie.name || movie.title} với chất lượng cao, vietsub.`;
     }
 
-    // Cập nhật genres
-    if (genresEl) {
-        let catStr = 'Hoạt hình';
-        if (Array.isArray(movie.category)) {
-            catStr = movie.category.map(c => (typeof c === 'object' ? c.name : c)).filter(Boolean).slice(0, 3).join(', ');
-        }
-        genresEl.textContent = `🎬 Thể Loại: ${catStr}`;
-    }
-
-    // Cập nhật meta (rating, tập, năm...)
-    if (metaEl) {
-        const rating = movie.tmdb?.vote_average || movie.vote_average || 'N/A';
-        const ep = safeEpisodeDisplay(movie.episode_current);
-        const year = movie.year || '2024';
-        const quality = movie.quality || 'HD';
-        const lang = movie.lang || 'Vietsub';
-        metaEl.innerHTML = `
-            <span class="rating">⭐ ${rating}</span>
-            <span class="episode">${ep}</span>
-            <span class="year">${year}</span>
-            <span class="quality">${quality}</span>
-            <span class="sub">${lang}</span>`;
-    }
-
     // Cập nhật dots
     dots.forEach((dot, i) => {
         dot.classList.toggle('active', i === index);
     });
-
-    // Cập nhật hot items highlight
-    hotItems.forEach((item, i) => {
-        item.classList.toggle('active', i === index);
-    });
 }
 
-// Auto-slide
+// Auto-slide mỗi 4 giây
 function startBannerAutoSlide() {
     if (bannerInterval) clearInterval(bannerInterval);
     bannerInterval = setInterval(() => {
@@ -1392,7 +1389,7 @@ function startBannerAutoSlide() {
         document.querySelectorAll('.hot-item').forEach((el, i) => {
             el.classList.toggle('active', i === next);
         });
-    }, 5000);
+    }, 4000);
 }
 
 function resetBannerAutoSlide() {
@@ -1523,3 +1520,512 @@ window.hideAllSuggestions = function() {
     if (desktopDropdown) desktopDropdown.classList.remove('active');
     if (mobileDropdown) mobileDropdown.classList.remove('active');
 };
+
+// ============================================================
+// TOP ANIME ROW (Trending - above banner)
+// ============================================================
+const TOP_ANIME = [
+  { id:1, title:"Dr. Stone 4th Season", slug:"dr-stone-4th-season", ep:"36", rating:"9.7", views:10278522, done:false, img:"/img/drstone.jpg" },
+  { id:2, title:"Re:Zero kara Hajimeru Isekai Seikatsu 4th", slug:"rezero-4th", ep:"11", rating:"9.6", views:1349931, done:false, img:"/img/rezero4.jpg" },
+  { id:3, title:"Chào Mừng Đến Với Lớp Học Đề Cao Thực Lực 4", slug:"classroom-4th", ep:"15", rating:"9", views:542371, done:false, img:"/img/classroom4.jpg" },
+  { id:4, title:"Class de 2-banme ni Kawaii Onnanoko", slug:"class-2banme", ep:"11", rating:"9.5", views:1473472, done:false, img:"/img/class2banme.jpg" },
+  { id:5, title:"Mai Mối Cho Độc Sư", slug:"mai-moi-cho-doc-su", ep:"11", rating:"9.1", views:820300, done:false, img:"/img/maimoi.jpg" },
+  { id:6, title:"Cuộc Sống Nông Dân Ở Thế Giới Khác 2", slug:"nong-dan-the-gioi-khac-2", ep:"11", rating:"9.4", views:650000, done:false, img:"/img/nongdan2.jpg" },
+  { id:7, title:"Haibara-kun no Tsuyokute Seishun New Game", slug:"haibara-kun", ep:"FULL", rating:"8.7", views:538765, done:true, img:"/img/haibara.jpg" },
+  { id:8, title:"Awajima Hyakkei", slug:"awajima-hyakkei", ep:"11", rating:"9.1", views:220802, done:false, img:"/img/awajima.jpg" },
+  { id:9, title:"Bức Tường Băng", slug:"buc-tuong-bang", ep:"12", rating:"8.6", views:493640, done:false, img:"/img/buctuongbang.jpg" },
+  { id:10, title:"Cánh Hoa Luân Hồi", slug:"canh-hoa-luan-hoi", ep:"12", rating:"8.2", views:180000, done:false, img:"/img/canhhoaluanhoi.jpg" },
+];
+
+function renderTopAnimeRow() {
+  const container = document.getElementById('top-anime-scroll');
+  if (!container) return;
+
+  // Chỉ lấy 10 item
+  const limited = TOP_ANIME.slice(0, 10);
+
+  container.innerHTML = limited.map(anime => {
+    const epBadgeClass = anime.done ? 'top-anime-ep-badge done' : 'top-anime-ep-badge';
+    const epText = anime.done ? 'HOÀN TẤT' : 'Tập ' + anime.ep;
+    // Dùng data-src để lazy load bằng Intersection Observer
+    return `
+      <div class="top-anime-card" 
+           data-slug="${anime.slug}"
+           data-title="${anime.title}"
+           data-rating="${anime.rating}"
+           data-ep="${anime.ep}"
+           data-done="${anime.done}"
+           data-views="${anime.views}">
+        <div class="top-anime-thumb">
+          <div class="top-anime-thumb-placeholder" style="width:100%;height:100%;background:#1a1a1a;position:absolute;inset:0;z-index:1;"></div>
+          <img src="data:image/svg+xml,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 width%3D%22130%22 height%3D%22160%22 viewBox%3D%220 0 130 160%22%3E%3Crect width%3D%22130%22 height%3D%22160%22 fill%3D%22%231a1a2e%22/%3E%3C/svg%3E" 
+               data-src="${anime.img}" 
+               alt="${anime.title}" 
+               loading="lazy"
+               class="lazy-trending"
+               onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 width%3D%22130%22 height%3D%22160%22 viewBox%3D%220 0 130 160%22%3E%3Crect width%3D%22130%22 height%3D%22160%22 fill%3D%22%231a1a2e%22/%3E%3Ctext x%3D%2250%25%22 y%3D%2250%25%22 dominant-baseline%3D%22middle%22 text-anchor%3D%22middle%22 font-family%3D%22sans-serif%22 font-size%3D%2212%22 fill%3D%22%23555%22%3E%F0%9F%8E%AC%3C/text%3E%3C/svg%3E';">
+          <div class="top-anime-overlay">
+            <div class="top-anime-play-btn">
+              <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"></polygon></svg>
+            </div>
+          </div>
+          <div class="top-anime-rating">⭐ ${anime.rating}</div>
+          <div class="${epBadgeClass}">${epText}</div>
+        </div>
+        <div class="top-anime-title">${anime.title}</div>
+      </div>`;
+  }).join('');
+
+  // Add click handlers
+  container.querySelectorAll('.top-anime-card').forEach(card => {
+    card.addEventListener('click', function() {
+      const slug = this.dataset.slug;
+      if (slug) window.location.href = 'watch.html?id=' + slug;
+    });
+  });
+
+  // Khởi tạo Intersection Observer cho lazy load ảnh trending
+  setupTrendingLazyLoad(container);
+}
+
+function setupTrendingLazyLoad(container) {
+  if (!container) return;
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const img = entry.target;
+        if (img.dataset.src) {
+          img.src = img.dataset.src;
+          img.removeAttribute('data-src');
+        }
+        observer.unobserve(img);
+      }
+    });
+  }, { rootMargin: '200px' });
+
+  container.querySelectorAll('img.lazy-trending[data-src]').forEach(img => {
+    observer.observe(img);
+  });
+}
+
+// ============================================================
+// HOVER INFO CARD
+// ============================================================
+const HOVER_INFO_DATA = {
+  'dr-stone-4th-season': {
+    title: 'Dr. Stone 4th Season',
+    rating: '9.7', year: '2025', quality: 'HD',
+    studio: 'TMS Entertainment',
+    genres: ['Shounen', 'Sci-Fi', 'Comedy'],
+    episodes: '36/37',
+    season: 'Mùa Xuân 2025',
+    desc: 'Senku và nhóm bạn tiếp tục hành trình khôi phục nền văn minh nhân loại sau khi toàn bộ loài người bị hóa đá. Mùa 4 hứa hẹn những khám phá khoa học mới đầy thú vị.'
+  },
+  'rezero-4th': {
+    title: 'Re:Zero kara Hajimeru Isekai Seikatsu 4th',
+    rating: '9.6', year: '2025', quality: 'HD',
+    studio: 'White Fox',
+    genres: ['Isekai', 'Drama', 'Psychological'],
+    episodes: '11/12',
+    season: 'Mùa Xuân 2025',
+    desc: 'Subaru tiếp tục cuộc chiến sinh tồn tại thế giới khác với sức mạnh "Return by Death". Mùa 4 mở ra những bí ẩn mới về thế giới và số phận.'
+  },
+  'classroom-4th': {
+    title: 'Chào Mừng Đến Với Lớp Học Đề Cao Thực Lực 4',
+    rating: '9.0', year: '2025', quality: 'HD',
+    studio: 'Lerche',
+    genres: ['School', 'Psychological', 'Drama'],
+    episodes: '15/16',
+    season: 'Mùa Xuân 2025',
+    desc: 'Ayanokouji Kiyotaka tiếp tục cuộc chiến tâm lý tại trường Cao Trung Đề Cao Thực Lực. Những âm mưu và chiến thuật ngày càng phức tạp.'
+  },
+  'class-2banme': {
+    title: 'Class de 2-banme ni Kawaii Onnanoko',
+    rating: '9.5', year: '2025', quality: 'HD',
+    studio: 'feel.',
+    genres: ['Romance', 'Comedy', 'School'],
+    episodes: '11/12',
+    season: 'Mùa Xuân 2025',
+    desc: 'Câu chuyện tình cảm nhẹ nhàng về cô gái xinh thứ hai trong lớp. Một rom-com đáng yêu với những tình huống dễ thương.'
+  },
+  'mai-moi-cho-doc-su': {
+    title: 'Mai Mối Cho Độc Sư',
+    rating: '9.1', year: '2025', quality: 'HD',
+    studio: 'A-1 Pictures',
+    genres: ['Romance', 'Fantasy', 'Comedy'],
+    episodes: '11/12',
+    season: 'Mùa Xuân 2025',
+    desc: 'Một câu chuyện mai mối hài hước giữa các vị thần và con người. Liệu tình yêu có thể vượt qua mọi rào cản?'
+  },
+  'nong-dan-the-gioi-khac-2': {
+    title: 'Cuộc Sống Nông Dân Ở Thế Giới Khác 2',
+    rating: '9.4', year: '2025', quality: 'HD',
+    studio: 'Zero-G',
+    genres: ['Isekai', 'Slice of Life', 'Fantasy'],
+    episodes: '11/12',
+    season: 'Mùa Xuân 2025',
+    desc: 'Cuộc sống nông dân nhàn nhã tại thế giới khác tiếp tục với nhiều câu chuyện thú vị và những vụ mùa bội thu.'
+  },
+  'haibara-kun': {
+    title: 'Haibara-kun no Tsuyokute Seishun New Game',
+    rating: '8.7', year: '2025', quality: 'HD',
+    studio: 'Silver Link',
+    genres: ['Sports', 'School', 'Comedy'],
+    episodes: 'FULL',
+    season: 'Mùa Xuân 2025',
+    desc: 'Haibara-kun tham gia câu lạc bộ thể thao mới và khám phá những khả năng tiềm ẩn của bản thân.'
+  },
+  'awajima-hyakkei': {
+    title: 'Awajima Hyakkei',
+    rating: '9.1', year: '2025', quality: 'HD',
+    studio: 'P.A. Works',
+    genres: ['Slice of Life', 'Drama'],
+    episodes: '11/12',
+    season: 'Mùa Xuân 2025',
+    desc: 'Bộ phim kể về cuộc sống thường ngày tại hòn đảo Awajima xinh đẹp, nơi những câu chuyện ấm áp diễn ra.'
+  },
+  'buc-tuong-bang': {
+    title: 'Bức Tường Băng',
+    rating: '8.6', year: '2025', quality: 'HD',
+    studio: 'MAPPA',
+    genres: ['Action', 'Mystery', 'Drama'],
+    episodes: '12/13',
+    season: 'Mùa Xuân 2025',
+    desc: 'Một bức tường băng bí ẩn xuất hiện, đe dọa sự sống của nhân loại. Những người dũng cảm phải đứng lên bảo vệ thế giới.'
+  },
+  'canh-hoa-luan-hoi': {
+    title: 'Cánh Hoa Luân Hồi',
+    rating: '8.2', year: '2025', quality: 'HD',
+    studio: 'Kyoto Animation',
+    genres: ['Fantasy', 'Drama', 'Romance'],
+    episodes: '12/12',
+    season: 'Mùa Xuân 2025',
+    desc: 'Một câu chuyện về luân hồi và tình yêu vượt thời gian. Những cánh hoa rơi mang theo ký ức của kiếp trước.'
+  }
+};
+
+let hoverTimeout = null;
+let hoverCardVisible = false;
+
+function setupHoverInfoCard() {
+  const hoverCard = document.getElementById('hover-info-card');
+  if (!hoverCard) return;
+
+  // Attach to all anime cards with debounce
+  let showTimer = null;
+  document.addEventListener('mouseover', function(e) {
+    const card = e.target.closest('.anime-card, .top-anime-card');
+    
+    if (!card) {
+      if (showTimer) clearTimeout(showTimer);
+      if (hoverTimeout) clearTimeout(hoverTimeout);
+      hoverTimeout = setTimeout(function() {
+        hoverCard.classList.remove('visible');
+        hoverCardVisible = false;
+      }, 200);
+      return;
+    }
+
+    const slug = card.dataset.slug;
+    if (!slug) return;
+    const data = HOVER_INFO_DATA[slug];
+    if (!data) return;
+
+    if (hoverTimeout) clearTimeout(hoverTimeout);
+    if (showTimer) clearTimeout(showTimer);
+
+    // Debounce 100ms before showing
+    showTimer = setTimeout(function() {
+      hoverCardVisible = true;
+      document.getElementById('hover-info-title').textContent = data.title;
+      document.getElementById('hover-info-meta').innerHTML = `
+        <span>⭐ ${data.rating}</span>
+        <span>📅 ${data.year}</span>
+        <span>🎬 ${data.quality}</span>`;
+      document.getElementById('hover-info-studio').textContent = data.studio;
+      document.getElementById('hover-info-genres').innerHTML = data.genres.map(g => 
+        `<span class="hover-info-genre-tag">${g}</span>`
+      ).join('');
+      document.getElementById('hover-info-episodes').textContent = data.episodes;
+      document.getElementById('hover-info-season').textContent = data.season;
+      document.getElementById('hover-info-desc').textContent = data.desc;
+
+      const rect = card.getBoundingClientRect();
+      let left = rect.right + 10;
+      let top = rect.top;
+
+      if (left + 240 > window.innerWidth - 10) {
+        left = rect.left - 240 - 10;
+      }
+      if (top + 350 > window.innerHeight) {
+        top = window.innerHeight - 350;
+      }
+      if (top < 10) top = 10;
+
+      hoverCard.style.left = left + 'px';
+      hoverCard.style.top = top + 'px';
+      hoverCard.classList.add('visible');
+    }, 100);
+  });
+
+  hoverCard.addEventListener('mouseenter', function() {
+    if (hoverTimeout) clearTimeout(hoverTimeout);
+  });
+
+  hoverCard.addEventListener('mouseleave', function() {
+    hoverCard.classList.remove('visible');
+    hoverCardVisible = false;
+  });
+}
+
+// ============================================================
+// BANNER SIDEBAR (Top Đề Xuất) - REDESIGN: no rank numbers
+// ============================================================
+const SIDEBAR_DATA = [
+  { title: "Trái Đất Đóng Băng", year: 2026, ep: "Tập 12", quality: "HD", slug: "trai-dat-dong-bang" },
+  { title: "Kẻ Thù Hoàng Gia Của Tôi", year: 2026, ep: "Tập 11", quality: "HD", slug: "ke-thu-hoang-gia" },
+  { title: "Dáng Say Tựa Đoá Bách Hợp", year: 2025, ep: "Tập 11", quality: "HD", slug: "dang-say-tua-do-bach-hop" },
+  { title: "Bức Tường Mê Cung", year: 2026, ep: "Tập 19", quality: "HD", slug: "buc-tuong-me-cung" },
+];
+
+function renderBannerSidebar(movies) {
+  const container = document.getElementById('banner-sidebar-list');
+  if (!container) return;
+
+  // Use SIDEBAR_DATA as static data, but try to use real movies if available
+  let sidebarItems = SIDEBAR_DATA;
+  
+  // If we have real movies, use them (up to 5)
+  if (movies && movies.length > 0) {
+    const realMovies = movies.slice(0, 5).filter(m => m && m.slug);
+    if (realMovies.length >= 4) {
+      sidebarItems = realMovies.map(m => ({
+        title: m.name || m.title || 'Anime',
+        year: m.year || '2026',
+        ep: safeEpisodeDisplay(m.episode_current),
+        quality: m.quality || 'HD',
+        slug: m.slug || ''
+      }));
+    }
+  }
+
+  // Đơn giản hóa: CHỈ text + số tập, KHÔNG ảnh, Font 13px, color #f5c518, truncate 1 dòng
+  container.innerHTML = sidebarItems.map((item, idx) => {
+    const title = item.title;
+    const slug = item.slug;
+    const ep = item.ep || 'Đang cập nhật';
+
+    return `
+      <div class="banner-sidebar-item ${idx === 0 ? 'active' : ''}" data-slug="${slug}" data-index="${idx}">
+        <div class="banner-sidebar-name">${title}</div>
+        <div class="banner-sidebar-ep">${ep}</div>
+      </div>`;
+  }).join('');
+
+  // Click handlers - change banner to clicked movie
+  container.querySelectorAll('.banner-sidebar-item').forEach(item => {
+    item.addEventListener('click', function() {
+      const slug = this.dataset.slug;
+      const index = parseInt(this.dataset.index);
+      
+      // Update active state
+      container.querySelectorAll('.banner-sidebar-item').forEach(el => el.classList.remove('active'));
+      this.classList.add('active');
+      
+      // If we have banner movies and this index matches, switch banner
+      if (bannerMovies.length > 0 && index < bannerMovies.length) {
+        bannerCurrentIndex = index;
+        showBannerSlide(index);
+        resetBannerAutoSlide();
+      } else if (slug) {
+        window.location.href = 'watch.html?id=' + slug;
+      }
+    });
+  });
+}
+
+// ============================================================
+// REALTIME COMMENTS
+// ============================================================
+const FAKE_COMMENTS = [
+  { user:"Minh Hoàng Tiến", text:"thằng rosti gay lo vải dài các ông ạ", anime:"Wistoria: Trượng Và Kiếm", time: Date.now()-4000, likes:12, dislikes:0 },
+  { user:"Phúc Nguyễn", text:"Là Miori nó thích thằng main nhưng vẫn quay qua đồng ý làm bạn gái của Reita wtf...", anime:"Haibara-kun no Tsuyokute Seishun New Game", time: Date.now()-18000, likes:24, dislikes:1 },
+  { user:"Kiên Đặng", text:"khả năng bộ này không có ss2 r", anime:"Haibara-kun no Tsuyokute Seishun New Game", time: Date.now()-120000, likes:8, dislikes:0 },
+  { user:"Linh Nguyễn", text:"Dr. Stone mùa 4 đỉnh quá, khoa học vui vẻ", anime:"Dr. Stone 4th Season", time: Date.now()-300000, likes:45, dislikes:2 },
+  { user:"Hoàng Anh", text:"Re:Zero mùa 4 tập mới hay vãi, Subaru trưởng thành hơn", anime:"Re:Zero 4th", time: Date.now()-600000, likes:67, dislikes:1 },
+  { user:"Minh Tuấn", text:"Classroom 4 vẫn giữ được chất riêng, Ayanokouji quá ngầu", anime:"Classroom 4th", time: Date.now()-900000, likes:33, dislikes:0 },
+  { user:"Thanh Hà", text:"Mai mối cho độc sư tập mới cute quá trời", anime:"Mai Mối Cho Độc Sư", time: Date.now()-1800000, likes:19, dislikes:0 },
+  { user:"Quốc Bảo", text:"Bức tường băng animation đẹp xuất sắc, MAPPA đỉnh", anime:"Bức Tường Băng", time: Date.now()-3600000, likes:52, dislikes:3 },
+  { user:"Huyền Trang", text:"Cánh hoa luân hồi xem mà khóc cả tập", anime:"Cánh Hoa Luân Hồi", time: Date.now()-7200000, likes:88, dislikes:0 },
+  { user:"Đức Mạnh", text:"Class de 2-banme rom-com nhẹ nhàng dễ thương", anime:"Class 2-banme", time: Date.now()-14400000, likes:15, dislikes:0 },
+];
+
+let commentsData = [];
+let commentInterval = null;
+let commentCount = FAKE_COMMENTS.length;
+
+function getRandomColor(name) {
+  const colors = ['#e53935','#43a047','#1e88e5','#fb8c00','#8e24aa','#00acc1','#3949ab','#c0ca33','#f4511e','#6d4c41'];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return colors[Math.abs(hash) % colors.length];
+}
+
+function timeAgo(timestamp) {
+  const seconds = Math.floor((Date.now() - timestamp) / 1000);
+  if (seconds < 5) return 'vài giây trước';
+  if (seconds < 60) return seconds + ' giây trước';
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return minutes + ' phút trước';
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return hours + ' giờ trước';
+  const days = Math.floor(hours / 24);
+  return days + ' ngày trước';
+}
+
+function renderComments(comments) {
+  const container = document.getElementById('comments-list');
+  if (!container) return;
+
+  container.innerHTML = comments.map(c => {
+    const avatarColor = getRandomColor(c.user);
+    const initial = c.user.charAt(0).toUpperCase();
+    const badgeHtml = c.user === 'Minh Hoàng Tiến' ? '<span class="comment-badge boss">Boss</span>' : 
+                      c.user === 'Phúc Nguyễn' ? '<span class="comment-badge gau">Gấu</span>' : '';
+    
+    return `
+      <div class="comment-item-new">
+        <div class="comment-avatar-new" style="background:${avatarColor}">${initial}</div>
+        <div class="comment-body-new">
+          <div class="comment-user-row">
+            <span class="comment-username">${c.user}</span>
+            ${badgeHtml}
+            <span class="comment-time-new">${timeAgo(c.time)}</span>
+          </div>
+          <div class="comment-text-new">${c.text}</div>
+          <div class="comment-actions-new">
+            <button class="comment-action-btn" data-action="like">
+              👍 <span>${c.likes}</span>
+            </button>
+            <button class="comment-action-btn" data-action="dislike">
+              👎 <span>${c.dislikes}</span>
+            </button>
+            <button class="comment-action-btn" data-action="reply">💬 Trả lời</button>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+
+  // Update count
+  const countEl = document.getElementById('comment-count');
+  if (countEl) countEl.textContent = `(${comments.length})`;
+
+  // Like/dislike handlers
+  container.querySelectorAll('.comment-action-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      const action = this.dataset.action;
+      if (action === 'like' || action === 'dislike') {
+        const span = this.querySelector('span');
+        if (span) {
+          let count = parseInt(span.textContent) || 0;
+          if (this.classList.contains('liked')) {
+            count--;
+            this.classList.remove('liked');
+          } else {
+            count++;
+            this.classList.add('liked');
+          }
+          span.textContent = count;
+        }
+      } else if (action === 'reply') {
+        alert('Chức năng trả lời đang phát triển!');
+      }
+    });
+  });
+}
+
+function addFakeComment() {
+  const randomNames = ['Ngọc Mai', 'Tuấn Anh', 'Hồng Nhung', 'Đức Huy', 'Phương Thảo', 'Minh Quân', 'Bảo Ngọc', 'Hoàng Long'];
+  const randomTexts = [
+    'tập này hay quá các bạn ơi',
+    'xem đi xem lại vẫn thấy hay',
+    'mong chờ tập sau quá',
+    'anime mùa này chất lượng quá',
+    'opening bài này hay vãi',
+    'cốt truyện ngày càng hấp dẫn',
+    'hóng tập mới mỗi tuần',
+    'không biết bao giờ ra tập tiếp theo',
+    'đỉnh quá đỉnh',
+    'xem phim này mà quên cả ăn'
+  ];
+  
+  const user = randomNames[Math.floor(Math.random() * randomNames.length)];
+  const text = randomTexts[Math.floor(Math.random() * randomTexts.length)];
+  const likes = Math.floor(Math.random() * 50) + 1;
+  const dislikes = Math.floor(Math.random() * 5);
+  
+  commentsData.unshift({
+    user: user,
+    text: text,
+    anime: 'Anime',
+    time: Date.now(),
+    likes: likes,
+    dislikes: dislikes
+  });
+  
+  commentCount++;
+  renderComments(commentsData);
+}
+
+function initComments() {
+  commentsData = [...FAKE_COMMENTS];
+  renderComments(commentsData);
+
+  // Add fake comment every 5-15 seconds
+  if (commentInterval) clearInterval(commentInterval);
+  
+  function scheduleNextComment() {
+    const delay = 5000 + Math.random() * 10000; // 5-15 seconds
+    commentInterval = setTimeout(function() {
+      addFakeComment();
+      scheduleNextComment();
+    }, delay);
+  }
+  
+  scheduleNextComment();
+}
+
+window.sortComments = function(sortType) {
+  if (sortType === 'new') {
+    commentsData.sort((a, b) => b.time - a.time);
+  } else if (sortType === 'top') {
+    commentsData.sort((a, b) => b.likes - a.likes);
+  }
+  renderComments(commentsData);
+};
+
+// ============================================================
+// INIT ALL NEW FEATURES
+// ============================================================
+// Override initBanner to also render sidebar
+const originalInitBanner = initBanner;
+initBanner = function(movies) {
+  originalInitBanner(movies);
+  // Render banner sidebar
+  renderBannerSidebar(movies);
+};
+
+// Init new features after DOM ready (called from within DOMContentLoaded)
+function initNewFeatures() {
+  // Render top anime row
+  renderTopAnimeRow();
+  
+  // Setup hover info card
+  setupHoverInfoCard();
+  
+  // Init comments
+  initComments();
+}

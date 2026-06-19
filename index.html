@@ -27,7 +27,7 @@
   <!-- Preload -->
   <link rel="preload" as="image" href="/logo.jpg.jpg" />
 
-  <!-- CSS: Variables + Main Style (NO Tailwind, NO inline CSS) -->
+  <!-- CSS: Variables + Main Style -->
   <link rel="stylesheet" href="/css/variables.css" />
   <link rel="stylesheet" href="/css/style.css" />
 
@@ -46,10 +46,91 @@
       <!-- Desktop Navigation -->
       <nav class="header-nav">
         <a href="/">Trang Chủ</a>
-        <a href="#">Dạng Anime</a>
-        <a href="#">Top Anime</a>
-        <a href="#">Thể Loại</a>
-        <a href="#">Season</a>
+        
+        <!-- Thể Loại Dropdown -->
+        <div class="nav-dropdown-trigger">
+          <a href="#">Thể Loại</a>
+          <div class="nav-dropdown-menu" style="min-width:520px;">
+            <div class="nav-dropdown-grid" id="theloai-grid">
+              <a class="nav-dropdown-item" href="#" data-slug="action">Action</a>
+              <a class="nav-dropdown-item" href="#" data-slug="adventure">Adventure</a>
+              <a class="nav-dropdown-item" href="#" data-slug="boys-love">Boys Love</a>
+              <a class="nav-dropdown-item" href="#" data-slug="cartoon">Cartoon</a>
+              <a class="nav-dropdown-item" href="#" data-slug="co-trang">Cổ Trang</a>
+              <a class="nav-dropdown-item" href="#" data-slug="comedy">Comedy</a>
+              <a class="nav-dropdown-item" href="#" data-slug="dementia">Dementia</a>
+              <a class="nav-dropdown-item" href="#" data-slug="demons">Demons</a>
+              <a class="nav-dropdown-item" href="#" data-slug="drama">Drama</a>
+              <a class="nav-dropdown-item" href="#" data-slug="ecchi">Ecchi</a>
+              <a class="nav-dropdown-item" href="#" data-slug="fantasy">Fantasy</a>
+              <a class="nav-dropdown-item" href="#" data-slug="game">Game</a>
+              <a class="nav-dropdown-item" href="#" data-slug="harem">Harem</a>
+              <a class="nav-dropdown-item" href="#" data-slug="historical">Historical</a>
+              <a class="nav-dropdown-item" href="#" data-slug="horror">Horror</a>
+              <a class="nav-dropdown-item" href="#" data-slug="josei">Josei</a>
+              <a class="nav-dropdown-item" href="#" data-slug="kids">Kids</a>
+              <a class="nav-dropdown-item" href="#" data-slug="magic">Magic</a>
+              <a class="nav-dropdown-item" href="#" data-slug="martial-arts">Martial Arts</a>
+              <a class="nav-dropdown-item" href="#" data-slug="mecha">Mecha</a>
+              <a class="nav-dropdown-item" href="#" data-slug="military">Military</a>
+              <a class="nav-dropdown-item" href="#" data-slug="mystery">Mystery</a>
+              <a class="nav-dropdown-item" href="#" data-slug="parody">Parody</a>
+              <a class="nav-dropdown-item" href="#" data-slug="police">Police</a>
+              <a class="nav-dropdown-item" href="#" data-slug="psychological">Psychological</a>
+              <a class="nav-dropdown-item" href="#" data-slug="romance">Romance</a>
+              <a class="nav-dropdown-item" href="#" data-slug="samurai">Samurai</a>
+              <a class="nav-dropdown-item" href="#" data-slug="school">School</a>
+              <a class="nav-dropdown-item" href="#" data-slug="sci-fi">Sci-Fi</a>
+              <a class="nav-dropdown-item" href="#" data-slug="seinen">Seinen</a>
+              <a class="nav-dropdown-item" href="#" data-slug="shoujo">Shoujo</a>
+              <a class="nav-dropdown-item" href="#" data-slug="shounen">Shounen</a>
+              <a class="nav-dropdown-item" href="#" data-slug="slice-of-life">Slice of Life</a>
+              <a class="nav-dropdown-item" href="#" data-slug="sports">Sports</a>
+              <a class="nav-dropdown-item" href="#" data-slug="supernatural">Supernatural</a>
+              <a class="nav-dropdown-item" href="#" data-slug="thriller">Thriller</a>
+              <a class="nav-dropdown-item" href="#" data-slug="vampire">Vampire</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Season Dropdown -->
+        <div class="nav-dropdown-trigger">
+          <a href="#">Season</a>
+          <div class="nav-dropdown-menu" style="min-width:420px;">
+            <div class="nav-dropdown-grid" id="season-grid">
+              <a class="nav-dropdown-item" href="#" data-slug="mua-dong-2026">Mùa Đông 2026</a>
+              <a class="nav-dropdown-item" href="#" data-slug="mua-xuan-2026">Mùa Xuân 2026</a>
+              <a class="nav-dropdown-item" href="#" data-slug="mua-ha-2026">Mùa Hạ 2026</a>
+              <a class="nav-dropdown-item" href="#" data-slug="mua-thu-2026">Mùa Thu 2026</a>
+              <a class="nav-dropdown-item" href="#" data-slug="mua-dong-2025">Mùa Đông 2025</a>
+              <a class="nav-dropdown-item" href="#" data-slug="mua-xuan-2025">Mùa Xuân 2025</a>
+              <a class="nav-dropdown-item" href="#" data-slug="mua-ha-2025">Mùa Hạ 2025</a>
+              <a class="nav-dropdown-item" href="#" data-slug="mua-thu-2025">Mùa Thu 2025</a>
+              <a class="nav-dropdown-item" href="#" data-slug="mua-dong-2024">Mùa Đông 2024</a>
+              <a class="nav-dropdown-item" href="#" data-slug="mua-xuan-2024">Mùa Xuân 2024</a>
+              <a class="nav-dropdown-item" href="#" data-slug="mua-ha-2024">Mùa Hạ 2024</a>
+              <a class="nav-dropdown-item" href="#" data-slug="mua-thu-2024">Mùa Thu 2024</a>
+              <a class="nav-dropdown-item" href="#" data-slug="mua-dong-2023">Mùa Đông 2023</a>
+              <a class="nav-dropdown-item" href="#" data-slug="mua-xuan-2023">Mùa Xuân 2023</a>
+              <a class="nav-dropdown-item" href="#" data-slug="mua-ha-2023">Mùa Hạ 2023</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Anime Dropdown -->
+        <div class="nav-dropdown-trigger">
+          <a href="#">Top Anime</a>
+          <div class="nav-dropdown-menu" style="min-width:250px;">
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <a class="nav-dropdown-item" href="#" data-slug="ngay">Theo Ngày</a>
+              <a class="nav-dropdown-item" href="#" data-slug="yeu-thich">Yêu Thích</a>
+              <a class="nav-dropdown-item" href="#" data-slug="thang">Theo Tháng</a>
+              <a class="nav-dropdown-item" href="#" data-slug="mua">Theo Mùa</a>
+              <a class="nav-dropdown-item" href="#" data-slug="nam">Theo Năm</a>
+            </div>
+          </div>
+        </div>
+
         <a href="#">Thư Viện</a>
         <a href="#">Lịch Chiếu</a>
 
@@ -167,58 +248,51 @@
     </div>
   </div>
 
+  <!-- ===== TOP ANIME ROW (Trending - above banner) ===== -->
+  <section class="top-anime-row" id="top-anime-row">
+    <div class="top-anime-row-inner">
+      <div class="top-anime-row-header">
+        <h3>Anime Trending 🔥HOT</h3>
+      </div>
+      <div class="top-anime-scroll" id="top-anime-scroll">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+  </section>
+
   <!-- ===== MAIN CONTENT ===== -->
   <main class="app-container" style="padding-top:var(--gap-2xl);padding-bottom:var(--gap-2xl);">
 
-    <!-- ===== BANNER SECTION MỚI ===== -->
-    <section class="banner-section" id="banner-section">
-      <!-- Banner chính -->
-      <div class="banner-main">
-        <!-- Ảnh nền -->
-        <div class="banner-bg" id="banner-bg">
-          <img id="banner-img" src="" alt="" />
-          <div class="banner-overlay"></div>
+    <!-- ===== BANNER LAYOUT MỚI ===== -->
+    <div class="banner-wrapper">
+      <div class="banner-layout">
+        <!-- Banner chính (bên trái) -->
+        <div class="banner-main-wrap">
+          <section class="banner-section" id="banner-section">
+            <div class="banner-main">
+              <div class="banner-bg" id="banner-bg">
+                <img id="banner-img" src="" alt="" />
+                <div class="banner-overlay"></div>
+              </div>
+              <div class="banner-content" id="banner-content">
+                <h1 class="banner-title" id="banner-title">Ani VietSub VN</h1>
+                <p class="banner-desc" id="banner-desc">Xem phim hoạt hình anime online, chất lượng cao</p>
+                <button class="btn-watch" id="btn-watch-banner">▶ Xem Phim</button>
+              </div>
+            </div>
+            <div class="banner-dots" id="banner-dots"></div>
+          </section>
         </div>
 
-        <!-- Nội dung bên trái -->
-        <div class="banner-content" id="banner-content">
-          <!-- Rating & Meta -->
-          <div class="banner-meta" id="banner-meta">
-            <span class="rating">⭐ 0.0</span>
-            <span class="episode">Tập 0</span>
-            <span class="year">2024</span>
-            <span class="quality">HD</span>
-            <span class="sub">Vietsub</span>
+        <!-- Sidebar Top Đề Xuất (bên phải) -->
+        <aside class="banner-sidebar" id="banner-sidebar">
+          <div class="banner-sidebar-title">⭐ Đề Xuất</div>
+          <div id="banner-sidebar-list">
+            <!-- Rendered by JS -->
           </div>
-
-          <!-- Tên phim -->
-          <h1 class="banner-title" id="banner-title">Ani VietSub VN</h1>
-
-          <!-- Mô tả -->
-          <p class="banner-desc" id="banner-desc">Xem phim hoạt hình anime online, chất lượng cao</p>
-
-          <!-- Thể loại -->
-          <div class="banner-genres" id="banner-genres">🎬 Thể Loại: Anime</div>
-
-          <!-- Nút xem phim -->
-          <div class="banner-buttons">
-            <button class="btn-watch" id="btn-watch-banner">▶ Xem Phim</button>
-          </div>
-        </div>
+        </aside>
       </div>
-
-      <!-- Hàng phim hot phía dưới -->
-      <div class="banner-hot-row">
-        <div class="hot-list" id="hot-list">
-          <!-- JS sẽ render -->
-        </div>
-      </div>
-
-      <!-- Dots indicator -->
-      <div class="banner-dots" id="banner-dots">
-        <!-- JS sẽ render -->
-      </div>
-    </section>
+    </div>
 
     <!-- DESKTOP 2-COLUMN LAYOUT -->
     <div class="home-layout">
@@ -252,6 +326,23 @@
 
         <!-- Load More Button -->
         <button class="load-more-btn" id="load-more-btn">XEM THÊM...</button>
+
+        <!-- Realtime Comments (bên dưới grid) -->
+        <div class="comments-realtime" id="comments-realtime">
+          <div class="comments-realtime-header">
+            <div class="comments-realtime-title">
+              💬 Bình luận <span class="comments-realtime-count" id="comment-count">(0)</span>
+            </div>
+            <div class="comments-realtime-sort">
+              <button class="comments-sort-btn active" data-sort="new">Mới nhất</button>
+              <button class="comments-sort-btn" data-sort="top">Top bình luận</button>
+            </div>
+          </div>
+          <button class="comments-login-btn" id="comments-login-btn">🔑 Đăng nhập để bình luận</button>
+          <div class="comments-list" id="comments-list">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
 
         <!-- Mobile Sidebar (hidden on desktop via CSS) -->
         <div class="mobile-sidebar">
@@ -323,6 +414,43 @@
     </div>
   </main>
 
+  <!-- ===== HOVER INFO CARD (global) ===== -->
+  <div class="hover-info-card" id="hover-info-card">
+    <div class="hover-info-header">
+      <div class="hover-info-title" id="hover-info-title">Tên phim</div>
+      <div class="hover-info-meta" id="hover-info-meta">
+        <span>⭐ 0.0</span>
+        <span>📅 2024</span>
+        <span>🎬 HD</span>
+      </div>
+    </div>
+    <hr class="hover-info-divider" />
+    <div class="hover-info-body">
+      <div class="hover-info-row">
+        <span class="hover-info-label">Studio:</span>
+        <span class="hover-info-value" id="hover-info-studio">-</span>
+      </div>
+      <div class="hover-info-row">
+        <span class="hover-info-label">Thể loại:</span>
+        <div class="hover-info-value hover-info-genres" id="hover-info-genres"></div>
+      </div>
+      <div class="hover-info-row">
+        <span class="hover-info-label">Số tập:</span>
+        <span class="hover-info-value" id="hover-info-episodes">-</span>
+      </div>
+      <div class="hover-info-row">
+        <span class="hover-info-label">Mùa:</span>
+        <span class="hover-info-value" id="hover-info-season">-</span>
+      </div>
+    </div>
+    <hr class="hover-info-divider" />
+    <div class="hover-info-desc" id="hover-info-desc">Mô tả ngắn...</div>
+    <div class="hover-info-footer">
+      <button class="hover-info-watch-btn" id="hover-info-watch">▶ XEM PHIM</button>
+      <button class="hover-info-fav-btn" id="hover-info-fav">❤ YÊU THÍCH</button>
+    </div>
+  </div>
+
   <!-- ===== FOOTER ===== -->
   <footer class="site-footer">
     <div class="footer-inner">
@@ -378,6 +506,9 @@
 
   <!-- Swiper.js -->
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+  <!-- Fake Views -->
+  <script src="/js/fakeViews.js"></script>
 
   <!-- Minimal inline JS for UI interactions only -->
   <script>
@@ -474,6 +605,65 @@
         if (!btn) return;
         var category = btn.dataset.category;
         if (typeof window.filterByCategory === 'function') window.filterByCategory(category);
+      });
+    }
+
+    // Navbar Dropdown click handlers for genre/season/top
+    document.querySelectorAll('#theloai-grid .nav-dropdown-item').forEach(function(item) {
+      item.addEventListener('click', function(e) {
+        e.preventDefault();
+        var slug = this.dataset.slug;
+        if (slug) window.location.href = '/the-loai/' + slug;
+      });
+    });
+
+    document.querySelectorAll('#season-grid .nav-dropdown-item').forEach(function(item) {
+      item.addEventListener('click', function(e) {
+        e.preventDefault();
+        var slug = this.dataset.slug;
+        if (slug) window.location.href = '/season/' + slug;
+      });
+    });
+
+    document.querySelectorAll('[data-slug="ngay"],[data-slug="yeu-thich"],[data-slug="thang"],[data-slug="mua"],[data-slug="nam"]').forEach(function(item) {
+      item.addEventListener('click', function(e) {
+        e.preventDefault();
+        var slug = this.dataset.slug;
+        if (slug) window.location.href = '/top/' + slug;
+      });
+    });
+
+    // Comments sort
+    document.querySelectorAll('.comments-sort-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.comments-sort-btn').forEach(function(b) { b.classList.remove('active'); });
+        this.classList.add('active');
+        if (typeof window.sortComments === 'function') window.sortComments(this.dataset.sort);
+      });
+    });
+
+    // Comments login button
+    var loginBtn = document.getElementById('comments-login-btn');
+    if (loginBtn) {
+      loginBtn.addEventListener('click', function() {
+        alert('Vui lòng đăng nhập để bình luận!');
+      });
+    }
+
+    // Hover info card watch button
+    var hoverWatch = document.getElementById('hover-info-watch');
+    if (hoverWatch) {
+      hoverWatch.addEventListener('click', function() {
+        var slug = this.dataset.slug;
+        if (slug) window.location.href = '/watch/' + slug;
+      });
+    }
+
+    // Hover info card fav button
+    var hoverFav = document.getElementById('hover-info-fav');
+    if (hoverFav) {
+      hoverFav.addEventListener('click', function() {
+        alert('Đã thêm vào danh sách yêu thích!');
       });
     }
   });
