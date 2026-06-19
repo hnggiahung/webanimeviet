@@ -1,64 +1,38 @@
 /* ============================================================
    ANIME VIETSUB VN - STYLE TỐI ƯU HÓA TOÀN DIỆN
-   ============================================================
-   I. Performance Core - Critical CSS, Minification-ready
-   II. UI Minimalist Catalog - Grid, Aspect Ratio, Tooltips, Typography, Colors
-   III. Interaction - Smooth Scroll, Skeleton, Event Delegation
-   IV. Mobile - Touch Targets, Tap Delay, Viewport
    ============================================================ */
 
-/* ========== I. CSS VARIABLES (Color Palette Enforcement) ========== */
+/* ========== I. CSS VARIABLES ========== */
 :root {
-  /* -- Primary Colors -- */
   --color-bg: #0a0a0f;
   --color-bg-secondary: #12121a;
   --color-surface: #1a1a24;
   --color-border: #222233;
   --color-border-hover: #444466;
-  
-  /* -- Text Colors -- */
   --color-text: #ffffff;
   --color-text-muted: #888899;
   --color-text-dim: #666677;
-  
-  /* -- Accent Colors -- */
   --color-primary: #b8281e;
   --color-primary-hover: #d43a2e;
   --color-primary-bg: rgba(180, 40, 30, 0.15);
   --color-primary-border: rgba(180, 40, 30, 0.25);
-  
-  /* -- Neutral -- */
   --color-overlay: rgba(0, 0, 0, 0.5);
   --color-skeleton: #1e1e2a;
   --color-skeleton-shine: #2a2a3a;
-  
-  /* -- Typography (System Font Stack - NO Google Fonts loading) -- */
   --font-stack: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', Arial, sans-serif;
   --font-mono: 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', monospace;
-  
-  /* -- Sizing -- */
   --touch-target-min: 44px;
   --border-radius-sm: 6px;
   --border-radius-md: 8px;
   --border-radius-lg: 12px;
   --border-radius-xl: 16px;
   --border-radius-pill: 9999px;
-  
-  /* -- Transitions -- */
-  --transition-fast: 0.15s ease;
-  --transition-normal: 0.2s ease;
-  
-  /* -- Shadows -- */
   --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.3);
   --shadow-overlay: -4px 0 20px rgba(0, 0, 0, 0.5);
 }
 
 /* ========== RESET & BASE ========== */
-*, *::before, *::after {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 html {
   font-family: var(--font-stack);
@@ -66,7 +40,6 @@ html {
   line-height: 1.5;
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
-  /* IV. Tap Delay Removal */
   touch-action: manipulation;
 }
 
@@ -77,31 +50,15 @@ body {
   overflow-x: hidden;
   min-height: 100vh;
   min-height: 100dvh;
-  /* IV. Unicode Handling - UTF-8 enforced at meta level */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
-/* ========== IV. VIEWPORT META CONTROL (prevent zoom on mobile) ========== */
-/* Applied via meta tag in HTML: user-scalable=no, maximum-scale=1 */
 
 /* ========== SCROLLBAR ========== */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: var(--color-bg-secondary); }
 ::-webkit-scrollbar-thumb { background: #333344; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #444455; }
-
-/* ========== II. GRID LAYOUT ENGINE (delegated to inline critical CSS) ========== */
-/* Grid, movie-card, tooltip, skeleton, episode-badge, movie-info are now in inline <style> in home.html */
-/* This file only contains styles for watch page, mobile overlay, and other non-critical sections */
-
-/* ========== SKELETON CARD (fallback) ========== */
-.skeleton-card {
-  border-radius: var(--border-radius-md);
-  overflow: hidden;
-  background: var(--color-bg-secondary);
-  border: 1px solid var(--color-border);
-}
 
 /* ========== SEARCH & FILTER ========== */
 .search-box {
@@ -112,9 +69,7 @@ body {
   padding: 10px 14px;
 }
 
-.search-box:focus-within {
-  border-color: #555;
-}
+.search-box:focus-within { border-color: #555; }
 
 .search-box input {
   background: transparent;
@@ -126,9 +81,7 @@ body {
   font-family: inherit;
 }
 
-.search-box input::placeholder {
-  color: var(--color-text-muted);
-}
+.search-box input::placeholder { color: var(--color-text-muted); }
 
 .search-icon {
   position: absolute;
@@ -152,8 +105,6 @@ body {
   font-size: 13px;
   font-family: inherit;
   user-select: none;
-  transition: all var(--transition-normal);
-  /* IV. Touch Target */
   min-height: var(--touch-target-min);
 }
 
@@ -189,12 +140,7 @@ body {
 
 .search-suggestions.active { display: block; }
 
-.search-suggestions ul {
-  list-style: none;
-  margin: 0;
-  padding: 4px 0;
-}
-
+.search-suggestions ul { list-style: none; margin: 0; padding: 4px 0; }
 .search-suggestions li { padding: 0; }
 
 .search-suggestions li a {
@@ -205,13 +151,10 @@ body {
   color: var(--color-text-muted);
   text-decoration: none;
   font-size: 13px;
-  /* IV. Touch Target */
   min-height: var(--touch-target-min);
 }
 
-.search-suggestions li a:hover {
-  background: rgba(255, 255, 255, 0.05);
-}
+.search-suggestions li a:hover { background: rgba(255, 255, 255, 0.05); }
 
 .search-suggestions .suggestion-thumb {
   width: 36px;
@@ -222,10 +165,7 @@ body {
   background: var(--color-skeleton);
 }
 
-.search-suggestions .suggestion-info {
-  flex: 1;
-  min-width: 0;
-}
+.search-suggestions .suggestion-info { flex: 1; min-width: 0; }
 
 .search-suggestions .suggestion-title {
   font-weight: 600;
@@ -300,16 +240,9 @@ body {
 }
 
 /* ========== PLAYER PAGE ========== */
-.watch-layout {
-  display: grid;
-  grid-template-columns: 1fr 350px;
-  gap: 24px;
-  align-items: start;
-}
+.watch-layout { display: grid; grid-template-columns: 1fr 350px; gap: 24px; align-items: start; }
 
-@media (max-width: 1024px) {
-  .watch-layout { grid-template-columns: 1fr; }
-}
+@media (max-width: 1024px) { .watch-layout { grid-template-columns: 1fr; } }
 
 .watch-main { min-width: 0; }
 .watch-sidebar { min-width: 0; }
@@ -321,23 +254,11 @@ body {
   border: 1px solid var(--color-border);
 }
 
-.video-frame {
-  width: 100%;
-  aspect-ratio: 16/9;
-  border: none;
-  background: #000000;
-}
+.video-frame { width: 100%; aspect-ratio: 16/9; border: none; background: #000000; }
 
-.video-info {
-  padding: 20px;
-  border-top: 1px solid var(--color-border);
-}
+.video-info { padding: 20px; border-top: 1px solid var(--color-border); }
 
-.video-info h1 {
-  font-size: 24px;
-  margin-bottom: 10px;
-  color: var(--color-text);
-}
+.video-info h1 { font-size: 24px; margin-bottom: 10px; color: var(--color-text); }
 
 .video-info p {
   color: var(--color-text-muted);
@@ -353,11 +274,7 @@ body {
   flex-wrap: wrap;
 }
 
-.video-stats span {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
+.video-stats span { display: flex; align-items: center; gap: 6px; }
 
 /* ========== EPISODE GRID ========== */
 #episode-container {
@@ -379,7 +296,6 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.08);
   color: var(--color-text-muted);
   cursor: pointer;
-  /* IV. Touch Target */
   min-height: var(--touch-target-min);
   min-width: var(--touch-target-min);
 }
@@ -397,19 +313,11 @@ body {
 }
 
 /* ========== WATCH SIDEBAR ========== */
-.watch-sidebar-sticky {
-  position: sticky;
-  top: 80px;
-}
+.watch-sidebar-sticky { position: sticky; top: 80px; }
 
-@media (max-width: 1024px) {
-  .watch-sidebar-sticky { position: static; }
-}
+@media (max-width: 1024px) { .watch-sidebar-sticky { position: static; } }
 
-.watch-related-scroll {
-  max-height: 500px;
-  overflow-y: auto;
-}
+.watch-related-scroll { max-height: 500px; overflow-y: auto; }
 
 .watch-related-scroll::-webkit-scrollbar { width: 4px; }
 .watch-related-scroll::-webkit-scrollbar-track { background: transparent; }
@@ -444,7 +352,6 @@ body {
   font-weight: 600;
   font-size: 13px;
   font-family: inherit;
-  /* IV. Touch Target */
   min-height: var(--touch-target-min);
 }
 
@@ -462,24 +369,12 @@ body {
   font-weight: 500;
   cursor: pointer;
   text-decoration: none;
-  /* IV. Touch Target */
   min-height: var(--touch-target-min);
 }
 
-.user-avatar-btn img {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid rgba(255, 255, 255, 0.15);
-}
+.user-avatar-btn img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255, 255, 255, 0.15); }
 
-.user-avatar-btn .avatar-name {
-  max-width: 100px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+.user-avatar-btn .avatar-name { max-width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* ========== RESPONSIVE ========== */
 @media (max-width: 1024px) {
@@ -492,25 +387,8 @@ body {
   .video-info h1 { font-size: 20px; }
   .search-box { width: 100%; }
   .filter-btn { padding: 6px 10px; font-size: 12px; }
-  .bookmark-notification {
-    bottom: 16px;
-    right: 16px;
-    left: 16px;
-  }
+  .bookmark-notification { bottom: 16px; right: 16px; left: 16px; }
 }
-
-/* ========== LOADING SPINNER ========== */
-.loading-spinner {
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  border: 2px solid var(--color-border);
-  border-top-color: #666;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin { to { transform: rotate(360deg); } }
 
 /* ========== GLASS CARD ========== */
 .glass-card {
@@ -537,7 +415,6 @@ body {
     border-left: 1px solid rgba(255, 255, 255, 0.08);
     z-index: 1000;
     overflow-y: auto;
-    transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: var(--shadow-overlay);
   }
 
@@ -553,13 +430,9 @@ body {
     z-index: 999;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.3s ease;
   }
 
-  .overlay-bg.open {
-    opacity: 1;
-    pointer-events: auto;
-  }
+  .overlay-bg.open { opacity: 1; pointer-events: auto; }
 
   .mobile-overlay-header {
     display: flex;
@@ -580,30 +453,15 @@ body {
     text-decoration: none;
     font-size: 15px;
     font-weight: 500;
-    transition: background 0.2s, color 0.2s;
     border-left: 3px solid transparent;
-    /* IV. Touch Target */
     min-height: var(--touch-target-min);
   }
 
-  .mobile-overlay-link svg {
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0;
-    opacity: 0.6;
-  }
+  .mobile-overlay-link svg { width: 20px; height: 20px; flex-shrink: 0; opacity: 0.6; }
 
-  .mobile-overlay-link:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: #fff;
-  }
+  .mobile-overlay-link:hover { background: rgba(255, 255, 255, 0.05); color: #fff; }
 
-  .mobile-overlay-link.active {
-    color: #fff;
-    border-left-color: #6b7280;
-    background: rgba(255, 255, 255, 0.05);
-  }
-
+  .mobile-overlay-link.active { color: #fff; border-left-color: #6b7280; background: rgba(255, 255, 255, 0.05); }
   .mobile-overlay-link.active svg { opacity: 1; }
 
   .mobile-overlay-footer {
@@ -624,73 +482,31 @@ body {
     text-decoration: none;
     font-size: 14px;
     font-weight: 600;
-    transition: background 0.2s;
-    /* IV. Touch Target */
     min-height: var(--touch-target-min);
   }
 
   .mobile-overlay-login:hover { background: rgba(255, 255, 255, 0.12); }
-
   .mobile-overlay-login svg { width: 20px; height: 20px; opacity: 0.7; }
 }
 
-/* ========== IV. TOUCH TARGET OPTIMIZATION ========== */
+/* ========== TOUCH TARGET OPTIMIZATION ========== */
 /* All interactive elements get min 44x44px touch target */
-button, 
-a, 
-.filter-btn, 
-.episode-item, 
-.mobile-overlay-link, 
-.mobile-overlay-login,
-.bookmark-notification button,
-.user-avatar-btn,
-.search-suggestions li a {
-  /* Inherited from each element's individual styles */
-  /* Ensures no element is smaller than 44px */
-}
 
 /* Prevent text selection on interactive elements */
-.filter-btn, 
-.episode-item, 
-.mobile-overlay-link {
+.filter-btn, .episode-item, .mobile-overlay-link {
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
 }
 
-/* ========== IV. TAP DELAY REMOVAL ========== */
-/* touch-action: manipulation set on html element globally */
-/* Additionally for touch-specific elements: */
-a, button, .filter-btn, .episode-item {
-  touch-action: manipulation;
-  -ms-touch-action: manipulation;
-}
+/* Touch-action */
+a, button, .filter-btn, .episode-item { touch-action: manipulation; }
 
 /* ========== UTILITY CLASSES ========== */
 .scrollbar-thin::-webkit-scrollbar { width: 4px; }
 .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
 .scrollbar-thin::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
 
-/* ========== I. PERFORMANCE: GPU Acceleration Hints ========== */
-.movie-card {
-  transform: translateZ(0);
-  backface-visibility: hidden;
-}
-
-/* ========== I. CRITICAL CSS FOR ABOVE-THE-FOLD ========== */
-/* These critical styles are repeated in <style> tag in HTML head */
-/* to ensure instant rendering without waiting for external CSS */
-
-/* ========== I. LAZY LOADING STRATEGY ========== */
-/* loading="lazy" on below-fold images, loading="eager" on banner */
-/* Images fade in when loaded */
-.movie-card-img.loaded {
-  opacity: 1;
-}
-
-/* ========== II. BANNER SWIPER (delegated to inline critical CSS) ========== */
-/* Banner styles are now in home.html inline <style> to ensure no layout shift */
-/* Height: 300-350-400px responsive, border-radius: 16px desktop */
-
+/* ========== BANNER SWIPER ========== */
 .banner-swiper .swiper-slide {
   position: relative;
   overflow: hidden;
@@ -700,25 +516,16 @@ a, button, .filter-btn, .episode-item {
   background-repeat: no-repeat !important;
 }
 
-.banner-swiper .swiper-pagination {
-  bottom: 12px !important;
-  z-index: 20;
-}
+.banner-swiper .swiper-pagination { bottom: 12px !important; z-index: 20; }
 
 .banner-swiper .swiper-pagination-bullet {
-  width: 8px;
-  height: 8px;
+  width: 8px; height: 8px;
   background: rgba(255,255,255,0.3);
   opacity: 1;
   border-radius: 999px;
-  transition: all 0.3s;
 }
 
-.banner-swiper .swiper-pagination-bullet-active {
-  width: 20px;
-  background: #d1d5db;
-  border-radius: 999px;
-}
+.banner-swiper .swiper-pagination-bullet-active { width: 20px; background: #d1d5db; border-radius: 999px; }
 
 .banner-slide-overlay {
   position: absolute;
@@ -738,9 +545,7 @@ a, button, .filter-btn, .episode-item {
   pointer-events: auto;
 }
 
-@media (min-width: 768px) {
-  .banner-slide-content { padding: 32px 40px 52px; }
-}
+@media (min-width: 768px) { .banner-slide-content { padding: 32px 40px 52px; } }
 
 .banner-slide-content .banner-title {
   font-size: 1.25rem;
@@ -755,12 +560,8 @@ a, button, .filter-btn, .episode-item {
   overflow: hidden;
 }
 
-@media (min-width: 768px) {
-  .banner-slide-content .banner-title { font-size: 1.875rem; }
-}
-@media (min-width: 1024px) {
-  .banner-slide-content .banner-title { font-size: 2.25rem; }
-}
+@media (min-width: 768px) { .banner-slide-content .banner-title { font-size: 1.875rem; } }
+@media (min-width: 1024px) { .banner-slide-content .banner-title { font-size: 2.25rem; } }
 
 .banner-slide-content .banner-desc {
   font-size: 0.75rem;
@@ -774,16 +575,9 @@ a, button, .filter-btn, .episode-item {
   text-shadow: 0 1px 3px rgba(0,0,0,0.5);
 }
 
-@media (min-width: 768px) {
-  .banner-slide-content .banner-desc { font-size: 0.875rem; }
-}
+@media (min-width: 768px) { .banner-slide-content .banner-desc { font-size: 0.875rem; } }
 
-.banner-slide-content .banner-meta-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-}
+.banner-slide-content .banner-meta-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 
 .banner-slide-content .banner-badge {
   display: inline-flex;
@@ -797,15 +591,10 @@ a, button, .filter-btn, .episode-item {
   color: #d1d5db;
   font-size: 11px;
   cursor: pointer;
-  transition: all 0.2s;
-  /* IV. Touch Target */
   min-height: var(--touch-target-min);
 }
 
-.banner-slide-content .banner-badge:hover {
-  background: rgba(255,255,255,0.2);
-  color: #fff;
-}
+.banner-slide-content .banner-badge:hover { background: rgba(255,255,255,0.2); color: #fff; }
 
 .banner-slide-content .banner-cta {
   display: inline-flex;
@@ -818,8 +607,6 @@ a, button, .filter-btn, .episode-item {
   font-weight: 600;
   border-radius: 999px;
   text-decoration: none;
-  transition: background 0.2s;
-  /* IV. Touch Target */
   min-height: var(--touch-target-min);
 }
 
