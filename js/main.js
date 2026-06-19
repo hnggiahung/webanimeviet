@@ -479,78 +479,66 @@ function createMovieCardHTML(movie) {
     }
 }
 
-// ====== RENDER MOVIE GROUPS (thu gọn theo nhóm 9) ======
-function chunkArray(arr, size) {
-    return Array.from(
-        { length: Math.ceil(arr.length / size) },
-        (_, i) => arr.slice(i * size, i * size + size)
-    );
-}
+// ====== RENDER MOVIE LIST (đơn giản: 18 phim đầu + 1 nút Xem Thêm) ======
+let showAllMovies = false;
 
 function renderMovieGroups(movies, container) {
     if (!movies || movies.length === 0) return;
     if (!container) container = document.getElementById('anime-groups-container');
     if (!container) return;
     
-    // Ẩn grid cũ, hiện groups container
+    // Ẩn grid cũ
     const oldGrid = document.getElementById('movies-grid');
     if (oldGrid) oldGrid.style.display = 'none';
     container.style.display = 'block';
     
+    const visibleList = showAllMovies ? movies : movies.slice(0, 18);
+    
     container.innerHTML = '';
     
-    const groups = chunkArray(movies, ITEMS_PER_GROUP);
+    // Grid chứa card
+    const gridDiv = document.createElement('div');
+    gridDiv.className = 'anime-grid';
+    gridDiv.id = 'movie-grid-main';
     
-    groups.forEach((group, groupIndex) => {
-        const groupDiv = document.createElement('div');
-        groupDiv.className = 'anime-group';
-        
-        const gridDiv = document.createElement('div');
-        gridDiv.className = `group-grid ${groupIndex === 0 ? 'visible' : 'hidden'}`;
-        gridDiv.id = `group-grid-${groupIndex}`;
-        
-        // Render cards
-        gridDiv.innerHTML = group.map(m => {
-            const id = m.slug || m._id || '';
-            if (id) renderedMovieIds.add(id);
-            return createMovieCardHTML(m);
-        }).join('');
-        
-        groupDiv.appendChild(gridDiv);
-        
-        // Toggle button cho các nhóm sau nhóm đầu
-        if (groupIndex > 0) {
-            const toggleBtn = document.createElement('button');
-            toggleBtn.className = 'toggle-btn';
-            toggleBtn.textContent = `▼ Xem Thêm (${group.length} phim)`;
-            toggleBtn.dataset.groupIndex = groupIndex;
-            toggleBtn.addEventListener('click', function() {
-                const idx = parseInt(this.dataset.groupIndex);
-                const grid = document.getElementById(`group-grid-${idx}`);
-                if (!grid) return;
-                
-                const isHidden = grid.classList.contains('hidden');
-                if (isHidden) {
-                    grid.classList.remove('hidden');
-                    grid.classList.add('visible');
-                    this.textContent = '▲ Thu Gọn';
-                    // Khi mở nhóm, lazy load ảnh trong nhóm đó
-                    initImageLazyLoader(grid);
-                } else {
-                    grid.classList.remove('visible');
-                    grid.classList.add('hidden');
-                    this.textContent = `▼ Xem Thêm (${group.length} phim)`;
-                }
-            });
-            groupDiv.appendChild(toggleBtn);
-        }
-        
-        container.appendChild(groupDiv);
-    });
+    gridDiv.innerHTML = visibleList.map(m => {
+        const id = m.slug || m._id || '';
+        if (id) renderedMovieIds.add(id);
+        return createMovieCardHTML(m);
+    }).join('');
     
-    // Init lazy load cho group đầu tiên
-    const firstGrid = document.getElementById('group-grid-0');
-    if (firstGrid) initImageLazyLoader(firstGrid);
+    container.appendChild(gridDiv);
+    
+    // 1 nút toggle duy nhất
+    if (movies.length > 18) {
+        const wrapDiv = document.createElement('div');
+        wrapDiv.style.cssText = 'display:flex;justify-content:center;margin:16px 0;';
+        
+        const toggleBtn = document.createElement('button');
+        toggleBtn.textContent = showAllMovies ? '▲ Thu Gọn' : '▼ Xem Thêm';
+        toggleBtn.style.cssText = 'background:rgba(255,255,255,0.08);color:#eee;border:1px solid rgba(255,255,255,0.15);border-radius:20px;padding:10px 40px;font-size:14px;cursor:pointer;transition:background 0.2s;';
+        toggleBtn.addEventListener('mouseenter', function() {
+            this.style.background = 'rgba(255,255,255,0.15)';
+        });
+        toggleBtn.addEventListener('mouseleave', function() {
+            this.style.background = 'rgba(255,255,255,0.08)';
+        });
+        toggleBtn.addEventListener('click', function() {
+            showAllMovies = !showAllMovies;
+            renderMovieGroups(movies, container);
+            // Khi mở hết, lazy load tất cả ảnh
+            if (showAllMovies) {
+                const newGrid = document.getElementById('movie-grid-main');
+                if (newGrid) initImageLazyLoader(newGrid);
+            }
+        });
+        
+        wrapDiv.appendChild(toggleBtn);
+        container.appendChild(wrapDiv);
+    }
+    
+    // Lazy load cho ảnh hiện tại
+    initImageLazyLoader(gridDiv);
 }
 
 // ====== LAZY LOAD ẢNH BẰNG INTERSECTION OBSERVER ======
@@ -1219,34 +1207,90 @@ window.filterByCategory = async function filterByCategory(category) {
     renderMovieGroups(apiMovies, container);
 };
 
-// ====== BANNER REDESIGN 2026 ======
-let bannerInterval = null;
-let bannerCurrentIndex = 0;
-let bannerMovies = [];
+// ====== HERO BANNER MỚI - THAY THẾ HOÀN TOÀN ======
+let heroMovies = [];
 
 function initBanner(movies) {
-    const bannerEl = document.getElementById('banner-section');
-    if (!bannerEl) return;
-
-    if (!movies || !Array.isArray(movies) || movies.length === 0) return;
-
-    const moviesWithThumb = movies.slice(0, 5).filter(m => m && m.slug && m.thumb_url);
-    if (moviesWithThumb.length > 0) {
-        bannerMovies = moviesWithThumb;
-    } else {
-        bannerMovies = movies.slice(0, 5).filter(m => m && m.slug);
+    const heroEl = document.getElementById('hero-banner');
+    if (!heroEl) {
+        console.log('⚠️ [HERO] Không tìm thấy hero-banner element');
+        return;
     }
 
-    if (!bannerMovies.length) return;
+    if (!movies || !Array.isArray(movies) || movies.length === 0) {
+        console.warn('⚠️ [HERO] Không có data để hiển thị');
+        return;
+    }
 
-    bannerCurrentIndex = 0;
+    // Lọc phim có ảnh
+    const moviesWithThumb = movies.filter(m => {
+        if (!m || !m.slug) return false;
+        return m.thumb_url || m.thumb || m.poster_url || m.image || m.cover || m.banner || m.backdrop;
+    });
+    
+    heroMovies = moviesWithThumb.length > 0 ? moviesWithThumb : movies.slice(0, 10).filter(m => m && m.slug);
 
-    renderBannerDots();
-    showBannerSlide(0);
-    startBannerAutoSlide();
-    setupWatchButton();
-    setupTrailerButton();
-    setupFavButton();
+    if (!heroMovies.length) {
+        console.warn('⚠️ [HERO] Không có phim nào để hiển thị');
+        return;
+    }
+
+    console.log('✅ [HERO] Số phim:', heroMovies.length, 'phim đầu:', heroMovies[0]?.name);
+
+    // Hiển thị phim đầu tiên
+    showHeroSlide(0);
+    setupHeroWatchButton();
+}
+
+function showHeroSlide(index) {
+    if (!heroMovies || !heroMovies.length) return;
+    const movie = heroMovies[index];
+    if (!movie) return;
+
+    const heroEl = document.getElementById('hero-banner');
+    const titleEl = document.getElementById('hero-title');
+    const descEl = document.getElementById('hero-desc');
+
+    // Xử lý ảnh nền
+    const thumbUrl = movie.thumb_url || movie.thumb || '';
+    const posterUrl = movie.poster_url || '';
+    const imageUrl = movie.image || '';
+    const coverUrl = movie.cover || '';
+    const bannerUrl = movie.banner || '';
+    const backdropUrl = movie.backdrop || '';
+    
+    const bestImg = posterUrl || thumbUrl || imageUrl || coverUrl || bannerUrl || backdropUrl;
+    const imgSrc = bestImg ? buildImageUrl(bestImg, '') : '';
+
+    if (imgSrc && imgSrc !== PLACEHOLDER) {
+        heroEl.style.backgroundImage = `url('${imgSrc}')`;
+        console.log('✅ [HERO] Đã set ảnh nền:', imgSrc, 'cho phim:', movie.name);
+    } else {
+        heroEl.style.backgroundImage = `url(${DEMO_BG})`;
+        console.warn('⚠️ [HERO] Không có ảnh, dùng fallback');
+    }
+
+    // Tiêu đề
+    if (titleEl) {
+        titleEl.textContent = movie.name || movie.title || 'Anime Hot';
+    }
+
+    // Mô tả
+    if (descEl) {
+        descEl.textContent = movie.content || movie.description || `Xem ${movie.name || movie.title} với chất lượng cao, vietsub.`;
+    }
+}
+
+function setupHeroWatchButton() {
+    const btn = document.getElementById('hero-watch-btn');
+    if (!btn) return;
+    btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const movie = heroMovies[0];
+        if (movie && movie.slug) {
+            window.location.href = 'watch.html?id=' + movie.slug;
+        }
+    });
 }
 
 function renderBannerDots() {
@@ -1296,16 +1340,35 @@ function showBannerSlide(index) {
     const studioEl = document.getElementById('banner-studio');
     const genresEl = document.getElementById('banner-genres');
 
-    // Image handling
+    // Image handling - thử nhiều field name khác nhau
     const thumbUrl = movie.thumb_url || movie.thumb || '';
     const posterUrl = movie.poster_url || '';
-    const imgSrc = thumbUrl || posterUrl ? buildImageUrl(thumbUrl, posterUrl) : '';
+    const imageUrl = movie.image || '';
+    const coverUrl = movie.cover || '';
+    const bannerUrl = movie.banner || '';
+    const backdropUrl = movie.backdrop || '';
+    
+    // Ưu tiên: poster_url > thumb_url > image > cover > banner > backdrop
+    const bestImg = posterUrl || thumbUrl || imageUrl || coverUrl || bannerUrl || backdropUrl;
+    const imgSrc = bestImg ? buildImageUrl(bestImg, '') : '';
 
     if (img) {
         if (imgSrc && imgSrc !== PLACEHOLDER) {
             img.src = imgSrc;
             img.style.display = '';
-            if (bannerBg) bannerBg.style.background = '';
+            if (bannerBg) {
+                bannerBg.style.background = '';
+                bannerBg.style.backgroundColor = '';
+            }
+            // Error handler
+            img.onerror = function() {
+                console.warn('⚠️ [BANNER] Ảnh lỗi:', imgSrc, 'cho phim:', movie.name);
+                this.style.display = 'none';
+                if (bannerBg) {
+                    bannerBg.style.background = `url(${DEMO_BG}) center/cover no-repeat`;
+                    bannerBg.style.backgroundColor = '#12121a';
+                }
+            };
         } else {
             img.style.display = 'none';
             if (bannerBg) {
@@ -1349,7 +1412,8 @@ function showBannerSlide(index) {
 function setupWatchButton() {
     const btn = document.getElementById('btn-watch-banner');
     if (!btn) return;
-    btn.addEventListener('click', function() {
+    btn.addEventListener('click', function(e) {
+        e.preventDefault();
         const movie = bannerMovies[bannerCurrentIndex];
         if (movie && movie.slug) {
             window.location.href = 'watch.html?id=' + movie.slug;
@@ -1357,31 +1421,55 @@ function setupWatchButton() {
     });
 }
 
-function setupTrailerButton() {
-    const btn = document.getElementById('btn-trailer');
-    if (!btn) return;
-    btn.addEventListener('click', function() {
-        const movie = bannerMovies[bannerCurrentIndex];
-        if (movie && movie.slug) {
-            // Mở trailer (nếu có) hoặc chuyển đến trang phim
-            window.location.href = 'watch.html?id=' + movie.slug;
-        }
-    });
+function setupBannerArrows() {
+    const leftArrow = document.getElementById('banner-arrow-left');
+    const rightArrow = document.getElementById('banner-arrow-right');
+    
+    if (leftArrow) {
+        leftArrow.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const prev = (bannerCurrentIndex - 1 + bannerMovies.length) % bannerMovies.length;
+            bannerCurrentIndex = prev;
+            showBannerSlide(prev);
+            resetBannerAutoSlide();
+        });
+    }
+    
+    if (rightArrow) {
+        rightArrow.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const next = (bannerCurrentIndex + 1) % bannerMovies.length;
+            bannerCurrentIndex = next;
+            showBannerSlide(next);
+            resetBannerAutoSlide();
+        });
+    }
 }
 
-function setupFavButton() {
-    const btn = document.getElementById('btn-fav');
+function setupSidebarRandomBtn() {
+    const btn = document.getElementById('sidebar-random-btn');
     if (!btn) return;
-    btn.addEventListener('click', function() {
-        this.classList.toggle('active');
-        if (this.classList.contains('active')) {
-            this.style.borderColor = '#e53935';
-            this.style.color = '#e53935';
-            this.style.background = 'rgba(229,57,53,0.1)';
+    btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (typeof window.handleRandomAnime === 'function') {
+            window.handleRandomAnime();
         } else {
-            this.style.borderColor = 'rgba(255,255,255,0.5)';
-            this.style.color = 'white';
-            this.style.background = 'transparent';
+            // Fallback random
+            let movies = allMovies;
+            if (!movies || movies.length === 0) {
+                try {
+                    const cached = localStorage.getItem('anime_data');
+                    if (cached) movies = JSON.parse(cached);
+                } catch(e) {}
+            }
+            if (movies && movies.length > 0) {
+                const randomIndex = Math.floor(Math.random() * movies.length);
+                const randomMovie = movies[randomIndex];
+                if (randomMovie && (randomMovie.slug || randomMovie._id)) {
+                    const slug = randomMovie.slug || randomMovie._id;
+                    window.location.href = 'watch.html?id=' + slug;
+                }
+            }
         }
     });
 }
@@ -1780,30 +1868,61 @@ function renderBannerSidebar(movies) {
   const container = document.getElementById('banner-sidebar-list');
   if (!container) return;
 
-  let sidebarItems = SIDEBAR_DATA;
+  // Nếu có bannerMovies (đã được set từ initBanner), dùng nó
+  const sourceMovies = (movies && movies.length > 0) ? movies : bannerMovies;
   
-  if (movies && movies.length > 0) {
-    const realMovies = movies.slice(0, 5).filter(m => m && m.slug);
-    if (realMovies.length >= 4) {
-      sidebarItems = realMovies.map(m => ({
-        title: m.name || m.title || 'Anime',
-        year: m.year || '2026',
-        ep: safeEpisodeDisplay(m.episode_current),
-        quality: m.quality || 'HD',
-        slug: m.slug || ''
-      }));
+  let sidebarItems = [];
+  
+  if (sourceMovies && sourceMovies.length > 0) {
+    const realMovies = sourceMovies.slice(0, 5).filter(m => m && m.slug);
+    if (realMovies.length >= 2) {
+      sidebarItems = realMovies.map(m => {
+        // Lấy ảnh thumbnail cho sidebar
+        const thumbUrl = m.thumb_url || m.thumb || '';
+        const posterUrl = m.poster_url || '';
+        const imageUrl = m.image || '';
+        const coverUrl = m.cover || '';
+        const bestImg = thumbUrl || posterUrl || imageUrl || coverUrl || m.banner || m.backdrop || '';
+        const imgSrc = bestImg ? buildImageUrl(bestImg, '') : PLACEHOLDER;
+        
+        return {
+          title: m.name || m.title || 'Anime',
+          year: m.year || '2026',
+          ep: safeEpisodeDisplay(m.episode_current),
+          quality: m.quality || 'HD',
+          slug: m.slug || '',
+          image: imgSrc
+        };
+      });
     }
+  }
+  
+  // Fallback nếu không có data thật
+  if (sidebarItems.length < 2) {
+    sidebarItems = SIDEBAR_DATA.map(item => ({
+      ...item,
+      image: PLACEHOLDER
+    }));
   }
 
   container.innerHTML = sidebarItems.map((item, idx) => {
     const title = item.title;
     const slug = item.slug;
     const ep = item.ep || 'Đang cập nhật';
+    const imgSrc = item.image || PLACEHOLDER;
 
     return `
       <div class="banner-sidebar-item ${idx === 0 ? 'active' : ''}" data-slug="${slug}" data-index="${idx}">
-        <div class="banner-sidebar-name">${title}</div>
-        <div class="banner-sidebar-ep">${ep}</div>
+        <img 
+          src="${imgSrc}" 
+          alt="${title}"
+          class="banner-sidebar-thumb"
+          onerror="this.onerror=null; this.style.display='none'"
+        />
+        <div class="banner-sidebar-info">
+          <div class="banner-sidebar-name">${title}</div>
+          <div class="banner-sidebar-ep">${ep}</div>
+        </div>
       </div>`;
   }).join('');
 
@@ -1989,12 +2108,8 @@ window.sortComments = function(sortType) {
 // ============================================================
 // INIT ALL NEW FEATURES
 // ============================================================
-// Override initBanner to also render sidebar
-const originalInitBanner = initBanner;
-initBanner = function(movies) {
-  originalInitBanner(movies);
-  renderBannerSidebar(movies);
-};
+// initBanner now tự động gọi renderBannerSidebar bên trong
+// Không cần override nữa
 
 function initNewFeatures() {
   renderTopAnimeRow();
