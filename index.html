@@ -170,38 +170,53 @@
   <!-- ===== MAIN CONTENT ===== -->
   <main class="app-container" style="padding-top:var(--gap-2xl);padding-bottom:var(--gap-2xl);">
 
-    <!-- HERO: Banner + Suggestions -->
-    <section class="hero-section">
-      <!-- Banner -->
-      <div class="hero-banner-wrap">
-        <div class="swiper banner-swiper" id="banner-swiper">
-          <div class="swiper-wrapper" id="banner-swiper-wrapper">
-            <div class="swiper-slide banner-slide" style="background:linear-gradient(135deg, #12121a 0%, #1a1a2e 50%, #101115 100%);">
-              <div class="banner-slide-overlay"></div>
-              <div class="banner-slide-content">
-                <div class="banner-title">Ani VietSub VN</div>
-                <div class="banner-desc">Xem phim hoạt hình anime online, chất lượng cao, cập nhật nhanh nhất</div>
-                <div class="banner-meta-row">
-                  <span class="banner-badge">🎬 Anime</span>
-                  <span class="banner-badge">FHD</span>
-                  <span class="banner-badge">Vietsub</span>
-                </div>
-              </div>
-            </div>
+    <!-- ===== BANNER SECTION MỚI ===== -->
+    <section class="banner-section" id="banner-section">
+      <!-- Banner chính -->
+      <div class="banner-main">
+        <!-- Ảnh nền -->
+        <div class="banner-bg" id="banner-bg">
+          <img id="banner-img" src="" alt="" />
+          <div class="banner-overlay"></div>
+        </div>
+
+        <!-- Nội dung bên trái -->
+        <div class="banner-content" id="banner-content">
+          <!-- Rating & Meta -->
+          <div class="banner-meta" id="banner-meta">
+            <span class="rating">⭐ 0.0</span>
+            <span class="episode">Tập 0</span>
+            <span class="year">2024</span>
+            <span class="quality">HD</span>
+            <span class="sub">Vietsub</span>
           </div>
-          <div class="swiper-pagination" id="banner-swiper-pagination"></div>
+
+          <!-- Tên phim -->
+          <h1 class="banner-title" id="banner-title">Ani VietSub VN</h1>
+
+          <!-- Mô tả -->
+          <p class="banner-desc" id="banner-desc">Xem phim hoạt hình anime online, chất lượng cao</p>
+
+          <!-- Thể loại -->
+          <div class="banner-genres" id="banner-genres">🎬 Thể Loại: Anime</div>
+
+          <!-- Nút xem phim -->
+          <div class="banner-buttons">
+            <button class="btn-watch" id="btn-watch-banner">▶ Xem Phim</button>
+          </div>
         </div>
       </div>
 
-      <!-- Suggestions (Desktop only) -->
-      <div class="hero-suggestions">
-        <div class="hero-suggestions-header">
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-          </svg>
-          <span>Đề Xuất Nhanh</span>
+      <!-- Hàng phim hot phía dưới -->
+      <div class="banner-hot-row">
+        <div class="hot-list" id="hot-list">
+          <!-- JS sẽ render -->
         </div>
-        <div id="suggestions-list" style="display:flex;flex-direction:column;gap:var(--gap-sm);flex:1;overflow:hidden;"></div>
+      </div>
+
+      <!-- Dots indicator -->
+      <div class="banner-dots" id="banner-dots">
+        <!-- JS sẽ render -->
       </div>
     </section>
 
