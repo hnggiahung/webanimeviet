@@ -1607,113 +1607,8 @@ img[loading="lazy"] {
 }
 
 /* ============================================================
-   BANNER LAYOUT MỚI - Desktop 2 cột
+   BANNER LAYOUT CŨ - ĐÃ XOÁ (THAY BẰNG BANNER TĨNH)
    ============================================================ */
-.banner-wrapper {
-  width: 100%;
-  margin-bottom: 32px;
-}
-
-.banner-layout {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
-  max-width: var(--max-width-container);
-  margin: 0 auto;
-  padding: 0 var(--gap-xl);
-}
-
-@media (min-width: 768px) {
-  .banner-layout {
-    grid-template-columns: 1fr 300px;
-  }
-}
-
-/* Banner main (left) */
-.banner-main-wrap {
-  position: relative;
-  border-radius: 12px;
-  overflow: hidden;
-  min-height: 400px;
-}
-
-.banner-main-wrap .banner-main {
-  border-radius: 12px;
-}
-
-/* Sidebar top đề xuất (right) - REDESIGN, no rank numbers */
-.banner-sidebar {
-  display: none;
-  background: rgba(255,255,255,0.04);
-  border-radius: 12px;
-  padding: 12px;
-  max-height: 460px;
-  overflow-y: auto;
-}
-
-@media (min-width: 768px) {
-  .banner-sidebar {
-    display: block;
-  }
-}
-
-.banner-sidebar-title {
-  font-size: 13px;
-  font-weight: 700;
-  color: #f5c518;
-  padding: 8px 10px 4px;
-}
-
-.banner-sidebar-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-
-.banner-sidebar-item:hover {
-  background: rgba(255,255,255,0.05);
-}
-
-.banner-sidebar-item.active {
-  border-left: 2px solid #f5c518;
-  background: rgba(245,197,24,0.06);
-}
-
-.banner-sidebar-thumb {
-  width: 40px;
-  height: 56px;
-  border-radius: 4px;
-  object-fit: cover;
-  flex-shrink: 0;
-  background: #1a1a2e;
-}
-
-.banner-sidebar-info {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.banner-sidebar-name {
-  font-size: 13px;
-  font-weight: 500;
-  color: #f5c518;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  min-width: 0;
-}
-
-.banner-sidebar-ep {
-  font-size: 11px;
-  color: #999;
-}
 
 /* ============================================================
    REALTIME COMMENTS
@@ -2073,48 +1968,49 @@ body {
 }
 
 /* ============================================================
-   HERO BANNER TĨNH - DÙNG ẢNH banner.jpg
+   BANNER TĨNH - DÙNG ẢNH banner.jpg (THỦ CÔNG - HARDCODED)
    ============================================================ */
-.hero-banner {
+.banner-wrapper {
   position: relative;
   width: 100%;
-  height: 400px;
-  background-image: url('./image.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  margin-bottom: 32px;
   border-radius: 12px;
   overflow: hidden;
-  margin-bottom: 32px;
+}
+
+.banner-img {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  display: block;
 }
 
 /* Overlay gradient phủ lên ảnh */
-.hero-banner::before {
+.banner-wrapper::after {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
+  background: linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);
   z-index: 1;
   pointer-events: none;
 }
 
-/* Nội dung chữ + nút - z-index: 2 (cao hơn overlay) */
-.hero-banner .banner-content {
-  position: relative;
+/* Nội dung chữ + nút - luôn nằm trên ảnh */
+.banner-wrapper .banner-content {
+  position: absolute;
+  top: 50%;
+  left: 20px;
+  transform: translateY(-50%);
   z-index: 2;
-  padding: 80px 50px;
   color: white;
   max-width: 55%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  padding: 0;
 }
 
-.hero-banner .banner-content h1 {
+.banner-wrapper .banner-content .banner-title {
   font-size: 28px;
   font-weight: 800;
   color: #ffffff;
@@ -2123,7 +2019,7 @@ body {
   text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
 }
 
-.hero-banner .banner-content p {
+.banner-wrapper .banner-content .banner-desc {
   font-size: 14px;
   color: rgba(255,255,255,0.9);
   line-height: 1.5;
@@ -2135,10 +2031,10 @@ body {
   text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
 }
 
-/* NÚT XEM NGAY - VUÔNG VỨC, CHERRY RED */
-.hero-banner .banner-content .btn-watch {
+/* NÚT XEM NGAY - CHERRY RED */
+.banner-wrapper .banner-content .btn-watch {
   padding: 10px 20px;
-  background-color: #991b1b;
+  background: #b91c1c;
   color: white;
   border: none;
   border-radius: 0;
@@ -2154,24 +2050,24 @@ body {
   text-decoration: none;
 }
 
-.hero-banner .banner-content .btn-watch:hover {
+.banner-wrapper .banner-content .btn-watch:hover {
   background-color: #7f1414;
   transform: translateY(-1px);
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-  .hero-banner { height: 300px; }
-  .hero-banner .banner-content { padding: 50px 30px; max-width: 80%; }
-  .hero-banner .banner-content h1 { font-size: 22px; }
-  .hero-banner .banner-content p { font-size: 13px; -webkit-line-clamp: 2; }
-  .hero-banner .banner-content .btn-watch { padding: 8px 18px; font-size: 13px; }
+  .banner-img { height: 300px; }
+  .banner-wrapper .banner-content { max-width: 80%; left: 15px; }
+  .banner-wrapper .banner-content .banner-title { font-size: 22px; }
+  .banner-wrapper .banner-content .banner-desc { font-size: 13px; -webkit-line-clamp: 2; }
+  .banner-wrapper .banner-content .btn-watch { padding: 8px 18px; font-size: 13px; }
 }
 
 @media (max-width: 480px) {
-  .hero-banner { height: 240px; }
-  .hero-banner .banner-content { padding: 30px 20px; max-width: 90%; }
-  .hero-banner .banner-content h1 { font-size: 18px; }
-  .hero-banner .banner-content p { font-size: 12px; -webkit-line-clamp: 1; }
-  .hero-banner .banner-content .btn-watch { padding: 6px 16px; font-size: 12px; }
+  .banner-img { height: 240px; }
+  .banner-wrapper .banner-content { max-width: 90%; left: 10px; }
+  .banner-wrapper .banner-content .banner-title { font-size: 18px; }
+  .banner-wrapper .banner-content .banner-desc { font-size: 12px; -webkit-line-clamp: 1; }
+  .banner-wrapper .banner-content .btn-watch { padding: 6px 16px; font-size: 12px; }
 }
