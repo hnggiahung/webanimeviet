@@ -80,7 +80,7 @@ const ALL_GENRES = [
     'Mystery', 'Drama', 'Comedy', 'Action', 'Adventure'
 ];
 
-// ====== BƯỚC 3: HÀM LỌC ANIME HOẠT HÌNH ======
+// ====== BƯỚC 3: HÀM LỌC ANIME HOẠT HÌNH (CHẶT CHẼ) ======
 function isAnimeCartoon(movie) {
     if (!movie) return false;
 
@@ -99,44 +99,73 @@ function isAnimeCartoon(movie) {
     const blockedTypes = [
         'live action', 'live-action', 'người đóng', 'nguoi dong',
         'phim lẻ người thật', 'phim bộ người thật', 'phim chiếu rạp',
-        'drama', 'variety', 'reality', 'documentary', 'tvshows'
+        'drama', 'variety', 'reality', 'documentary', 'tvshows',
+        'tv show', 'talk show', 'news', 'sport'
     ];
 
     const allowedTypes = [
         'anime', 'hoạt hình', 'hoat hinh', 'animation',
         'animated', 'donghua', 'dong hua', 'cartoon',
         'motion comic', 'webtoon', '3d animation', 'cgi',
-        'hoathinh'
+        'hoathinh', 'hoạt hình nhật bản', 'anime vietsub',
+        'anime bộ', 'anime lẻ', 'anime movie', 'movie anime',
+        'tv anime', 'anime series', 'anime tv'
     ];
 
+    // Ưu tiên 1: type === 'hoathinh' là chắc chắn anime
     if (movie.type === 'hoathinh') return true;
-    if (blockedTypes.some(k => typeFields.includes(k))) return false;
-    if (allowedTypes.some(k => typeFields.includes(k))) return true;
-    if (allowedTypes.some(k => titleField.includes(k))) return true;
-
-    if (Array.isArray(movie.category)) {
-        const catSlugs = movie.category.map(c => typeof c === 'object' ? c.slug : '').filter(Boolean);
-        if (catSlugs.some(s => s === 'hoat-hinh' || s.includes('hoat-hinh') || s === 'anime')) return true;
+    
+    // Ưu tiên 2: Nếu type là 'series' hoặc 'single', kiểm tra category
+    if (movie.type === 'series' || movie.type === 'single' || !movie.type) {
+        // Kiểm tra category slugs
+        if (Array.isArray(movie.category)) {
+            const catSlugs = movie.category.map(c => typeof c === 'object' ? c.slug : '').filter(Boolean);
+            const catNames = movie.category.map(c => typeof c === 'object' ? c.name : '').filter(Boolean);
+            
+            // Nếu có slug 'hoat-hinh' hoặc 'anime' → chắc chắn là anime
+            if (catSlugs.some(s => s === 'hoat-hinh' || s === 'anime')) return true;
+            if (catNames.some(n => n.toLowerCase() === 'anime' || n.toLowerCase() === 'hoạt hình')) return true;
+            
+            // Nếu category là thể loại anime điển hình (shounen, seinen, mecha...) → giữ lại
+            const animeGenres = ['shounen', 'shoujo', 'seinen', 'mecha', 'magic', 'slice of life',
+                'super power', 'school', 'harem', 'isekai', 'romance', 'comedy anime',
+                'action anime', 'drama anime', 'fantasy anime', 'ecchi', 'demons',
+                'supernatural', 'military', 'police', 'psychological', 'thriller',
+                'samurai', 'vampire', 'josei', 'kids', 'game', 'martial arts',
+                'parody', 'sports', 'music', 'space', 'sci-fi'];
+            if (catSlugs.some(s => animeGenres.includes(s))) return true;
+            if (catNames.some(n => animeGenres.includes(n.toLowerCase()))) return true;
+        }
+        
+        // Kiểm tra title có chứa từ khóa anime không
+        if (allowedTypes.some(k => titleField.includes(k))) return true;
+        
+        // Kiểm tra typeFields
+        if (allowedTypes.some(k => typeFields.includes(k))) return true;
     }
-
-    return true;
+    
+    // Ưu tiên 3: Block phim người đóng
+    if (blockedTypes.some(k => typeFields.includes(k))) return false;
+    if (blockedTypes.some(k => titleField.includes(k))) return false;
+    
+    // Mặc định: KHÔNG giữ lại nếu không chắc chắn (tránh lẫn phim lạ)
+    return false;
 }
 
-// ====== BƯỚC 2: LẤY TOÀN BỘ PHIM TỪ API (PHÂN TRANG) ======
+// ====== BƯỚC 2: LẤY TOÀN BỘ PHIM TỪ API (PHÂN TRANG + NHIỀU NGUỒN) ======
 async function fetchAllAnimeFromAPI() {
     let allMovies = [];
-    let page = 1;
-    let hasMore = true;
+    let seenSlugs = new Set();
     let maxPages = 200;
     let consecutiveEmptyPages = 0;
 
     console.log('📡 [FETCH ALL] Bắt đầu lấy toàn bộ phim từ API...');
 
-    while (hasMore && page <= maxPages) {
+    // === NGUỒN 1: Lấy từ endpoint danh-sach/hoat-hinh (chuyên cho anime) ===
+    console.log('📡 [FETCH ALL] === NGUỒN 1: danh-sach/hoat-hinh ===');
+    for (let page = 1; page <= 50; page++) {
         try {
-            const url = `https://ophim1.com/v1/api/danh-sach/phim-moi-cap-nhat?page=${page}`;
-            console.log(`📡 [FETCH ALL] Đang lấy trang ${page}...`);
-            
+            const url = `https://ophim1.com/v1/api/danh-sach/hoat-hinh?page=${page}`;
             const res = await fetchWithRetry(url);
             
             const cdnDomain = res?.data?.APP_DOMAIN_CDN_IMAGE;
@@ -150,50 +179,87 @@ async function fetchAllAnimeFromAPI() {
             const totalPageCount = Math.ceil(totalItems / totalItemsPerPage) || 1;
             
             if (page === 1) {
-                console.log(`📊 [FETCH ALL] Tổng số phim: ${totalItems}, Tổng số trang: ${totalPageCount}`);
-                maxPages = Math.min(totalPageCount, maxPages);
+                console.log(`📊 [FETCH ALL - HOAT HINH] Tổng số phim: ${totalItems}, Tổng số trang: ${totalPageCount}`);
             }
 
             const movies = res?.data?.items || res?.items || [];
-
             if (!movies || movies.length === 0) {
                 consecutiveEmptyPages++;
-                if (consecutiveEmptyPages >= 3) {
-                    console.log('📡 [FETCH ALL] 3 trang liên tiếp không có dữ liệu, dừng lại.');
-                    hasMore = false;
-                    break;
+                if (consecutiveEmptyPages >= 3) break;
+                continue;
+            }
+            consecutiveEmptyPages = 0;
+
+            // Endpoint hoat-hinh đã là anime, không cần lọc
+            movies.forEach(m => {
+                const slug = m.slug || m._id || '';
+                if (slug && !seenSlugs.has(slug)) {
+                    seenSlugs.add(slug);
+                    allMovies.push(m);
                 }
-                page++;
+            });
+            
+            console.log(`📡 [FETCH ALL - HOAT HINH] Trang ${page}: +${movies.length} phim, tổng: ${allMovies.length}`);
+
+            if (page >= totalPageCount) break;
+            await new Promise(r => setTimeout(r, API_DELAY_MS));
+        } catch (err) {
+            console.error(`❌ [FETCH ALL - HOAT HINH] Lỗi trang ${page}:`, err.message);
+            consecutiveEmptyPages++;
+            if (consecutiveEmptyPages >= 3) break;
+            await new Promise(r => setTimeout(r, 1000));
+        }
+    }
+
+    // === NGUỒN 2: Lấy từ endpoint phim-moi-cap-nhat (bổ sung thêm) ===
+    console.log('📡 [FETCH ALL] === NGUỒN 2: phim-moi-cap-nhat ===');
+    consecutiveEmptyPages = 0;
+    for (let page = 1; page <= maxPages; page++) {
+        try {
+            const url = `https://ophim1.com/v1/api/danh-sach/phim-moi-cap-nhat?page=${page}`;
+            const res = await fetchWithRetry(url);
+
+            const pagination = res?.data?.params?.pagination || {};
+            const totalItems = pagination.totalItems || 0;
+            const totalItemsPerPage = pagination.totalItemsPerPage || ITEMS_PER_PAGE;
+            const totalPageCount = Math.ceil(totalItems / totalItemsPerPage) || 1;
+            
+            if (page === 1) {
+                console.log(`📊 [FETCH ALL - MOI CAP NHAT] Tổng số phim: ${totalItems}, Tổng số trang: ${totalPageCount}`);
+            }
+
+            const movies = res?.data?.items || res?.items || [];
+            if (!movies || movies.length === 0) {
+                consecutiveEmptyPages++;
+                if (consecutiveEmptyPages >= 3) break;
                 continue;
             }
             consecutiveEmptyPages = 0;
 
             const animeMovies = movies.filter(isAnimeCartoon);
-            console.log(`📡 [FETCH ALL] Trang ${page}: ${movies.length} phim, giữ lại ${animeMovies.length} anime`);
+            let added = 0;
+            animeMovies.forEach(m => {
+                const slug = m.slug || m._id || '';
+                if (slug && !seenSlugs.has(slug)) {
+                    seenSlugs.add(slug);
+                    allMovies.push(m);
+                    added++;
+                }
+            });
+            
+            console.log(`📡 [FETCH ALL - MOI CAP NHAT] Trang ${page}: ${movies.length} phim, +${added} anime mới, tổng: ${allMovies.length}`);
 
-            allMovies = allMovies.concat(animeMovies);
-
-            if (page >= totalPageCount || page >= maxPages) {
-                hasMore = false;
-            } else {
-                page++;
-            }
-
+            if (page >= totalPageCount) break;
             await new Promise(r => setTimeout(r, API_DELAY_MS));
-
         } catch (err) {
-            console.error(`❌ [FETCH ALL] Lỗi trang ${page}:`, err.message);
+            console.error(`❌ [FETCH ALL - MOI CAP NHAT] Lỗi trang ${page}:`, err.message);
             consecutiveEmptyPages++;
-            if (consecutiveEmptyPages >= 3) {
-                hasMore = false;
-            } else {
-                page++;
-                await new Promise(r => setTimeout(r, 1000));
-            }
+            if (consecutiveEmptyPages >= 3) break;
+            await new Promise(r => setTimeout(r, 1000));
         }
     }
 
-    console.log(`✅ [FETCH ALL] Hoàn tất! Tổng phim anime lấy được: ${allMovies.length}`);
+    console.log(`✅ [FETCH ALL] HOÀN TẤT! Tổng phim anime: ${allMovies.length}`);
     return allMovies;
 }
 
@@ -1207,90 +1273,13 @@ window.filterByCategory = async function filterByCategory(category) {
     renderMovieGroups(apiMovies, container);
 };
 
-// ====== HERO BANNER MỚI - THAY THẾ HOÀN TOÀN ======
-let heroMovies = [];
-
+// ====== HERO BANNER - ĐÃ CHUYỂN SANG TĨNH (VÔ HIỆU HÓA LOGIC TỰ ĐỘNG) ======
+// Banner hiện tại dùng ảnh banner.jpg tĩnh trong HTML + CSS
+// Không cần JS lấy dữ liệu từ API nữa
+// Giữ hàm initBanner rỗng để tránh lỗi gọi từ code cũ
 function initBanner(movies) {
-    const heroEl = document.getElementById('hero-banner');
-    if (!heroEl) {
-        console.log('⚠️ [HERO] Không tìm thấy hero-banner element');
-        return;
-    }
-
-    if (!movies || !Array.isArray(movies) || movies.length === 0) {
-        console.warn('⚠️ [HERO] Không có data để hiển thị');
-        return;
-    }
-
-    // Lọc phim có ảnh
-    const moviesWithThumb = movies.filter(m => {
-        if (!m || !m.slug) return false;
-        return m.thumb_url || m.thumb || m.poster_url || m.image || m.cover || m.banner || m.backdrop;
-    });
-    
-    heroMovies = moviesWithThumb.length > 0 ? moviesWithThumb : movies.slice(0, 10).filter(m => m && m.slug);
-
-    if (!heroMovies.length) {
-        console.warn('⚠️ [HERO] Không có phim nào để hiển thị');
-        return;
-    }
-
-    console.log('✅ [HERO] Số phim:', heroMovies.length, 'phim đầu:', heroMovies[0]?.name);
-
-    // Hiển thị phim đầu tiên
-    showHeroSlide(0);
-    setupHeroWatchButton();
-}
-
-function showHeroSlide(index) {
-    if (!heroMovies || !heroMovies.length) return;
-    const movie = heroMovies[index];
-    if (!movie) return;
-
-    const heroEl = document.getElementById('hero-banner');
-    const titleEl = document.getElementById('hero-title');
-    const descEl = document.getElementById('hero-desc');
-
-    // Xử lý ảnh nền
-    const thumbUrl = movie.thumb_url || movie.thumb || '';
-    const posterUrl = movie.poster_url || '';
-    const imageUrl = movie.image || '';
-    const coverUrl = movie.cover || '';
-    const bannerUrl = movie.banner || '';
-    const backdropUrl = movie.backdrop || '';
-    
-    const bestImg = posterUrl || thumbUrl || imageUrl || coverUrl || bannerUrl || backdropUrl;
-    const imgSrc = bestImg ? buildImageUrl(bestImg, '') : '';
-
-    if (imgSrc && imgSrc !== PLACEHOLDER) {
-        heroEl.style.backgroundImage = `url('${imgSrc}')`;
-        console.log('✅ [HERO] Đã set ảnh nền:', imgSrc, 'cho phim:', movie.name);
-    } else {
-        heroEl.style.backgroundImage = `url(${DEMO_BG})`;
-        console.warn('⚠️ [HERO] Không có ảnh, dùng fallback');
-    }
-
-    // Tiêu đề
-    if (titleEl) {
-        titleEl.textContent = movie.name || movie.title || 'Anime Hot';
-    }
-
-    // Mô tả
-    if (descEl) {
-        descEl.textContent = movie.content || movie.description || `Xem ${movie.name || movie.title} với chất lượng cao, vietsub.`;
-    }
-}
-
-function setupHeroWatchButton() {
-    const btn = document.getElementById('hero-watch-btn');
-    if (!btn) return;
-    btn.addEventListener('click', function(e) {
-        e.preventDefault();
-        const movie = heroMovies[0];
-        if (movie && movie.slug) {
-            window.location.href = 'watch.html?id=' + movie.slug;
-        }
-    });
+    // ĐÃ VÔ HIỆU - Banner tĩnh dùng ảnh banner.jpg
+    console.log('✅ [BANNER] Banner tĩnh - dùng ảnh banner.jpg');
 }
 
 function renderBannerDots() {
