@@ -2073,13 +2073,13 @@ body {
 }
 
 /* ============================================================
-   HERO BANNER MỚI - GỌN GÀNG, SẠCH SẼ
+   HERO BANNER TĨNH - DÙNG ẢNH banner.jpg
    ============================================================ */
 .hero-banner {
   position: relative;
   width: 100%;
   height: 400px;
-  background-image: url('https://img.ophim.live/uploads/movies/thumb_3.jpg');
+  background-image: url('./image.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -2088,7 +2088,9 @@ body {
   margin-bottom: 32px;
 }
 
-.hero-overlay {
+/* Overlay gradient phủ lên ảnh */
+.hero-banner::before {
+  content: '';
   position: absolute;
   top: 0;
   left: 0;
@@ -2099,9 +2101,10 @@ body {
   pointer-events: none;
 }
 
-.hero-content {
+/* Nội dung chữ + nút - z-index: 2 (cao hơn overlay) */
+.hero-banner .banner-content {
   position: relative;
-  z-index: 10;
+  z-index: 2;
   padding: 80px 50px;
   color: white;
   max-width: 55%;
@@ -2111,38 +2114,39 @@ body {
   justify-content: center;
 }
 
-.hero-content h1 {
+.hero-banner .banner-content h1 {
   font-size: 28px;
   font-weight: 800;
   color: #ffffff;
   line-height: 1.2;
   margin: 0 0 10px 0;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
 }
 
-.hero-content p {
+.hero-banner .banner-content p {
   font-size: 14px;
-  color: rgba(255,255,255,0.8);
+  color: rgba(255,255,255,0.9);
   line-height: 1.5;
   margin: 0 0 16px 0;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
 }
 
-/* NÚT XEM NGAY - COMPACT, CHERRY RED */
-.hero-content .btn-watch {
-  padding: 8px 24px;
-  background-color: #b91c1c;
-  border-radius: 4px;
+/* NÚT XEM NGAY - VUÔNG VỨC, CHERRY RED */
+.hero-banner .banner-content .btn-watch {
+  padding: 10px 20px;
+  background-color: #991b1b;
+  color: white;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  font-weight: bold;
   display: inline-block;
   width: fit-content;
   font-size: 14px;
-  font-weight: 700;
-  border: none;
-  cursor: pointer;
-  color: white;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   transition: background 0.2s, transform 0.2s;
@@ -2150,24 +2154,24 @@ body {
   text-decoration: none;
 }
 
-.hero-content .btn-watch:hover {
-  background-color: #991b1b;
+.hero-banner .banner-content .btn-watch:hover {
+  background-color: #7f1414;
   transform: translateY(-1px);
 }
 
-/* Responsive hero banner */
+/* Responsive */
 @media (max-width: 768px) {
   .hero-banner { height: 300px; }
-  .hero-content { padding: 50px 30px; max-width: 80%; }
-  .hero-content h1 { font-size: 22px; }
-  .hero-content p { font-size: 13px; -webkit-line-clamp: 2; }
-  .hero-content .btn-watch { padding: 7px 20px; font-size: 13px; }
+  .hero-banner .banner-content { padding: 50px 30px; max-width: 80%; }
+  .hero-banner .banner-content h1 { font-size: 22px; }
+  .hero-banner .banner-content p { font-size: 13px; -webkit-line-clamp: 2; }
+  .hero-banner .banner-content .btn-watch { padding: 8px 18px; font-size: 13px; }
 }
 
 @media (max-width: 480px) {
   .hero-banner { height: 240px; }
-  .hero-content { padding: 30px 20px; max-width: 90%; }
-  .hero-content h1 { font-size: 18px; }
-  .hero-content p { font-size: 12px; -webkit-line-clamp: 1; }
-  .hero-content .btn-watch { padding: 6px 18px; font-size: 12px; }
+  .hero-banner .banner-content { padding: 30px 20px; max-width: 90%; }
+  .hero-banner .banner-content h1 { font-size: 18px; }
+  .hero-banner .banner-content p { font-size: 12px; -webkit-line-clamp: 1; }
+  .hero-banner .banner-content .btn-watch { padding: 6px 16px; font-size: 12px; }
 }
