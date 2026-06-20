@@ -37,12 +37,11 @@
   <!-- Kiểm tra CSS đã load -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      const hero = document.querySelector('.hero-banner');
-      if (hero) {
-        const bg = getComputedStyle(hero).backgroundImage;
-        console.log('✅ CSS loaded - hero-banner found, background:', bg ? 'set' : 'not set');
+      const banner = document.querySelector('.banner-wrapper');
+      if (banner) {
+        console.log('✅ CSS loaded - banner-wrapper found');
       } else {
-        console.log('❌ CSS loaded but hero-banner NOT FOUND in DOM');
+        console.log('❌ CSS loaded but banner-wrapper NOT FOUND in DOM');
       }
     });
   </script>
@@ -276,14 +275,13 @@
   <!-- ===== MAIN CONTENT ===== -->
   <main class="app-container" style="padding-top:var(--gap-2xl);padding-bottom:var(--gap-2xl);">
 
-    <!-- ===== BANNER TĨNH - DÙNG ẢNH image.jpg ===== -->
-    <div class="hero-banner">
-      <img src="image.jpg" alt="Banner" class="hero-banner-img" />
-      <div class="hero-overlay"></div>
+    <!-- ===== BANNER TĨNH - DÙNG ẢNH banner.jpg ===== -->
+    <div class="banner-wrapper">
+      <img src="./banner.jpg" alt="Banner" class="banner-img">
       <div class="banner-content">
-        <h1>Tên Bộ Phim Của Bạn</h1>
-        <p>Mô tả bộ phim...</p>
-        <button class="btn-watch" onclick="window.location.href='watch.html'">XEM NGAY</button>
+        <h1 class="banner-title">Tiêu đề phim</h1>
+        <p class="banner-desc">Mô tả ngắn gọn về bộ phim ở đây.</p>
+        <button class="btn-watch" onclick="window.location.href='#'">XEM NGAY</button>
       </div>
     </div>
 
