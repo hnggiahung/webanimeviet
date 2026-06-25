@@ -1,0 +1,71 @@
+=== danh-sach/hoat-hinh status: 200
+Total items from param: undefined
+
+=== First 5 items ===
+Item 0 (Đảo Hải Tặc):
+  country = [{"id":"620a2307e0fc277084dfd726","name":"Nhật Bản","slug":"nhat-ban"}]
+  category = [{"id":"620a21b2e0fc277084dfd0c5","name":"Hành Động","slug":"hanh-dong"},{"id":"620a221de0fc277084dfd1c1","name":"Hài Hước","slug":"hai-huoc"},{"id":"620a2293e0fc277084dfd489","name":"Phiêu Lưu","slug":"phieu-luu"}]
+  lang = Vietsub
+  slug = one-piece
+Item 1 (Rạp xiếc kỹ thuật số diệu kỳ):
+  country = [{"id":"62135c8f1f1609c9d9346bb1","name":"Úc","slug":"uc"}]
+  category = [{"id":"620a221de0fc277084dfd1c1","name":"Hài Hước","slug":"hai-huoc"},{"id":"620a2282e0fc277084dfd435","name":"Viễn Tưởng","slug":"vien-tuong"},{"id":"620a229be0fc277084dfd4dd","name":"Khoa Học","slug":"khoa-hoc"},{"id":"620f84d291fa4af90ab6b3f4","name":"Bí ẩn","slug":"bi-an"}]
+  lang = Vietsub
+  slug = rap-xiec-ky-thuat-so-dieu-ky
+Item 2 (Wistoria: Trượng và Kiếm (Phần 2)):
+  country = [{"id":"620a2307e0fc277084dfd726","name":"Nhật Bản","slug":"nhat-ban"}]
+  category = [{"id":"620a21b2e0fc277084dfd0c5","name":"Hành Động","slug":"hanh-dong"},{"id":"620a2282e0fc277084dfd435","name":"Viễn Tưởng","slug":"vien-tuong"},{"id":"620a2293e0fc277084dfd489","name":"Phiêu Lưu","slug":"phieu-luu"},{"id":"620a229be0fc277084dfd4dd","name":"Khoa Học","slug":"khoa-hoc"}]
+  lang = Vietsub
+  slug = wistoria-truong-va-kiem-phan-2
+Item 3 (Võ Thần Chúa Tể):
+  country = [{"id":"62093063196e9f4ab6b448b8","name":"Trung Quốc","slug":"trung-quoc"}]
+  category = [{"id":"620a21b2e0fc277084dfd0c5","name":"Hành Động","slug":"hanh-dong"},{"id":"620a2282e0fc277084dfd435","name":"Viễn Tưởng","slug":"vien-tuong"},{"id":"620a2293e0fc277084dfd489","name":"Phiêu Lưu","slug":"phieu-luu"},{"id":"620a229be0fc277084dfd4dd","name":"Khoa Học","slug":"khoa-hoc"}]
+  lang = Vietsub
+  slug = vo-than-chua-te
+Item 4 (Đấu Phá Thương Khung Ngoại Truyện):
+  country = [{"id":"62093063196e9f4ab6b448b8","name":"Trung Quốc","slug":"trung-quoc"}]
+  category = [{"id":"620a21b2e0fc277084dfd0c5","name":"Hành Động","slug":"hanh-dong"},{"id":"620a222fe0fc277084dfd23d","name":"Cổ Trang","slug":"co-trang"},{"id":"620a2279e0fc277084dfd3e1","name":"Võ Thuật","slug":"vo-thuat"},{"id":"620a2293e0fc277084dfd489","name":"Phiêu Lưu","slug":"phieu-luu"}]
+  lang = Vietsub
+  slug = dau-pha-thuong-khung-ngoai-truyen
+
+=== quoc-gia/nhat-ban status: 200
+Total: 5
+Item 0 (Nhật Ký Nơi Xứ Lạ):
+  category = [{"id":"620f3d2b91fa4af90ab697fe","name":"Chính kịch","slug":"chinh-kich"}]
+  lang = Vietsub
+  slug = nhat-ky-noi-xu-la
+Item 1 (Học Cách Chiến Đấu):
+  category = [{"id":"620a21b2e0fc277084dfd0c5","name":"Hành Động","slug":"hanh-dong"},{"id":"620a2293e0fc277084dfd489","name":"Phiêu Lưu","slug":"phieu-luu"},{"id":"620f3d2b91fa4af90ab697fe","name":"Chính kịch","slug":"chinh-kich"}]
+  lang = Vietsub
+  slug = hoc-cach-chien-dau
+Item 2 (Tiêu Nhân (Phần 2)):
+  category = [{"id":"620a21b2e0fc277084dfd0c5","name":"Hành Động","slug":"hanh-dong"},{"id":"620a2293e0fc277084dfd489","name":"Phiêu Lưu","slug":"phieu-luu"}]
+  lang = Vietsub
+  slug = tieu-nhan-phan-2
+
+=== tim-kiem/hoat hinh ===
+Item 0 (Mechamato - Loạt phim hoạt hình):
+  country = [{"id":"62159af71f1609c9d934824e","name":"Malaysia","slug":"malaysia"}]
+  category = [{"id":"620a2293e0fc277084dfd489","name":"Phiêu Lưu","slug":"phieu-luu"}]
+  lang = Vietsub
+  slug = mechamato-loat-phim-hoat-hinh
+Item 1 (Trường Ca Hành hoạt hình):
+  country = [{"id":"62093063196e9f4ab6b448b8","name":"Trung Quốc","slug":"trung-quoc"}]
+  category = [{"id":"620a21b2e0fc277084dfd0c5","name":"Hành Động","slug":"hanh-dong"},{"id":"620a2282e0fc277084dfd435","name":"Viễn Tưởng","slug":"vien-tuong"},{"id":"620a2293e0fc277084dfd489","name":"Phiêu Lưu","slug":"phieu-luu"},{"id":"620a229be0fc277084dfd4dd","name":"Khoa Học","slug":"khoa-hoc"},{"id":"620f3d2b91fa4af90ab697fe","name":"Chính kịch","slug":"chinh-kich"}]
+  lang = Vietsub
+  slug = truong-ca-hanh-hoat-hinh
+Item 2 (Nụ Cười Của Arsnotoria (Hoạt Hình)):
+  country = [{"id":"620a2307e0fc277084dfd726","name":"Nhật Bản","slug":"nhat-ban"}]
+  category = [{"id":"620f84d291fa4af90ab6b3f4","name":"Bí ẩn","slug":"bi-an"},{"id":"62121e821f1609c9d934585c","name":"Học Đường","slug":"hoc-duong"}]
+  lang = Vietsub
+  slug = nu-cuoi-cua-arsnotoria-hoat-hinh
+Item 3 (Thương Lan Quyết (Bản Hoạt Hình)):
+  country = [{"id":"62093063196e9f4ab6b448b8","name":"Trung Quốc","slug":"trung-quoc"}]
+  category = [{"id":"620a221de0fc277084dfd1c1","name":"Hài Hước","slug":"hai-huoc"}]
+  lang = Vietsub
+  slug = thuong-lan-quyet-ban-hoat-hinh
+Item 4 (Mechamato – Loạt phim hoạt hình (Phần 2)):
+  country = [{"id":"62159af71f1609c9d934824e","name":"Malaysia","slug":"malaysia"}]
+  category = [{"id":"620a2293e0fc277084dfd489","name":"Phiêu Lưu","slug":"phieu-luu"}]
+  lang = Vietsub
+  slug = mechamato-loat-phim-hoat-hinh-phan-2
