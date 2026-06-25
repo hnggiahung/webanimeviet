@@ -1,0 +1,17 @@
+=== ONE PIECE EPISODES ===
+Number of server groups: 1
+
+Server 0: Vietsub #1
+  Episodes: 1165
+  Ep 1 (1):
+    link_embed: https://vip.opstream11.com/share/d516b13671a4179d9b7b458a6ebdeb92
+    link_m3u8: https://vip.opstream11.com/20220304/879_6a052982/index.m3u8
+    link_direct: null
+  Ep 2 (2):
+    link_embed: https://vip.opstream11.com/share/1f50893f80d6830d62765ffad7721742
+    link_m3u8: https://vip.opstream11.com/20220304/880_67985097/index.m3u8
+    link_direct: null
+  Ep 3 (3):
+    link_embed: https://vip.opstream11.com/share/dd8eb9f23fbd362da0e3f4e70b878c16
+    link_m3u8: https://vip.opstream11.com/20220304/878_5231d0c5/index.m3u8
+    link_direct: null
