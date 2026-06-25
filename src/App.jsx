@@ -578,6 +578,10 @@ export default function App() {
           background: rgba(0,0,0,0.55);
           z-index: 1;
         }
+        @media (max-width: 1023px) {
+          #bg-video, .bg-video-overlay { display: none !important; }
+          body { background-color: #0f0f1a !important; }
+        }
 
         /* ═══ GLASSMORPHISM ═══ */
         .main-container {
@@ -796,8 +800,8 @@ export default function App() {
                 </div>
               </SidebarWidget>
 
-              {/* Banner quảng cáo / Discord */}
-              <div className="bg-[#1a1a2e] border border-[#2a2a2a] overflow-hidden" style={{ borderRadius: 8 }}>
+              {/* Banner quảng cáo / Discord - ẩn trên mobile */}
+              <div className="bg-[#1a1a2e] border border-[#2a2a2a] overflow-hidden hidden lg:block" style={{ borderRadius: 8 }}>
                 <div className="aspect-[16/9] bg-gradient-to-br from-[#5865F2] to-[#4752C4] flex flex-col items-center justify-center p-4 text-center">
                   <img src="https://cdn.prod.website-files.com/6257adef93867e50d84b30e2/663e6e3e9f6bda4c7adf3bd2_2c17a67e.svg" alt="Discord" className="w-12 h-12 mb-2 brightness-0 invert" />
                   <p className="text-white text-xs font-bold mb-1">Tham gia Discord!</p>
@@ -806,10 +810,12 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Bình Luận Mới (Sidebar) */}
-              <SidebarWidget title="Bình Luận Mới" icon={MessageCircle}>
-                <div className="text-center py-6 text-gray-600 text-xs">Đăng nhập để xem bình luận mới nhất</div>
-              </SidebarWidget>
+              {/* Bình Luận Mới (Sidebar) - ẩn trên mobile */}
+              <div className="hidden lg:block">
+                <SidebarWidget title="Bình Luận Mới" icon={MessageCircle}>
+                  <div className="text-center py-6 text-gray-600 text-xs">Đăng nhập để xem bình luận mới nhất</div>
+                </SidebarWidget>
+              </div>
             </aside>
           </div>
 
