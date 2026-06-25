@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from "react";
+import MobileHomepage from "./components/MobileHomepage";
 import { useQuery } from "@tanstack/react-query";
 import {
   Search, Moon, Sun, Play, Star, Eye, Bell, ChevronRight,
@@ -328,8 +329,21 @@ function Footer() {
   );
 }
 
+// ─── MOBILE DETECTION HOOK ──────────────────────────────────────────────────
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile;
+}
+
 // ─── ROOT APP ─────────────────────────────────────────────────────────────────
 export default function App() {
+  const isMobile = useIsMobile();
   const [dark, setDark] = useState(true);
   const [activeGenre, setActiveGenre] = useState(null);
   const [filterTab, setFilterTab] = useState("all");
@@ -539,6 +553,24 @@ export default function App() {
   }
 
   // ─── HOMEPAGE ──────────────────────────────────────────────────────────────
+  // Mobile layout
+  if (isMobile) {
+    return (
+      <MobileHomepage
+        allItems={allItems}
+        filteredAnime={filteredAnime}
+        filterTab={filterTab}
+        setFilterTab={setFilterTab}
+        onMovieClick={handleMovieClick}
+        isLoading={isLoading}
+        isError={isError}
+        dark={dark}
+        setDark={setDark}
+      />
+    );
+  }
+
+  // Desktop layout (original)
   return (
     <div className="min-h-screen text-white font-sans relative">
       <style>{`
@@ -578,9 +610,28 @@ export default function App() {
           background: rgba(0,0,0,0.55);
           z-index: 1;
         }
+        /* ═══ MOBILE OPTIMIZATIONS (dưới 1024px) ═══ */
         @media (max-width: 1023px) {
           #bg-video, .bg-video-overlay { display: none !important; }
-          body { background-color: #0f0f1a !important; }
+          body { background: #0a0a12 !important; }
+          .main-container { backdrop-filter: none !important; background: transparent !important; border: none !important; padding-left: 10px !important; padding-right: 10px !important; }
+          .banner-flex-wrapper .banner-wrapper { height: 200px !important; }
+          .banner-flex-wrapper .banner-wrapper .anim-title { font-size: 15px !important; }
+          .banner-flex-wrapper .banner-wrapper .anim-desc { display: none !important; }
+          .banner-flex-wrapper .banner-wrapper .anim-director { display: none !important; }
+          .banner-flex-wrapper .banner-wrapper .pl-6 { padding-left: 14px !important; }
+          .banner-flex-wrapper .banner-wrapper .md\\:w-\\[45\\%\\] { width: 65% !important; }
+          .top-carousel .flex { gap: 8px !important; }
+          .top-carousel .flex > div { min-width: 70px !important; width: 70px !important; }
+          .top-carousel .flex > div > div { width: 70px !important; height: 100px !important; }
+          .top-carousel .flex img { width: 70px !important; height: 100px !important; }
+          .main-content-grid > div { width: 100% !important; }
+          .main-content-grid > div:last-child { display: none !important; }
+          .new-updated-grid { grid-template-columns: repeat(2, 1fr) !important; display: grid !important; gap: 8px !important; }
+          .new-updated-grid > * { width: auto !important; }
+          .new-updated-grid img { width: 100% !important; height: auto !important; aspect-ratio: 2/3 !important; }
+          .new-updated-grid .w-\\[140px\\] { width: 100% !important; }
+          .new-updated-grid .h-\\[210px\\] { height: auto !important; aspect-ratio: 2/3 !important; }
         }
 
         /* ═══ GLASSMORPHISM ═══ */
