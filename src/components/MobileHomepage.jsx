@@ -556,7 +556,7 @@ export default function MobileHomepage({
       )}
 
       <TopHorizontalScroll items={allItems} onMovieClick={onMovieClick} />
-      <HeroSlider items={allItems} onMovieClick={onMovieClick} />
+
 
       {/* ═══ Anime Mới Cập Nhật - Mini Card List ═══ */}
       <div className="mb-5 mt-2">
@@ -594,6 +594,23 @@ export default function MobileHomepage({
             <button className="text-gray-600 hover:text-gray-400 text-[10px] transition-colors">Góp ý</button>
             <button className="text-gray-600 hover:text-gray-400 text-[10px] transition-colors">Liên hệ</button>
           </div>
+
+          {/* Miễn trừ trách nhiệm */}
+          <div className="max-w-2xl mx-auto text-left text-gray-500 text-[10px] leading-relaxed space-y-2 mb-4 px-2">
+            <p className="text-gray-400 text-[10px] font-bold uppercase tracking-wider text-center mb-3">Miễn trừ trách nhiệm và Bản quyền</p>
+            <p>Website này được xây dựng bởi cá nhân với mục đích chia sẻ và giải trí thuần túy. Chúng tôi không lưu trữ, sở hữu hay phát hành bất kỳ tệp tin video nào trực tiếp trên máy chủ. Mọi nội dung hiển thị đều được tổng hợp từ các nguồn công khai trên Internet.</p>
+            <p>Chúng tôi tôn trọng quyền sở hữu trí tuệ của các đơn vị sản xuất và các nền tảng phát hành chính thống. Nếu bạn là chủ sở hữu bản quyền hoặc đại diện hợp pháp và phát hiện nội dung có liên quan đến bản quyền của mình bị hiển thị tại đây, xin vui lòng liên hệ qua email: <a href="mailto:hnggiahung@gmail.com" className="text-violet-400 hover:text-violet-300 underline transition-colors">hnggiahung@gmail.com</a>. Chúng tôi cam kết sẽ xem xét và gỡ bỏ nội dung vi phạm trong thời gian sớm nhất.</p>
+            <p>Lưu ý: Trang web này hoạt động phi lợi nhuận, không phục vụ mục đích thương mại, không quảng cáo cờ bạc, cá độ hoặc các nội dung vi phạm pháp luật dưới mọi hình thức.</p>
+          </div>
+
+          {/* Miễn trừ trách nhiệm */}
+          <div className="max-w-2xl mx-auto text-left text-gray-500 text-[10px] leading-relaxed space-y-2 mb-4 px-2">
+            <p className="text-gray-400 text-[10px] font-bold uppercase tracking-wider text-center mb-3">Miễn trừ trách nhiệm và Bản quyền</p>
+            <p>Website này được xây dựng bởi cá nhân với mục đích chia sẻ và giải trí thuần túy. Chúng tôi không lưu trữ, sở hữu hay phát hành bất kỳ tệp tin video nào trực tiếp trên máy chủ. Mọi nội dung hiển thị đều được tổng hợp từ các nguồn công khai trên Internet.</p>
+            <p>Chúng tôi tôn trọng quyền sở hữu trí tuệ của các đơn vị sản xuất và các nền tảng phát hành chính thống. Nếu bạn là chủ sở hữu bản quyền hoặc đại diện hợp pháp và phát hiện nội dung có liên quan đến bản quyền của mình bị hiển thị tại đây, xin vui lòng liên hệ qua email: <a href="mailto:hnggiahung@gmail.com" className="text-violet-400 hover:text-violet-300 underline transition-colors">hnggiahung@gmail.com</a>. Chúng tôi cam kết sẽ xem xét và gỡ bỏ nội dung vi phạm trong thời gian sớm nhất.</p>
+            <p>Lưu ý: Trang web này hoạt động phi lợi nhuận, không phục vụ mục đích thương mại, không quảng cáo cờ bạc, cá độ hoặc các nội dung vi phạm pháp luật dưới mọi hình thức.</p>
+          </div>
+
           <p className="text-gray-700 text-[9px]">© 2026 Dự án cá nhân | Phát triển bởi Gia Hưng</p>
         </div>
       </footer>
